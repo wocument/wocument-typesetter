@@ -46,8 +46,9 @@ redefined per breakpoint with `at=`. Columns: `C = min(W - 2*margin-x, max)` wid
 - `columns=2` sets internal columns; `columns=auto` takes as many as keep lines within `measure`
   (or about 64 characters). `measure=` caps line length in a wide frame: use it on any frame
   wider than about 75 characters of body text (warning W041 otherwise).
-- `balance=true` (default) balances a frame's columns **by whole blocks**: paragraphs are not
-  split; a lone paragraph stays in column 1. Give a balanced frame several paragraphs.
+- `balance=true` (default) balances a frame's columns **by lines**: a paragraph may split across
+  columns (two lines at least on each side), pictures and boxes stay whole, and the columns end
+  within a line or two of each other. A paragraph of three lines or fewer stays in one column.
 - `top=auto` (default) places a frame below every earlier sibling that overlaps its columns.
   `top=0` with `wrap=rect` on a heading frame lets text start beside it.
 - `inset=`, `bg=` (a role or colour) and `valign=` (with a definite height) box a frame.
@@ -60,9 +61,9 @@ columns per screen, read top to bottom and left to right, then the next screen. 
 engine guarantees, so you can design for it:
 
 - The first band starts under whatever is above it (a heading); later bands are a full screen.
-- **Columns end together** on the screen's bottom line; where widows, orphans or a subhead
-  kept with its paragraph would leave one short, the band is set up to six lines shorter until
-  they end level. What cannot be levelled ends a line apart at most.
+- **Columns are not levelled**: every band but the last is set to the screen's bottom line as it
+  is, so where widows, orphans or a subhead kept with its paragraph leave a column short, it ends a
+  few lines early. The last band is balanced by lines.
 - **Pages end full**: a page with a photograph lets the photograph grow or crop by a few lines
   so the columns reach the foot.
 - **No stubs**: never one or two lines under a picture in a column; a section's last page never

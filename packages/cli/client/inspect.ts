@@ -11,7 +11,6 @@ export type Report = { viewport: { width: number; height: number }; breakpoint: 
 
 /** Reasons a reader would notice: text moved, a page ending short, a picture that found no good spot, a gap. */
 const NOTABLE = new Set([
-  "column-end:levelled",
   "column-end:orphans",
   "column-end:widows",
   "column-end:rule-3-cut",

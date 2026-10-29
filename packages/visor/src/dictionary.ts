@@ -15,7 +15,6 @@ const px = (k: number | undefined): string => `${Math.round(k ?? 0)}px`;
 
 const COLUMN_END: Record<ColumnEndReason, Record<Voice, Entry>> = {
   "bottom-line": { engineer: { title: "Full to the bottom line", body: () => "The column reached the screen's locked bottom line." } },
-  levelled: { engineer: { title: "Levelled", body: (n) => `The column was set ${lines(n.lines)} short so the page's columns end on the same line.` } },
   "rule-3-cut": { engineer: { title: "Cut to go on with the pictures", body: (n) => `The column was shortened by ${lines(n.lines)} so the text goes on to the next screen with its pictures.` } },
   "keep-with-next": { engineer: { title: "Kept with the next paragraph", body: () => "A subhead moved on to the next column with its paragraph." } },
   orphans: { engineer: { title: "Orphans", body: (n) => `${lines(n.lines)} moved on to protect the first lines of a paragraph.` } },

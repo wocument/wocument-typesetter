@@ -39,7 +39,7 @@ export type Decision = {
 };
 
 /** Why a column ends (`kind: "column-end"`). */
-export const COLUMN_END_REASONS = ["bottom-line", "levelled", "rule-3-cut", "keep-with-next", "orphans", "widows", "hyphen-avoided", "frame-break", "column-break", "story-end", "balanced-last-page", "stub-folded", "picture-at-foot"] as const;
+export const COLUMN_END_REASONS = ["bottom-line", "rule-3-cut", "keep-with-next", "orphans", "widows", "hyphen-avoided", "frame-break", "column-break", "story-end", "balanced-last-page", "stub-folded", "picture-at-foot"] as const;
 export type ColumnEndReason = (typeof COLUMN_END_REASONS)[number];
 
 /** Why a floating object took its spot (`kind: "picture"`); `here`: it does not float. */

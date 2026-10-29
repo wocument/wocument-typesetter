@@ -67,11 +67,15 @@ describe("floating in multi-column scrolling frames", () => {
     expect(lay(one)).toEqual(lay(one, { composeBudget: 0 }));
   });
 
-  it("balancing still keeps paragraphs whole", () => {
+  it("balancing splits paragraphs by lines, never leaving a single line in a column", () => {
     const pd = lay(flow(STORY));
-    const byBlock = new Map<number, Set<number>>();
-    for (const l of lines(pd)) byBlock.set(l.block, (byBlock.get(l.block) ?? new Set()).add(l.column));
-    for (const cols of byBlock.values()) expect(cols.size).toBe(1);
+    const per = new Map<number, Map<number, number>>();
+    for (const l of lines(pd)) {
+      const cols = per.get(l.block) ?? new Map<number, number>();
+      cols.set(l.column, (cols.get(l.column) ?? 0) + 1);
+      per.set(l.block, cols);
+    }
+    for (const cols of per.values()) if (cols.size > 1) for (const n of cols.values()) expect(n).toBeGreaterThanOrEqual(2);
     // And composed: the picture is not where today's rule sets it.
     expect(figure(pd).box).not.toEqual(figure(lay(flow(STORY), { composeBudget: 0 })).box);
   });
@@ -85,10 +89,9 @@ describe("floating in multi-column scrolling frames", () => {
     const top = Math.min(...ls.map((l) => l.y));
     const [a, b, c] = pd.scenes[0]!.objects.filter((o) => o.name.startsWith("figure"));
     expect(a!.box.y).toBeLessThanOrEqual(top + 1e-3);
-    // The others stay inline at their anchors, far below the top.
-    for (const o of [b!, c!]) {
-      expect(o.box.y).toBeGreaterThan(top + 688);
-      expect(Math.abs(o.box.y - o.anchoredAt!)).toBeLessThanOrEqual(2 * 28);
-    }
+    // The others are set where the balanced columns put their anchors: inside the frame, and (the
+    // layout invariants above) clear of the text. Balancing by lines may move an anchor to the top of a
+    // column, which a picture then waits for (§09.7 rule 6), so their place is not pinned to the anchor.
+    for (const o of [b!, c!]) expect(o.box.y).toBeGreaterThanOrEqual(56 - 1e-3);
   });
 });

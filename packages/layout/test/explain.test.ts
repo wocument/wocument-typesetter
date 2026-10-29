@@ -49,7 +49,7 @@ const SPREAD = here("playground/docs/test-spread.woc");
 
 describe("the reasons log", () => {
   it("lists every column-end code", () => {
-    expect(COLUMN_END_REASONS).toEqual(["bottom-line", "levelled", "rule-3-cut", "keep-with-next", "orphans", "widows", "hyphen-avoided", "frame-break", "column-break", "story-end", "balanced-last-page", "stub-folded", "picture-at-foot"]);
+    expect(COLUMN_END_REASONS).toEqual(["bottom-line", "rule-3-cut", "keep-with-next", "orphans", "widows", "hyphen-avoided", "frame-break", "column-break", "story-end", "balanced-last-page", "stub-folded", "picture-at-foot"]);
   });
 
   const hand = [
@@ -109,15 +109,6 @@ describe("column-end reasons", () => {
     const d = ends(pd).at(-1)!;
     expect(d.reason).toBe("story-end");
     expect(d.numbers).toEqual({});
-  });
-
-  it("levelled: set lines short so the columns end on one line", () => {
-    const words = LONG.split(" ");
-    const blocks = Array.from({ length: 40 }, (_, i) => (i % 5 === 4 ? `\\subhead{Part ${i}}` : words.slice(0, 20 + ((i * 37) % 60)).join(" ")));
-    const src = `\\style[name=body, space-after=0, indent=1em]\n\\style[name=subhead, leading=1bl, space-before=1bl, space-after=0]\n${page(blocks.join("\n\n"))}`;
-    const d = one(lay(src), "levelled");
-    expect(d.numbers.lines).toBeGreaterThanOrEqual(1);
-    expect(d.rule).toBe("§09.7 rule 11");
   });
 
   it("keep-with-next: a subhead at a column's foot moves on with its paragraph", () => {
@@ -319,8 +310,8 @@ describe("space reasons", () => {
   });
 
   it("early-end: a screen whose columns all end short of the bottom line", () => {
-    const br = "\n\n\\framebreak[column]\n\n";
-    const pd = lay(page([para(6, "a"), para(6, "b"), para(6, "c"), para(60, "d")].join(br)));
+    // The band is set short for the picture's sake (rule 3), so its columns end short of the bottom line.
+    const pd = lay(RULE3);
     const ds = spaces(pd, "early-end");
     expect(ds).toHaveLength(1);
     expect(ds[0]).toMatchObject({ screen: 1, rule: "§09.7 rule 12" });
@@ -418,12 +409,13 @@ describe("column-end at", () => {
 });
 
 // Minimal stories for the codes that need a setting just so (lengths found by a search at 1280x800, fixed engine).
+// A long tail follows the first three, so their page is a full band: the last band is balanced by lines.
 /** A subhead whose paragraph has no room under it at column 1's foot. */
-const KEEP = page(`${para(15, "a")}\n\n\\subhead{The keepers}\n\n${para(20, "b")}`);
+const KEEP = page(`${para(15, "a")}\n\n\\subhead{The keepers}\n\n${para(20, "b")}\n\n${para(300, "z")}`);
 /** A paragraph whose first line alone would end column 1. */
-const ORPHANS = page(`${para(17, "a")}\n\n${para(20, "b")}`);
+const ORPHANS = page(`${para(17, "a")}\n\n${para(20, "b")}\n\n${para(300, "z")}`);
 /** A paragraph whose last line alone would start column 3. */
-const WIDOWS = page(`${para(16, "a")}\n\n${para(20, "b")}`);
+const WIDOWS = page(`${para(16, "a")}\n\n${para(20, "b")}\n\n${para(300, "z")}`);
 /** Words with soft hyphens, so the band's last line would end on one. */
 const HYPHEN = page(`${para(1, "a")} ${"extra\u00adordinarily ".repeat(200)}`);
 /** A picture that waits, and two lines of text left for the last page. */

@@ -155,7 +155,10 @@ describe("floating in screen pages", () => {
     const [o] = objects(pd);
     expect(screenOf(pd, o!.box.y)).toBe(last);
     const onLast = lines.filter((l) => screenOf(pd, l.y) === last);
-    for (const b of new Set(onLast.map((l) => l.block))) expect(new Set(onLast.filter((l) => l.block === b).map((l) => l.column)).size, `block ${b}`).toBe(1);
+    for (const b of new Set(onLast.map((l) => l.block))) {
+      const parts = [...new Set(onLast.filter((l) => l.block === b).map((l) => l.column))].map((c) => onLast.filter((l) => l.block === b && l.column === c).length);
+      if (parts.length > 1) for (const n of parts) expect(n, `block ${b}`).toBeGreaterThanOrEqual(2);
+    }
   });
 
   it("a float stays in its anchor's frame", () => {
@@ -288,9 +291,9 @@ describe("floating in screen pages", () => {
 
   // 2026-10-17: at 1920x1080 no setting with a picture lets the text go on (each leaves one or two
   // lines alone by a box, rule 13), so every picture waits and the text ends on page 1: the text's
-  // last page. It is balanced by whole blocks, as the story's end is: each paragraph in one column,
-  // the columns filled from the left at the smallest height; the pictures follow, within their window.
-  it.skipIf(!local("stress-portraits"))("the text's last page, every picture waiting, is balanced by whole blocks (stress-portraits at 1920x1080)", () => {
+  // last page. It is balanced by lines, as the story's end is: the columns filled from the left at the
+  // smallest height that holds the text; the pictures follow, within their window.
+  it.skipIf(!local("stress-portraits"))("the text's last page, every picture waiting, is balanced by lines (stress-portraits at 1920x1080)", () => {
     const here = (p: string): string => fileURLToPath(new URL(`../../${p}`, import.meta.url));
     const assets = createAssetHost({ publicDir: here("playground/public"), sourceDir: here("playground/docs") });
     const { doc } = resolve(parse(readFileSync(here("playground/docs/stress-portraits.woc"), "utf8")).ast as Document, { assets });
@@ -300,20 +303,16 @@ describe("floating in screen pages", () => {
     const s = pd.scenes[0]!;
     const text = s.lines.filter((l) => l.story === "nine");
     expect(text.every((l) => screenOf(pd, l.y) === 0), "the text ends on page 1").toBe(true);
-    // Each paragraph in one column.
-    for (const b of new Set(text.map((l) => l.block))) expect(new Set(text.filter((l) => l.block === b).map((l) => l.column)).size, `block ${b}`).toBe(1);
-    // Filled from the left at the smallest height: a column's first paragraph would not fit at the
-    // foot of the column before it within the tallest column.
+    // Balanced by lines: a split paragraph never leaves one line in a column, and the columns end
+    // within two lines of each other.
+    for (const b of new Set(text.map((l) => l.block))) {
+      const parts = [...new Set(text.filter((l) => l.block === b).map((l) => l.column))].map((c) => text.filter((l) => l.block === b && l.column === c).length);
+      if (parts.length > 1) for (const n of parts) expect(n, `block ${b}`).toBeGreaterThanOrEqual(2);
+    }
     const cols = [...new Set(text.map((l) => l.column))].sort((a, b) => a - b);
     expect(cols.length).toBeGreaterThan(1);
-    const foot = (c: number) => Math.max(...text.filter((l) => l.column === c).map((l) => l.y + l.height));
-    const tallest = Math.max(...cols.map(foot));
-    for (const [i, c] of cols.entries()) {
-      if (i === 0) continue;
-      const first = text.filter((l) => l.column === c && l.block === text.find((x) => x.column === c)!.block);
-      const height = first.at(-1)!.y + first.at(-1)!.height - first[0]!.y;
-      expect(foot(cols[i - 1]!) + height, `column ${c}'s first paragraph fits in column ${cols[i - 1]}`).toBeGreaterThan(tallest + 1);
-    }
+    const feet = cols.map((c) => Math.max(...text.filter((l) => l.column === c).map((l) => l.y + l.height)));
+    expect(Math.max(...feet) - Math.min(...feet)).toBeLessThanOrEqual(2 * pd.scenes[0]!.grid.baseline + 1e-6);
   });
 
   // 2026-10-21: the all-wait setting was never laid out (the search gave it up before the first
@@ -383,9 +382,10 @@ describe("floating in screen pages", () => {
   // 2026-10-21 (test-spread at 1470x956, characters 0.42 to 0.46em): on the text's last page a pull
   // quote at the foot stood 47 to 103px below the balanced columns. The last page is no exception: a
   // box at the foot rises with the balanced columns.
-  it.skipIf(!local("test-spread")).each([0.42, 0.44, 0.46, 0.47])("no page holds a hole taller than a line, the last included (test-spread at 1470x956, characters %fem)", (em) => {
+  it.skipIf(!local("test-spread")).each([0.42, 0.44, 0.46, 0.47])("no page holds a hole taller than two lines, the last included (test-spread at 1470x956, characters %fem)", (em) => {
+    // Two lines since rule 11's levelling was removed: at 0.44em one column beside a box stands 38px short.
     const { doc, pd } = testSpread(em);
-    expect(columnHoles(doc, pd, pd.scenes[0]!.grid.baseline, { last: true })).toEqual([]);
+    expect(columnHoles(doc, pd, 2 * pd.scenes[0]!.grid.baseline, { last: true })).toEqual([]);
   });
 
   // 2026-10-20 (test-spread at 1470x956, the screen with the gallery): the gallery and the pull quote

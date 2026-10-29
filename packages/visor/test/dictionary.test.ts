@@ -24,7 +24,7 @@ describe("the reason dictionary", () => {
   });
 
   it("reads the numbers into the sentence", () => {
-    expect(describeDecision(decision("column-end", "levelled", { lines: 2 })).body).toContain("2 lines");
+    expect(describeDecision(decision("column-end", "rule-3-cut", { lines: 2 })).body).toContain("2 lines");
     expect(describeDecision(decision("column-end", "picture-at-foot")).title).toBe("The column ends with a picture or quote");
   });
 });

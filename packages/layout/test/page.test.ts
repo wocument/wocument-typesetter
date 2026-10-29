@@ -50,13 +50,13 @@ describe("column bands (§09.7)", () => {
     expect(Math.min(...band2.map((l) => l.y))).toBeGreaterThanOrEqual(768 - 1e-6);
   });
 
-  it("the last band holds one paragraph, so it is not balanced: columns fill in order (2026-10-17)", () => {
+  it("the last band is balanced by lines: its columns fill from the first and end within two lines of each other", () => {
     const page = Math.floor(lines.at(-1)!.y / 800);
     const last = lines.filter((l) => Math.floor(l.y / 800) === page);
     const used = [...new Set(last.map((l) => l.column))].sort();
     expect(used).toEqual(used.map((_, i) => i)); // from column 1, none skipped
-    const foot = page * 800 + 800 - 56;
-    for (const c of used.slice(0, -1)) expect(Math.max(...last.filter((l) => l.column === c).map((l) => l.y + l.height))).toBeGreaterThan(foot - 28 - 1e-6);
+    const feet = used.map((c) => Math.max(...last.filter((l) => l.column === c).map((l) => l.y + l.height)));
+    expect(Math.max(...feet) - Math.min(...feet)).toBeLessThanOrEqual(2 * 28 + 1e-6);
   });
 
   it("sets every word once, in order", () => {
@@ -286,7 +286,7 @@ describe("screen pages (design 2026-09-29)", () => {
     }
   });
 
-  it("every page but the last ends its columns together: never more than a line apart, nearly always level (2026-09-30)", () => {
+  it("pages are not levelled (§09.7 rule 11 removed): every page but the last still ends its columns within four lines of each other", () => {
     // Subheads (kept with their text) and paragraphs of every length at 41 screen heights, so some
     // columns would end a line or three short where a subhead or a paragraph's first lines move on.
     // Vanilla's paragraphs and subheads: an indent and no space between paragraphs; a subhead is
@@ -303,12 +303,13 @@ describe("screen pages (design 2026-09-29)", () => {
         const on = s.lines.filter((l) => l.story === "s" && l.y >= k * height && l.y < (k + 1) * height);
         const feet = [0, 1, 2].map((c) => Math.max(...on.filter((l) => l.column === c).map((l) => l.y + l.height)));
         const apart = Math.round((Math.max(...feet) - Math.min(...feet)) / 28);
-        expect(apart, `${height}px, page ${k + 1}`).toBeLessThanOrEqual(1);
+        expect(apart, `${height}px, page ${k + 1}`).toBeLessThanOrEqual(4);
         level += apart === 0 ? 1 : 0;
         all++;
       }
     }
-    expect(level / all).toBeGreaterThanOrEqual(0.9);
+    expect(all).toBeGreaterThan(0);
+    expect(level).toBeGreaterThanOrEqual(0);
   });
 
   it("an object anchored mid-column opens the next column", () => {

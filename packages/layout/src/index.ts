@@ -123,8 +123,6 @@ type Env = {
   origin?: number;
   /** §09.7 rule 12: extra height, in px (negative to crop), a photograph takes so that its page ends full. */
   grow?: ReadonlyMap<string, number>;
-  /** 2026-10-17: set while columns are balanced. A paragraph, picture or box is never split across columns. */
-  whole?: boolean;
   /** 2026-10-17: the scene is set in screen pages, so every frame snaps to the grid of the screen a line is on. */
   pageGrids?: boolean;
   /** Picture composition (2026-10-17): how many combinations a screen may try; 0: no composition, every object takes rule 6. */
@@ -919,52 +917,68 @@ function fillFrame(
 }
 
 /**
- * §09.4, 2026-10-17: columns are balanced by whole blocks. Paragraphs, pictures and boxes stay in
- * reading order, filling from the left, and are never split across columns; a subhead goes with the
- * paragraph after it. The height is the smallest, in baseline steps, at which every block fits in the
- * columns; columns that height does not need stay empty, and one block alone stays in the first.
+ * §09.4: columns are balanced by lines. The columns are filled as on any other page, so a paragraph
+ * may split across them (widows, orphans and keep-with-next still apply) and pictures and boxes stay
+ * whole. The height is the smallest, in baseline steps, at which all the text still fits the columns.
  * The search halves the height; keep-with-next breaks monotonic fitting, so it may settle on a taller
  * height than the smallest that fits, never losing text.
  */
 function balance(env: Env, run: (limit: number) => Columns, rest = false): Columns {
   const bl = env.grid.baseline;
-  const before = env.whole;
-  // The columns filled as on any other page, splitting paragraphs: always takes what the caller gave.
-  env.whole = false;
-  const lines = run(Number.POSITIVE_INFINITY);
-  env.whole = true;
-  try {
-    const natural = run(Number.POSITIVE_INFINITY);
-    // Text that ends exactly at the last column's foot reports the column full, yet takes it all: that
-    // fit counts (2026-10-07: two columns stayed 28 and 26 lines where 27 and 27 fit exactly).
-    // §09.7 rule 5: a block kept with the next one never ends a column (a box over two columns can leave
-    // a subhead's paragraph no room beside it).
-    // `rest`: the text's last page with objects still to come after it (2026-10-17): those wait for
-    // the next page as they do in the line setting, so a fit leaves the same ones waiting.
-    const waits = (r: Columns): boolean => (rest ? r.deferred.join() === lines.deferred.join() : r.deferred.length === 0);
-    const same = (r: Columns): boolean => r.cursor.block === lines.cursor.block && (r.stop !== "full" || waits(r)) && !r.collides && !keptApart(env, r.placed.lines);
-    // Whole blocks that do not fit at all (a page's last band is only so tall, and the gaps they leave
-    // take room): the columns stay filled in order, so nothing is left out.
-    if (!same(natural)) return lines;
-    // Anchored objects hang below the text they wrap; the search must reach heights that hold them too.
-    const total = Math.max(...natural.bottoms, ...natural.placed.objects.map((o) => o.box.y + o.box.height)) - Math.min(...natural.tops);
-    let lo = 1;
-    let hi = Math.max(1, Math.ceil(total / bl));
-    while (lo < hi) {
-      const mid = Math.floor((lo + hi) / 2);
-      if (same(run(mid * bl))) hi = mid;
-      else lo = mid + 1;
-    }
-    // The upper bound is measured, not tried: when even it does not take the text (lines snapping to a
-    // page's grid can need a line more), the natural setting stands.
-    const tried = run(lo * bl);
-    const best = same(tried) ? { ...tried, balanced: lo * bl } : natural;
-    // Such a fit took all the text: it ends where the line setting does, not "full" (2026-10-11: a
-    // last page whose columns ended exactly at the balanced foot got a continuation arrow).
-    return best.stop === "full" ? { ...best, stop: lines.stop } : best;
-  } finally {
-    env.whole = before;
+  const natural = run(Number.POSITIVE_INFINITY);
+  // Text that ends exactly at the last column's foot reports the column full, yet takes it all: that
+  // fit counts (2026-10-07: two columns stayed 28 and 26 lines where 27 and 27 fit exactly).
+  // §09.7 rule 5: a block kept with the next one never ends a column (a box over two columns can leave
+  // a subhead's paragraph no room beside it).
+  // `rest`: the text's last page with objects still to come after it (2026-10-17): those wait for
+  // the next page as they do in the line setting, so a fit leaves the same ones waiting.
+  const waits = (r: Columns): boolean => (rest ? r.deferred.join() === natural.deferred.join() : r.deferred.length === 0);
+  const same = (r: Columns): boolean => r.cursor.block === natural.cursor.block && (r.stop !== "full" || waits(r)) && !r.collides && !keptApart(env, r.placed.lines) && !stranded(env, r.placed.lines);
+  // Text that does not fit at all (a page's last band is only so tall): the columns stay filled in
+  // order, so nothing is left out.
+  if (!same(natural)) return natural;
+  // Anchored objects hang below the text they wrap; the search must reach heights that hold them too.
+  const total = Math.max(...natural.bottoms, ...natural.placed.objects.map((o) => o.box.y + o.box.height)) - Math.min(...natural.tops);
+  let lo = 1;
+  let hi = Math.max(1, Math.ceil(total / bl));
+  while (lo < hi) {
+    const mid = Math.floor((lo + hi) / 2);
+    if (same(run(mid * bl))) hi = mid;
+    else lo = mid + 1;
   }
+  // The upper bound is measured, not tried: when even it does not take the text (lines snapping to a
+  // page's grid can need a line more), the natural setting stands.
+  const tried = run(lo * bl);
+  const best = same(tried) ? { ...tried, balanced: lo * bl } : natural;
+  // Such a fit took all the text: it ends where the line setting does, not "full" (2026-10-11: a
+  // last page whose columns ended exactly at the balanced foot got a continuation arrow).
+  return best.stop === "full" ? { ...best, stop: natural.stop } : best;
+}
+
+/**
+ * A paragraph split across columns leaves fewer lines than its style's orphans at the foot of the
+ * first column, or fewer than its widows in the last (§07.6). The line setting yields to those rules
+ * only where a column cannot hold more, and a trial height that short must not be taken as a fit.
+ */
+function stranded(env: Env, lines: readonly PositionedLine[]): boolean {
+  const parts = new Map<string, PositionedLine[][]>();
+  for (const l of lines) {
+    if (!env.v.frames[l.frame]) continue;
+    const key = `${l.story}:${l.block}`;
+    const cols = parts.get(key) ?? [];
+    if (cols.length === 0 || cols[cols.length - 1]![0]!.column !== l.column) cols.push([]);
+    cols[cols.length - 1]!.push(l);
+    parts.set(key, cols);
+  }
+  for (const cols of parts.values()) {
+    if (cols.length < 2) continue;
+    const first = cols[0]!;
+    const last = cols[cols.length - 1]!;
+    const style = env.v.styles[first[0]!.style];
+    if (first[0]!.paragraphStart && first.length < (style?.orphans ?? 2)) return true;
+    if (last.length < (env.v.styles[last[0]!.style]?.widows ?? 2)) return true;
+  }
+  return false;
 }
 
 /** A keep-with-next block's last line ends a column while the text after it starts another (§07.6, §09.7 rule 5). */
@@ -999,7 +1013,6 @@ type Over = { why: ColumnEndReason; numbers: Record<string, number> } | undefine
 /** The spec rule each column-end code stands on. */
 const COLUMN_END_RULE: Record<ColumnEndReason, string> = {
   "bottom-line": "§09.7 rule 11",
-  levelled: "§09.7 rule 11",
   "rule-3-cut": "§09.7 rule 6",
   "keep-with-next": "§07.6 keep-with-next",
   orphans: "§07.6 orphans",
@@ -1219,9 +1232,8 @@ function bands(
     // The screen's floating objects are chosen first; every setting of the screen below keeps them.
     /** How much shorter the composer set this band, rule 3 applied (2026-10-17). */
     let cut = 0;
-    /** The visor: how much shorter rule 3 and the levelling set the band, in px. */
+    /** The visor: how much shorter rule 3 set the band, in px. */
     let rule3 = 0;
-    let level = 0;
     if (compose) {
       // Objects that fall back join those already waiting in story order, so earlier ones open the band first.
       let extra: string[];
@@ -1255,32 +1267,15 @@ function bands(
       const t = held.length ? run(limit, at, from, earlier, waiting.filter(tied)) : null;
       if (t && !t.deferred.some(tied)) (full = t), (waiting = waiting.filter(tied)), (holdOver = held);
     }
-    // 2026-09-30: a page's columns end on the same line. Where a kept subhead or a paragraph's
-    // first lines moving on would leave a column short, the band is set a line shorter at a time, up
-    // to six lines (a subhead, its space and two lines of text moving on is four), and the try whose
-    // columns end closest together wins (the first that ends them all on one line; ties to the
-    // longer band). Limit: short of editing the copy, as a magazine would, a page can end a few
-    // lines early, or rarely stay a line apart.
-    // With floating boxes on the screen (2026-10-17), a column ends where its content does: a box at
-    // the foot ends it, and text that stops above a box is not short.
+    // Where a column ends is what its content does: a box at the foot ends it, and text that stops
+    // above a box is not short (2026-10-17). Columns are not levelled: a band is set to the foot as
+    // it is, and rule 12 below takes up what is left (§09.7 rule 11, levelling, removed).
     const boxed = [...(env.floated?.values() ?? [])].some((f) => f !== null);
     const spread = (r: Columns): number => {
       const f = (boxed ? ends(r) : feet(r)).filter(Number.isFinite);
       return f.length ? Math.max(...f) - Math.min(...f) : 0;
     };
-    if (full.stop === "full" && spread(full) > EPS) {
-      let best = full;
-      for (let cut = grid.baseline; cut <= 6 * grid.baseline + EPS && cut < limit / 2; cut += grid.baseline) {
-        const t = run(limit - cut, at, from, earlier, waiting);
-        // A try that sets nothing is level only because it has no columns: never a candidate.
-        if (t.stop !== "full" || lone(t) || sameResume(t.cursor, from) || spread(t) >= spread(best) - EPS) continue;
-        best = t;
-        level = cut;
-        if (spread(t) <= EPS) break;
-      }
-      full = best;
-    }
-    const levelled = full;
+    const set = full;
     // Rule 12 (2026-10-07): a page whose columns end short of the
     // foot, level or not, has a photograph on it take the difference, a line at a time taller (or
     // shorter, by up to three lines), cropped. The first height that ends every column, text or
@@ -1312,7 +1307,7 @@ function bands(
     }
     const done = full.stop !== "full";
     // 2026-10-17: every floating object waits on this screen and the text still ends here (rule 3
-    // could not carry any on): this is the text's last page. It is balanced by whole blocks, as the
+    // could not carry any on): this is the text's last page. It is balanced by lines, as the
     // story's end is; the pictures follow on the pages after it.
     const last = !done && compose !== undefined && compose.left() && ![...(env.floated?.values() ?? [])].some((f) => f !== null) && lone(full);
     let folded = 0;
@@ -1366,11 +1361,10 @@ function bands(
     }
     // The visor: a band-level outcome names the columns that ended at the band's (shortened) foot.
     const bl = grid.baseline;
-    const r3 = band === levelled ? rule3 : cut;
+    const r3 = band === set ? rule3 : cut;
     const over: Over = !env.explain ? undefined
       : folded ? { why: "stub-folded", numbers: { lines: folded } }
       : band.balanced !== undefined ? { why: "balanced-last-page", numbers: { height: band.balanced } }
-      : band === levelled && level > 0 ? { why: "levelled", numbers: { lines: Math.round(level / bl) } }
       : r3 > 0 ? { why: "rule-3-cut", numbers: { lines: Math.round(r3 / bl) } }
       : undefined;
     prev = { mark: mark(out), tops: tops.length, bottoms: bottoms.length, earlier: earlier.length, at, limit, from, waiting, page, band, floated: env.floated, explain: env.explain?.length ?? 0, over };
@@ -1527,7 +1521,7 @@ function rise(env: Env, run: (limit: number) => Columns, rest: boolean, foot: nu
  * Picture composition, 2026-10-17, for a multi-column frame in a scrolling scene: the frame is one
  * screen (index 0) from its content top, a screen's band tall. Its floating objects anchored within
  * that band, at most three in story order, compete for `place=top` spots only; the rest, and every object when no combination
- * keeps the hard rules, keep today's placement (`null` before any trial: the caller balances). The columns balance by whole blocks below
+ * keeps the hard rules, keep today's placement (`null` before any trial: the caller balances). The columns balance by lines below
  * and around the boxes chosen.
  */
 function floatFlow(
@@ -1834,7 +1828,7 @@ function composer(
        * Rule 3's cut for a setting whose text ends here with boxes set (see `tryLayout`): of those that
        * let text go on and keep the hard rules, the one whose columns end closest to level (ties to
        * the smaller cut; the first level one ends the search); else the first that lets text go on.
-       * Limit: up to six lines, as the levelling search in `bands` (2026-10-17: a trial is at most
+       * Limit: up to six lines of cut, as in rule 3's search in `bands` (2026-10-17: a trial is at most
        * seven layouts; the budget counts combinations). `runs` counts the cut layouts set.
        */
       const cutFor = (combo: Candidate[], trial: Columns): { k: number; t: Columns; as: Candidate[]; runs: number } | null => {
@@ -2250,7 +2244,7 @@ function linesLeft(next: NextLine, pieces: Prepared[], at: TextCursor, width: nu
 
 type NextLine = (p: Prepared, from: TextCursor, width: number) => LineBox | null;
 type Plan = { cost: number; line: LineBox | null };
-/** Composer plans per prepared paragraph, kept while the paragraph is: the levelling search's trials reuse them. */
+/** Composer plans per prepared paragraph, kept while the paragraph is: the balancing and rule 3 trials reuse them. */
 const PLANS = new WeakMap<Prepared, Map<string, Plan>>();
 /**
  * §07.6 `justify`: how much to add to each space so the line fills its slot. The slack is what
@@ -2642,7 +2636,7 @@ function fillColumn(
         // §11.3: it does not fit in what is left of the column. It moves to the top of the next
         // column (or band) and the text continues here without a gap -- where there is a next
         // column in this fill to take it; otherwise the column ends at the object, as before.
-        if (defer.allowed && !pins.has(o.id) && !env.whole) {
+        if (defer.allowed && !pins.has(o.id)) {
           defer.list.push(o.id);
           cursor = { ...START, block: b + 1 };
           continue;
@@ -2764,14 +2758,6 @@ function fillColumn(
           }
           return null;
         };
-        // Balancing (2026-10-17): a paragraph is one block. Text left over means it moves on whole, its
-        // kept subhead with it; one that does not fit even at a column's top leaves the column empty,
-        // so the balancing search takes a taller height.
-        if (env.whole && linesLeft(lineOf, pieces.slice(piece).map(prepare), at, Math.min(pcol.width, measure), 1) > 0) {
-          if (kept) return backToKept(kept);
-          rollback(out, blockMark.at);
-          return { placed: out, cursor, bottom: blockMark.y, stop: "full", why: "bottom-line" };
-        }
         // Column full. Orphans: a paragraph that started here and would leave too few
         // lines behind moves whole, and a block kept with it comes along.
         if (!resuming && n > 0 && n < style.orphans && !(atTop && blockMark.at.lines === 0)) {

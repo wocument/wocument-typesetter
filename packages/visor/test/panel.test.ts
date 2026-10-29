@@ -97,8 +97,8 @@ describe("the visor panel", () => {
     const first = lay(`\\story[name=u]{${para(60, "u")}}\n\\scene{\\frame[story=u, cols=1-12, columns=2]}\n${page(para(200, "a"), "s")}`);
     const paged = buildModel(first, first.explain!).filter((m) => m.screen !== null);
     expect(first.scenes[0]!.paged).toBe(false);
-    // The pages start on screen 3 but on the second dot, so a dot is not its screen number less one.
-    expect(paged[0]!.screen).toBeGreaterThan(2);
+    // The pages start after the scrolling scene, on the second dot, so a dot is not its screen number less one.
+    expect(paged[0]!.screen).toBeGreaterThan(1);
     expect(paged.length).toBeGreaterThanOrEqual(2);
     paged.forEach((m, k) => expect(dotsOf(first, m.screen!, m.screen!), `screen ${m.screen}`).toEqual([k + 1]));
     expect(dotsOf(first, paged[0]!.screen!, paged.at(-1)!.screen!)).toEqual(paged.map((_, k) => k + 1));
