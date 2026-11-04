@@ -308,8 +308,9 @@ describe("screen pages (design 2026-09-29)", () => {
         all++;
       }
     }
-    expect(all).toBeGreaterThan(0);
-    expect(level).toBeGreaterThanOrEqual(0);
+    // 2026-11-04: 46 of 159 pages level. A floor, so a change cannot make it worse unseen.
+    expect(all).toBeGreaterThan(150);
+    expect(level).toBeGreaterThanOrEqual(40);
   });
 
   it("an object anchored mid-column opens the next column", () => {

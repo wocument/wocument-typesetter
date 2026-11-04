@@ -61,7 +61,7 @@ or the page scrolls sideways.
 | :---- | :---- | :---- |
 | Empty room inside a column (N lines) | a hole in a column, often above a picture | move the picture's anchor, change its `size=`, or edit copy |
 | Strip too narrow | a blank strip beside a picture or box | a wider or narrower `width=`, `side=full`, or `wrap=jump` |
-| Levelled / Widows / Orphans (N lines) | a column set short so the page ends level, or text moved on | usually fine; many on one page means awkward paragraph lengths: edit copy |
+| Widows / Orphans (N lines) | a column ends a line or two short because text moved on to the next | usually fine; many on one page means awkward paragraph lengths: edit copy |
 | Cut to go on with the pictures / Short last page folded back | the engine reshaped a page around its pictures | check the screenshots: the page may be crowded |
 | Fallback: no spot / search budget, Waited | a picture could not go where it was anchored | `size=column` or `small`, fewer pictures on that stretch of text, or move the anchor |
 | Photograph cropped / Photograph grown | a photograph was cropped or extended to fill a page | check the crop: set `focus=`, or `fit=contain` if it must show whole |

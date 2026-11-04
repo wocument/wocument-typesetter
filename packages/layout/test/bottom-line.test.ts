@@ -1,7 +1,7 @@
 /**
  * The bottom line (2026-10-17): a page scene's grid counts up from each screen's bottom line (the
  * screen's foot less margin-y), so every full column ends exactly there, on every page and every
- * screen size. A page that ends early (the rule that keeps columns level) is short by whole lines.
+ * screen size. A page that ends early (a section's last page, balanced by lines) is short by whole lines.
  */
 import { describe, expect, it } from "vitest";
 import { parse, type Document } from "@wocument/parser";

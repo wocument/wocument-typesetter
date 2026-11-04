@@ -48,7 +48,7 @@ redefined per breakpoint with `at=`. Columns: `C = min(W - 2*margin-x, max)` wid
   wider than about 75 characters of body text (warning W041 otherwise).
 - `balance=true` (default) balances a frame's columns **by lines**: a paragraph may split across
   columns (two lines at least on each side), pictures and boxes stay whole, and the columns end
-  within a line or two of each other. A paragraph of three lines or fewer stays in one column.
+  within a line or two of each other. With the default widows and orphans (2), a paragraph of three lines or fewer stays in one column.
 - `top=auto` (default) places a frame below every earlier sibling that overlaps its columns.
   `top=0` with `wrap=rect` on a heading frame lets text start beside it.
 - `inset=`, `bg=` (a role or colour) and `valign=` (with a definite height) box a frame.

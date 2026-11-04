@@ -966,7 +966,8 @@ function stranded(env: Env, lines: readonly PositionedLine[]): boolean {
     if (!env.v.frames[l.frame]) continue;
     const key = `${l.story}:${l.block}`;
     const cols = parts.get(key) ?? [];
-    if (cols.length === 0 || cols[cols.length - 1]![0]!.column !== l.column) cols.push([]);
+    const prev = cols[cols.length - 1]?.[0];
+    if (!prev || prev.column !== l.column || prev.frame !== l.frame) cols.push([]);
     cols[cols.length - 1]!.push(l);
     parts.set(key, cols);
   }
@@ -1909,7 +1910,7 @@ function composer(
         const ending = waiting.filter((id) => (anchors.get(id)?.screen ?? page) <= page - 1);
         const kept = !stuck && owed.every((id) => beyond(trial.cursor, id)) && early.every((c) => !reach || beyond(reach, c.id)) && ![...due, ...ending].some((id) => trial.deferred.includes(id));
         const pre = kept ? sum : { ...sum, allSet: false };
-        // The text ends here: `bands` balances the page (rule 11's last band), so its empty room is
+        // The text ends here: `bands` balances the page by lines (§09.4), so its empty room is
         // counted on the balanced setting, where a box at the foot can stand below shorter columns
         // (2026-10-20).
         const rescore =
@@ -2017,7 +2018,7 @@ type Columns = {
   deferred: string[];
   /** The visor (2026-10-21): why each column set ended, by column; `moved`: lines orphans or widows sent on; `object`: the picture that ends it (rule 13). */
   why: { code: ColumnEndReason; frame: string; x: number; width: number; moved?: number; object?: string }[];
-  /** Set by `balance` when the whole-block search chose a height: that height, in px. */
+  /** Set by `balance` when the line search chose a height: that height, in px. */
   balanced?: number;
 };
 /** Anchored objects deferred to the next column (§11.3), and whether a later column or band exists to take one. */

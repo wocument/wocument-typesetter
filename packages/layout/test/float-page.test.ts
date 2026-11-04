@@ -327,8 +327,7 @@ describe("floating in screen pages", () => {
   });
 
   it.skipIf(!local("stress-portraits"))("a trial's rule-3 cut search sets at most seven layouts", () => {
-    // 2026-10-17: the budget counts combinations; each trial's cut search is bounded as the levelling
-    // search is, six lines at most, so a trial is its own layout and up to six cuts.
+    // 2026-10-17: the budget counts combinations; each trial's cut search is bounded at six lines, so a trial is its own layout and up to six cuts.
     const here = (p: string): string => fileURLToPath(new URL(`../../${p}`, import.meta.url));
     const assets = createAssetHost({ publicDir: here("playground/public"), sourceDir: here("playground/docs") });
     const { doc } = resolve(parse(readFileSync(here("playground/docs/stress-portraits.woc"), "utf8")).ast as Document, { assets });

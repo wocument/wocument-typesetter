@@ -23,7 +23,7 @@ const widest = (ls: PositionedLine[]) => Math.max(...ls.map((l) => l.width));
 
 describe("span=all", () => {
   it("a subhead in the middle: balanced columns above it, it across all of them, columns below", () => {
-    // Columns balance by whole blocks (§09.4), so three paragraphs on each side.
+    // Columns balance by lines (§09.4).
     const lines = lay(`${P(4, "a")}\n\n${P(4, "c")}\n\n${P(4, "d")}\n\n\\subhead[span=all]{A crosshead}\n\n${P(4, "b")}\n\n${P(4, "e")}\n\n${P(4, "f")}`);
     const head = lines.filter((l) => l.style === "subhead");
     const before = lines.filter((l) => l.block < 3);

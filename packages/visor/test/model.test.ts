@@ -24,7 +24,7 @@ function lay(src: string, view = VIEW): PositionedDocument {
   return layout(rd, view, new PrepareCache(createFixedEngine()), { explain: true });
 }
 
-/** A levelled page, a page with pictures and a scrolling scene after them. */
+/** A page of text, a page with pictures and a scrolling scene after them. */
 function mixed(): PositionedDocument {
   const words = LONG.split(" ");
   const blocks = Array.from({ length: 40 }, (_, i) => (i % 5 === 4 ? `\\subhead{Part ${i}}` : words.slice(0, 20 + ((i * 37) % 60)).join(" ")));

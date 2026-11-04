@@ -1,7 +1,7 @@
 # Editorial design in Wocument
 
 The engine already sets type well: baseline grid, paragraph composer, hyphenation, hanging
-punctuation, balanced display lines, level columns, no stubs or widows. Your decisions are the
+punctuation, balanced display lines, no stubs or widows. Your decisions are the
 ones an art director makes: what leads, how big, where the pictures go, how the page breathes,
 what the phone sees.
 
