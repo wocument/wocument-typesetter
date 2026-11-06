@@ -867,7 +867,7 @@ export function resolve(source: Document, options: ResolveOptions = {}): Resolve
     version: 1,
     meta: meta(ast.frontmatter, lang, socialImage),
     breakpoints: design.breakpoints(),
-    fonts: fonts(defs, (src) => options.assets?.file(src)?.url ?? src),
+    fonts: fonts(defs, (src) => options.assets?.file(src)?.url ?? src, new Set(built.flatMap(([, v]) => Object.values(v.styles).flatMap((st) => st.family.map((f) => f.toLowerCase()))))),
     strings,
     assets,
     variants: Object.fromEntries(built) as Variants,
@@ -905,15 +905,21 @@ function meta(fm: Document["frontmatter"], lang: string, socialImage: string | n
   };
 }
 
-/** `url` gives the URL the page loads a font file from: the asset host's, or the path when there is none or the file is missing. */
-function fonts(defs: Definitions, url: (src: string) => string): ResolvedDocument["fonts"] {
+/**
+ * `url` gives the URL the page loads a font file from: the asset host's, or the path when there is none or the file is missing.
+ * Only faces of a family some style uses (`used`, lower case) are kept (2026-11-06), so a page does not download fonts it never shows,
+ * such as the built-in theme's when a theme file sets other families.
+ */
+function fonts(defs: Definitions, url: (src: string) => string, used: ReadonlySet<string>): ResolvedDocument["fonts"] {
   const out: ResolvedDocument["fonts"] = [];
   // \font has no name; every definition registers a face.
   for (const c of defs.all("font")) {
     const a = new Map([...schemaDefaults("font"), ...c.attrs.map((x) => [x.key, x.value] as const)]);
+    const family = (a.get("family") as { s: string }).s;
+    if (!used.has(family.toLowerCase())) continue; // CSS family names ignore case
     const w = a.get("weight")!;
     out.push({
-      family: (a.get("family") as { s: string }).s,
+      family,
       src: url((a.get("src") as { s: string }).s),
       weight: w.t === "range" ? { min: w.from, max: w.to === "end" ? w.from : w.to } : { min: num(w), max: num(w) },
       italic: bool(a.get("italic")),

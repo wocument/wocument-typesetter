@@ -18,7 +18,7 @@
  */
 
 import type { Frame, ResolvedDocument, Variant } from "../src/resolved-document.js";
-import { type Bp, DEFAULT_BREAKPOINTS, DEFAULT_SPOTS, DEFAULT_PALETTE, NO_REVEAL, defaultGrid, pick, px, themeStyles } from "./default-theme.js";
+import { type Bp, DEFAULT_BREAKPOINTS, DEFAULT_SPOTS, DEFAULT_PALETTE, NO_REVEAL, defaultGrid, pick, px, themeStyles, VANILLA_SERIF_FONTS } from "./default-theme.js";
 
 const SCENE = "scene-1";
 const HEADING = "frame-1";
@@ -110,7 +110,7 @@ const doc: ResolvedDocument = {
     theme: null,
   },
   breakpoints: DEFAULT_BREAKPOINTS,
-  fonts: [],
+  fonts: VANILLA_SERIF_FONTS,
   // The headline binds its short words: "A" stays with "Brief".
   strings: ["A\u00a0Brief Note", "This is the en\u00adtire ar\u00adti\u00adcle."],
   assets: {},

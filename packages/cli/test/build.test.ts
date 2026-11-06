@@ -31,6 +31,7 @@ title: A <Test> Page
 description: Short.
 ---
 \\font[family="Face", src=./face.woff2, weight=400]
+\\style[name=headline, family="Face, serif"]
 \\headline{Hello}
 
 Some text, and a closing </script> that must stay text.
@@ -58,8 +59,13 @@ describe("woc build", () => {
     const picture = Object.values(rd.assets as Record<string, { kind: string; fallback?: string }>).find((a) => a.kind === "image")!;
     expect(picture.fallback).toMatch(/^assets\/a-[0-9a-f]{10}\.webp$/);
     expect(existsSync(join(out(), picture.fallback!))).toBe(true);
-    expect(rd.fonts[0].src).toMatch(/^assets\/face-[0-9a-f]{10}\.woff2$/);
-    expect(existsSync(join(out(), rd.fonts[0].src))).toBe(true);
+    const face = rd.fonts.find((f: { family: string }) => f.family === "Face");
+    expect(face.src).toMatch(/^assets\/face-[0-9a-f]{10}\.woff2$/);
+    expect(existsSync(join(out(), face.src))).toBe(true);
+    // The built-in theme's fonts ship with the package and are copied like any other file (2026-11-06).
+    const vanilla = rd.fonts.find((f: { family: string }) => f.family === "Newsreader");
+    expect(vanilla.src).toMatch(/^assets\/newsreader-latin-wght-normal-[0-9a-f]{10}\.woff2$/);
+    expect(existsSync(join(out(), vanilla.src))).toBe(true);
     // The PNG is served as WebP, so it is not copied.
     expect(readdirSync(join(out(), "assets")).filter((f) => f.endsWith(".png"))).toEqual([]);
   });

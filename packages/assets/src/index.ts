@@ -9,12 +9,17 @@
  * `convert()`, and resolve again when it converted anything. Sizes and contours always come from
  * the original.
  *
+ * Vanilla's fonts (2026-11-06): the built-in theme names its faces at `/fonts/vanilla/<file>`.
+ * Those files ship in this package (`fonts/`, under the SIL Open Font License), so every
+ * build has them without a copy in the public folder.
+ *
  * Limit: responsive image sets (§11.4) are not generated yet: one WebP per
  * picture, at its own size. Alpha contours read PNG only.
  */
 
 import { createHash } from "node:crypto";
-import { existsSync, mkdirSync, readFileSync, renameSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, readdirSync, renameSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 import { basename, extname, join, resolve as resolvePath } from "node:path";
 import sharp from "sharp";
 import { imageSize } from "image-size";
@@ -76,10 +81,19 @@ function toWebp(src: string, file: string): Promise<void> {
   return job;
 }
 
+/** Where the built-in theme's font files are, and the path it names them by. */
+const FONTS = fileURLToPath(new URL("../fonts/", import.meta.url));
+const FONT_PATH = "/fonts/vanilla/";
+const BUILT_IN = new Set(readdirSync(FONTS).filter((f) => f.endsWith(".woff2")));
+
 export function createAssetHost(opts: HostOptions): AssetHost & { convert(): Promise<number>; named(): ReadonlyMap<string, string> } {
   const cache = new Map<string, Buffer>();
   const fileOf = (path: string): string =>
-    path.startsWith("/") ? join(opts.publicDir, path) : resolvePath(opts.sourceDir, path);
+    path.startsWith(FONT_PATH) && BUILT_IN.has(path.slice(FONT_PATH.length))
+      ? join(FONTS, path.slice(FONT_PATH.length))
+      : path.startsWith("/")
+        ? join(opts.publicDir, path)
+        : resolvePath(opts.sourceDir, path);
   const read = (path: string): Buffer => {
     let b = cache.get(path);
     if (!b) {

@@ -1,9 +1,10 @@
 /**
  * Line length (W064, 2026-10-09): the document laid out at the spec's test widths (§15.6)
  * with a fixed-width text engine, counting the characters in full lines of body text. Node has no
- * fonts to measure with, so a character is taken as 0.46 of the text size, Georgia's average on
- * running English (measured in the browser: 59 characters in a 573px column at 21px). The count is
- * an estimate, close to a browser's for Vanilla; other faces run a few characters either way.
+ * fonts to measure with, so a character is taken as 0.44 of the text size, Newsreader's average on
+ * running English (2026-11-06: measured in the browser at 4.3% narrower than Georgia, whose 0.46
+ * came from 59 characters in a 573px column at 21px). The count is an estimate, close to a
+ * browser's for Vanilla; other faces run a few characters either way.
  */
 
 import { activeVariant, layout, type PositionedDocument } from "@wocument/layout";
@@ -11,7 +12,7 @@ import type { ResolvedDocument } from "@wocument/resolved-document";
 import { PrepareCache, createFixedEngine } from "@wocument/text-engine";
 
 export const TEST_WIDTHS = [360, 768, 1280, 1470, 2560];
-const CHAR = 0.46;
+const CHAR = 0.44;
 
 export type LineLength = { width: number; variant: string; chars: number };
 

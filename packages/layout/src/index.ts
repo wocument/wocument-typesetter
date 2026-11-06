@@ -2265,7 +2265,7 @@ export function justifySpacing(l: { text: string; width: number; measured: numbe
   return each > size / 2 ? 0 : each;
 }
 
-/** The most a justified line's spaces close, in em: a fifth of Georgia's space (0.24em). The composer uses the same. */
+/** The most a justified line's spaces close, in em: about a fifth of the serif's space (0.23em in Newsreader, 0.24em in Georgia). The composer uses the same. */
 export const SHRINK = 0.05;
 const sameCursor = (a: TextCursor, b: TextCursor): boolean => a.item === b.item && a.seg === b.seg && a.grapheme === b.grapheme;
 

@@ -33,7 +33,8 @@ You get this with no design at all. Design from it: change what the edition need
   phone); max 1440px (1760 wide, 1224 compact); body 4-9 (2-7 tablet, all phone).
 - **Palette `default`**: paper `#f6f7f8`, ink `#16181d`, muted `#5f6570`, accent `#1f5fbf`,
   rule `#dde1e6`.
-- **Type**: Georgia for text and display, Helvetica Neue for labels. Body 21px (18 compact, 19
+- **Type**: Newsreader for text and display, Inter for labels; both ship with the typesetter,
+  so a page needs no font files of its own (Georgia and Helvetica Neue are the fall-backs). Body 21px (18 compact, 19
   tablet, 18 phone) on one baseline step, justified with the paragraph composer, hyphenated
   (not capitalised words), 2em indent, hanging punctuation. Headline `fluid(40px, 72px)` regular
   weight, balanced. Deck `fluid(21px, 25px)`. Kicker 12px upper case, tracked. Subhead 18px sans

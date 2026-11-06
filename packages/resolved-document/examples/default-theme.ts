@@ -5,7 +5,7 @@
  * Readings the owner ruled on:
  *   - §07.6's default column applies to every style, and §16 overrides it.
  *   - Two-argument fluid() interpolates from 360px to grid `default`'s `max`.
- * The theme is Vanilla (built in since 2026-10-07): Georgia and Helvetica Neue,
+ * The theme is Vanilla (built in since 2026-10-07): Newsreader and Inter (2026-11-06),
  * a one-line baseline grid, and a `wide` breakpoint at 1800px where the grid
  * grows to 1760px.
  */
@@ -19,8 +19,12 @@ export const fluid = (min: number, max: number, to = 1440): Len => ({ u: "fluid"
 
 /** The §07.6 default family, for a style that names none. */
 export const SERIF = ["serif"];
-export const GEORGIA = ["Georgia", "serif"];
-export const SANS = ["Helvetica Neue", "Helvetica", "Arial", "sans-serif"];
+export const TEXT_SERIF = ["Newsreader", "Georgia", "serif"];
+/** The built-in theme's fonts (2026-11-06); a document lists only the families its styles use. */
+const vanillaFace = (family: string, file: string, min: number, max: number, italic = false) => ({ family, src: `/fonts/vanilla/${file}.woff2`, weight: { min, max }, italic });
+export const VANILLA_SERIF_FONTS = [vanillaFace("Newsreader", "newsreader-latin-wght-normal", 200, 800), vanillaFace("Newsreader", "newsreader-latin-wght-italic", 200, 800, true)];
+export const VANILLA_SANS_FONTS = [vanillaFace("Inter", "inter-latin-wght-normal", 100, 900)];
+export const SANS = ["Inter", "Helvetica Neue", "Helvetica", "Arial", "sans-serif"];
 
 /** §07.6 defaults: what every style has unless §16 or the author says otherwise. */
 export const STYLE_DEFAULTS: ResolvedStyle = {
@@ -71,29 +75,29 @@ export function themeStyles(bp: Bp): Record<string, ResolvedStyle> {
   const bodySize = phone ? 18 : tablet ? 19 : k(21, 18);
   const headline = s({
     // regular weight, a touch larger.
-    family: GEORGIA, weight: 400, size: c ? f(34, 61) : f(40, 72), leading: c ? f(36.04, 64.66) : f(42.4, 76.32), tracking: c ? f(-0.51, -0.915) : f(-0.6, -1.08),
+    family: TEXT_SERIF, weight: 400, size: c ? f(34, 61) : f(40, 72), leading: c ? f(36.04, 64.66) : f(42.4, 76.32), tracking: c ? f(-0.51, -0.915) : f(-0.6, -1.08),
     snap: "none", hyphenate: false, balance: true, spaceAfter: bl(0.75), bindShort: true,
   });
   return {
-    body: s({ family: GEORGIA, size: px(bodySize), spaceAfter: px(0), indent: px(2 * bodySize), align: "justify", minSlot: px(9 * bodySize), composer: "paragraph", hyphenateMin: 6, hyphenateCaps: false, justifyMin: px(12 * bodySize), hang: "punctuation" }),
+    body: s({ family: TEXT_SERIF, size: px(bodySize), spaceAfter: px(0), indent: px(2 * bodySize), align: "justify", minSlot: px(9 * bodySize), composer: "paragraph", hyphenateMin: 6, hyphenateCaps: false, justifyMin: px(12 * bodySize), hang: "punctuation" }),
     // the intro opens the story, on the grid.
-    lede: s({ family: GEORGIA, size: px(phone ? 20 : k(22, 19)), spaceAfter: bl(1), hyphenate: false, composer: "paragraph" }),
-    blockquote: s({ family: GEORGIA, italic: true, size: px(k(20, 17)), hang: "punctuation" }),
+    lede: s({ family: TEXT_SERIF, size: px(phone ? 20 : k(22, 19)), spaceAfter: bl(1), hyphenate: false, composer: "paragraph" }),
+    blockquote: s({ family: TEXT_SERIF, italic: true, size: px(k(20, 17)), hang: "punctuation" }),
     headline,
-    deck: s({ family: GEORGIA, size: c ? f(18, 21) : f(21, 25), leading: c ? f(25.2, 29.4) : f(29.4, 35), snap: "none", balance: true, hyphenate: false, spaceAfter: bl(1.5), bindShort: true }),
-    pullquote: s({ family: GEORGIA, italic: true, size: c ? f(19, 24) : f(22, 28), leading: c ? f(23.75, 30) : f(27.5, 35), snap: "none", balance: true, spaceAfter: px(0), mark: "\u201c\u201d", bindShort: true }),
+    deck: s({ family: TEXT_SERIF, size: c ? f(18, 21) : f(21, 25), leading: c ? f(25.2, 29.4) : f(29.4, 35), snap: "none", balance: true, hyphenate: false, spaceAfter: bl(1.5), bindShort: true }),
+    pullquote: s({ family: TEXT_SERIF, italic: true, size: c ? f(19, 24) : f(22, 28), leading: c ? f(23.75, 30) : f(27.5, 35), snap: "none", balance: true, spaceAfter: px(0), mark: "\u201c\u201d", bindShort: true }),
     cite: s({ size: px(k(17, 14)), leading: px(k(20.4, 16.8)), color: { role: "muted" } }),
     kicker: s({ family: SANS, weight: 500, size: px(k(12, 10)), leading: bl(0.5), case: "upper", tracking: px(k(1.68, 1.4)), spaceAfter: bl(1), snap: "none" }),
     byline: s({ family: SANS, weight: 500, size: px(k(14, 12)), leading: bl(0.75), spaceAfter: px(0), snap: "none" }),
     meta: s({ family: SANS, size: px(k(13, 11)), leading: bl(0.75), color: { role: "muted" }, spaceAfter: px(0), snap: "none" }),
     subhead: s({ family: SANS, weight: 600, size: px(k(18, 15)), case: "upper", tracking: px(k(1.44, 1.2)), spaceBefore: bl(1), spaceAfter: px(0), keepWithNext: true, color: { role: "accent" }, balance: true, bindShort: true }),
     "subhead-2": s({ family: SANS, weight: 700, size: px(k(20, 17)), spaceBefore: bl(1), spaceAfter: px(0), keepWithNext: true }),
-    caption: s({ family: GEORGIA, italic: true, size: px(k(15, 13)), leading: px(k(21, 18.2)), color: { role: "muted" }, snap: "none" }),
+    caption: s({ family: TEXT_SERIF, italic: true, size: px(k(15, 13)), leading: px(k(21, 18.2)), color: { role: "muted" }, snap: "none" }),
     credit: s({ family: SANS, size: px(k(13, 11)), leading: px(k(18.2, 15.4)), case: "upper", tracking: px(k(0.78, 0.66)), color: { role: "muted" }, snap: "none" }),
     sidebar: s({ family: SANS, size: px(k(16, 14)), leading: px(k(24, 21)), snap: "none" }),
     // §16: as headline, in the accent. Size and leading are not used: the cap spans `lines` steps (§10.4).
     dropcap: { ...headline, weight: 700, color: { role: "accent" } },
-    bio: s({ family: SANS, italic: true, size: px(k(16, 14)), leading: bl(0.75), color: { role: "muted" }, snap: "none" }),
+    bio: s({ family: TEXT_SERIF, italic: true, size: px(k(16, 14)), leading: bl(0.75), color: { role: "muted" }, snap: "none" }),
     folio: s({ family: SANS, weight: 600, size: px(k(12, 10)), case: "upper", tracking: px(k(0.96, 0.8)), color: { role: "muted" } }),
   };
 }

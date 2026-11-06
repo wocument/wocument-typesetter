@@ -30,7 +30,26 @@
       "variant": "wide"
     }
   ],
-  "fonts": [],
+  "fonts": [
+    {
+      "family": "Newsreader",
+      "src": "/fonts/vanilla/newsreader-latin-wght-normal.woff2",
+      "weight": {
+        "min": 200,
+        "max": 800
+      },
+      "italic": false
+    },
+    {
+      "family": "Newsreader",
+      "src": "/fonts/vanilla/newsreader-latin-wght-italic.woff2",
+      "weight": {
+        "min": 200,
+        "max": 800
+      },
+      "italic": true
+    }
+  ],
   "strings": [
     "A Brief Note",
     "This is the en­tire ar­ti­cle."
@@ -42,6 +61,7 @@
       "styles": {
         "headline": {
           "family": [
+            "Newsreader",
             "Georgia",
             "serif"
           ],
@@ -109,6 +129,7 @@
         },
         "body": {
           "family": [
+            "Newsreader",
             "Georgia",
             "serif"
           ],
@@ -491,6 +512,7 @@
       "styles": {
         "headline": {
           "family": [
+            "Newsreader",
             "Georgia",
             "serif"
           ],
@@ -558,6 +580,7 @@
         },
         "body": {
           "family": [
+            "Newsreader",
             "Georgia",
             "serif"
           ],
@@ -940,6 +963,7 @@
       "styles": {
         "headline": {
           "family": [
+            "Newsreader",
             "Georgia",
             "serif"
           ],
@@ -1007,6 +1031,7 @@
         },
         "body": {
           "family": [
+            "Newsreader",
             "Georgia",
             "serif"
           ],
@@ -1389,6 +1414,7 @@
       "styles": {
         "headline": {
           "family": [
+            "Newsreader",
             "Georgia",
             "serif"
           ],
@@ -1456,6 +1482,7 @@
         },
         "body": {
           "family": [
+            "Newsreader",
             "Georgia",
             "serif"
           ],
@@ -1838,6 +1865,7 @@
       "styles": {
         "headline": {
           "family": [
+            "Newsreader",
             "Georgia",
             "serif"
           ],
@@ -1905,6 +1933,7 @@
         },
         "body": {
           "family": [
+            "Newsreader",
             "Georgia",
             "serif"
           ],

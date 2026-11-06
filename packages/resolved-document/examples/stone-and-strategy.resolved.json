@@ -32,6 +32,33 @@
   ],
   "fonts": [
     {
+      "family": "Newsreader",
+      "src": "/fonts/vanilla/newsreader-latin-wght-normal.woff2",
+      "weight": {
+        "min": 200,
+        "max": 800
+      },
+      "italic": false
+    },
+    {
+      "family": "Newsreader",
+      "src": "/fonts/vanilla/newsreader-latin-wght-italic.woff2",
+      "weight": {
+        "min": 200,
+        "max": 800
+      },
+      "italic": true
+    },
+    {
+      "family": "Inter",
+      "src": "/fonts/vanilla/inter-latin-wght-normal.woff2",
+      "weight": {
+        "min": 100,
+        "max": 900
+      },
+      "italic": false
+    },
+    {
       "family": "Tiempos Text",
       "src": "/fonts/tiempos-text.woff2",
       "weight": {
@@ -360,6 +387,7 @@
         },
         "dropcap": {
           "family": [
+            "Newsreader",
             "Georgia",
             "serif"
           ],
@@ -427,6 +455,7 @@
         },
         "pullquote": {
           "family": [
+            "Newsreader",
             "Georgia",
             "serif"
           ],
@@ -491,6 +520,7 @@
         },
         "subhead": {
           "family": [
+            "Inter",
             "Helvetica Neue",
             "Helvetica",
             "Arial",
@@ -616,6 +646,7 @@
         },
         "caption": {
           "family": [
+            "Newsreader",
             "Georgia",
             "serif"
           ],
@@ -674,6 +705,7 @@
         },
         "credit": {
           "family": [
+            "Inter",
             "Helvetica Neue",
             "Helvetica",
             "Arial",
@@ -734,6 +766,7 @@
         },
         "kicker": {
           "family": [
+            "Inter",
             "Helvetica Neue",
             "Helvetica",
             "Arial",
@@ -861,6 +894,7 @@
         },
         "deck": {
           "family": [
+            "Newsreader",
             "Georgia",
             "serif"
           ],
@@ -925,6 +959,7 @@
         },
         "byline": {
           "family": [
+            "Inter",
             "Helvetica Neue",
             "Helvetica",
             "Arial",
@@ -985,6 +1020,7 @@
         },
         "meta": {
           "family": [
+            "Inter",
             "Helvetica Neue",
             "Helvetica",
             "Arial",
@@ -1045,6 +1081,7 @@
         },
         "title": {
           "family": [
+            "Inter",
             "Helvetica Neue",
             "Helvetica",
             "Arial",
@@ -1105,6 +1142,7 @@
         },
         "sidebar": {
           "family": [
+            "Inter",
             "Helvetica Neue",
             "Helvetica",
             "Arial",
@@ -1165,10 +1203,9 @@
         },
         "bio": {
           "family": [
-            "Helvetica Neue",
-            "Helvetica",
-            "Arial",
-            "sans-serif"
+            "Newsreader",
+            "Georgia",
+            "serif"
           ],
           "weight": 400,
           "italic": true,
@@ -1225,6 +1262,7 @@
         },
         "folio": {
           "family": [
+            "Inter",
             "Helvetica Neue",
             "Helvetica",
             "Arial",
@@ -2847,6 +2885,7 @@
         },
         "dropcap": {
           "family": [
+            "Newsreader",
             "Georgia",
             "serif"
           ],
@@ -2914,6 +2953,7 @@
         },
         "pullquote": {
           "family": [
+            "Newsreader",
             "Georgia",
             "serif"
           ],
@@ -2978,6 +3018,7 @@
         },
         "subhead": {
           "family": [
+            "Inter",
             "Helvetica Neue",
             "Helvetica",
             "Arial",
@@ -3103,6 +3144,7 @@
         },
         "caption": {
           "family": [
+            "Newsreader",
             "Georgia",
             "serif"
           ],
@@ -3161,6 +3203,7 @@
         },
         "credit": {
           "family": [
+            "Inter",
             "Helvetica Neue",
             "Helvetica",
             "Arial",
@@ -3221,6 +3264,7 @@
         },
         "kicker": {
           "family": [
+            "Inter",
             "Helvetica Neue",
             "Helvetica",
             "Arial",
@@ -3348,6 +3392,7 @@
         },
         "deck": {
           "family": [
+            "Newsreader",
             "Georgia",
             "serif"
           ],
@@ -3412,6 +3457,7 @@
         },
         "byline": {
           "family": [
+            "Inter",
             "Helvetica Neue",
             "Helvetica",
             "Arial",
@@ -3472,6 +3518,7 @@
         },
         "meta": {
           "family": [
+            "Inter",
             "Helvetica Neue",
             "Helvetica",
             "Arial",
@@ -3532,6 +3579,7 @@
         },
         "title": {
           "family": [
+            "Inter",
             "Helvetica Neue",
             "Helvetica",
             "Arial",
@@ -3592,6 +3640,7 @@
         },
         "sidebar": {
           "family": [
+            "Inter",
             "Helvetica Neue",
             "Helvetica",
             "Arial",
@@ -3652,10 +3701,9 @@
         },
         "bio": {
           "family": [
-            "Helvetica Neue",
-            "Helvetica",
-            "Arial",
-            "sans-serif"
+            "Newsreader",
+            "Georgia",
+            "serif"
           ],
           "weight": 400,
           "italic": true,
@@ -3712,6 +3760,7 @@
         },
         "folio": {
           "family": [
+            "Inter",
             "Helvetica Neue",
             "Helvetica",
             "Arial",
@@ -5334,6 +5383,7 @@
         },
         "dropcap": {
           "family": [
+            "Newsreader",
             "Georgia",
             "serif"
           ],
@@ -5401,6 +5451,7 @@
         },
         "pullquote": {
           "family": [
+            "Newsreader",
             "Georgia",
             "serif"
           ],
@@ -5465,6 +5516,7 @@
         },
         "subhead": {
           "family": [
+            "Inter",
             "Helvetica Neue",
             "Helvetica",
             "Arial",
@@ -5590,6 +5642,7 @@
         },
         "caption": {
           "family": [
+            "Newsreader",
             "Georgia",
             "serif"
           ],
@@ -5648,6 +5701,7 @@
         },
         "credit": {
           "family": [
+            "Inter",
             "Helvetica Neue",
             "Helvetica",
             "Arial",
@@ -5708,6 +5762,7 @@
         },
         "kicker": {
           "family": [
+            "Inter",
             "Helvetica Neue",
             "Helvetica",
             "Arial",
@@ -5835,6 +5890,7 @@
         },
         "deck": {
           "family": [
+            "Newsreader",
             "Georgia",
             "serif"
           ],
@@ -5899,6 +5955,7 @@
         },
         "byline": {
           "family": [
+            "Inter",
             "Helvetica Neue",
             "Helvetica",
             "Arial",
@@ -5959,6 +6016,7 @@
         },
         "meta": {
           "family": [
+            "Inter",
             "Helvetica Neue",
             "Helvetica",
             "Arial",
@@ -6019,6 +6077,7 @@
         },
         "title": {
           "family": [
+            "Inter",
             "Helvetica Neue",
             "Helvetica",
             "Arial",
@@ -6079,6 +6138,7 @@
         },
         "sidebar": {
           "family": [
+            "Inter",
             "Helvetica Neue",
             "Helvetica",
             "Arial",
@@ -6139,10 +6199,9 @@
         },
         "bio": {
           "family": [
-            "Helvetica Neue",
-            "Helvetica",
-            "Arial",
-            "sans-serif"
+            "Newsreader",
+            "Georgia",
+            "serif"
           ],
           "weight": 400,
           "italic": true,
@@ -6199,6 +6258,7 @@
         },
         "folio": {
           "family": [
+            "Inter",
             "Helvetica Neue",
             "Helvetica",
             "Arial",
@@ -7821,6 +7881,7 @@
         },
         "dropcap": {
           "family": [
+            "Newsreader",
             "Georgia",
             "serif"
           ],
@@ -7888,6 +7949,7 @@
         },
         "pullquote": {
           "family": [
+            "Newsreader",
             "Georgia",
             "serif"
           ],
@@ -7952,6 +8014,7 @@
         },
         "subhead": {
           "family": [
+            "Inter",
             "Helvetica Neue",
             "Helvetica",
             "Arial",
@@ -8077,6 +8140,7 @@
         },
         "caption": {
           "family": [
+            "Newsreader",
             "Georgia",
             "serif"
           ],
@@ -8135,6 +8199,7 @@
         },
         "credit": {
           "family": [
+            "Inter",
             "Helvetica Neue",
             "Helvetica",
             "Arial",
@@ -8195,6 +8260,7 @@
         },
         "kicker": {
           "family": [
+            "Inter",
             "Helvetica Neue",
             "Helvetica",
             "Arial",
@@ -8322,6 +8388,7 @@
         },
         "deck": {
           "family": [
+            "Newsreader",
             "Georgia",
             "serif"
           ],
@@ -8386,6 +8453,7 @@
         },
         "byline": {
           "family": [
+            "Inter",
             "Helvetica Neue",
             "Helvetica",
             "Arial",
@@ -8446,6 +8514,7 @@
         },
         "meta": {
           "family": [
+            "Inter",
             "Helvetica Neue",
             "Helvetica",
             "Arial",
@@ -8506,6 +8575,7 @@
         },
         "title": {
           "family": [
+            "Inter",
             "Helvetica Neue",
             "Helvetica",
             "Arial",
@@ -8566,6 +8636,7 @@
         },
         "sidebar": {
           "family": [
+            "Inter",
             "Helvetica Neue",
             "Helvetica",
             "Arial",
@@ -8626,10 +8697,9 @@
         },
         "bio": {
           "family": [
-            "Helvetica Neue",
-            "Helvetica",
-            "Arial",
-            "sans-serif"
+            "Newsreader",
+            "Georgia",
+            "serif"
           ],
           "weight": 400,
           "italic": true,
@@ -8686,6 +8756,7 @@
         },
         "folio": {
           "family": [
+            "Inter",
             "Helvetica Neue",
             "Helvetica",
             "Arial",
@@ -10306,6 +10377,7 @@
         },
         "dropcap": {
           "family": [
+            "Newsreader",
             "Georgia",
             "serif"
           ],
@@ -10373,6 +10445,7 @@
         },
         "pullquote": {
           "family": [
+            "Newsreader",
             "Georgia",
             "serif"
           ],
@@ -10437,6 +10510,7 @@
         },
         "subhead": {
           "family": [
+            "Inter",
             "Helvetica Neue",
             "Helvetica",
             "Arial",
@@ -10562,6 +10636,7 @@
         },
         "caption": {
           "family": [
+            "Newsreader",
             "Georgia",
             "serif"
           ],
@@ -10620,6 +10695,7 @@
         },
         "credit": {
           "family": [
+            "Inter",
             "Helvetica Neue",
             "Helvetica",
             "Arial",
@@ -10680,6 +10756,7 @@
         },
         "kicker": {
           "family": [
+            "Inter",
             "Helvetica Neue",
             "Helvetica",
             "Arial",
@@ -10807,6 +10884,7 @@
         },
         "deck": {
           "family": [
+            "Newsreader",
             "Georgia",
             "serif"
           ],
@@ -10871,6 +10949,7 @@
         },
         "byline": {
           "family": [
+            "Inter",
             "Helvetica Neue",
             "Helvetica",
             "Arial",
@@ -10931,6 +11010,7 @@
         },
         "meta": {
           "family": [
+            "Inter",
             "Helvetica Neue",
             "Helvetica",
             "Arial",
@@ -10991,6 +11071,7 @@
         },
         "title": {
           "family": [
+            "Inter",
             "Helvetica Neue",
             "Helvetica",
             "Arial",
@@ -11051,6 +11132,7 @@
         },
         "sidebar": {
           "family": [
+            "Inter",
             "Helvetica Neue",
             "Helvetica",
             "Arial",
@@ -11111,10 +11193,9 @@
         },
         "bio": {
           "family": [
-            "Helvetica Neue",
-            "Helvetica",
-            "Arial",
-            "sans-serif"
+            "Newsreader",
+            "Georgia",
+            "serif"
           ],
           "weight": 400,
           "italic": true,
@@ -11171,6 +11252,7 @@
         },
         "folio": {
           "family": [
+            "Inter",
             "Helvetica Neue",
             "Helvetica",
             "Arial",

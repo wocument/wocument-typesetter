@@ -13,7 +13,8 @@
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "fonts"
   ],
   "dependencies": {
     "image-size": "^2.0.4",

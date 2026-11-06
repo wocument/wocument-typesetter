@@ -20,7 +20,7 @@
  */
 
 import type { Block, FigureObject, Frame, ObjectElement, ResolvedDocument, ResolvedStyle, Scene, Story, Variant } from "../src/resolved-document.js";
-import { type Bp, DEFAULT_BREAKPOINTS, DEFAULT_SPOTS, DEFAULT_PALETTE, NO_REVEAL, bl, fluid, pct, pick, px, themeStyles } from "./default-theme.js";
+import { type Bp, DEFAULT_BREAKPOINTS, DEFAULT_SPOTS, DEFAULT_PALETTE, NO_REVEAL, bl, fluid, pct, pick, px, themeStyles, VANILLA_SERIF_FONTS, VANILLA_SANS_FONTS } from "./default-theme.js";
 
 // ---------------------------------------------------------------------------
 // strings: every piece of text once
@@ -508,6 +508,8 @@ const doc: ResolvedDocument = {
   },
   breakpoints: DEFAULT_BREAKPOINTS,
   fonts: [
+    ...VANILLA_SERIF_FONTS,
+    ...VANILLA_SANS_FONTS,
     { family: "Tiempos Text", src: "/fonts/tiempos-text.woff2", weight: { min: 400, max: 400 }, italic: false },
     { family: "Tiempos Text", src: "/fonts/tiempos-text-italic.woff2", weight: { min: 400, max: 400 }, italic: true },
     { family: "Tiempos Headline", src: "/fonts/tiempos-headline.woff2", weight: { min: 700, max: 700 }, italic: false },
