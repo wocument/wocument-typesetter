@@ -13,7 +13,8 @@
     "print-tables": "vite-node packages/schema/scripts/print-tables.ts --",
     "gen:resolved": "vite-node packages/resolved-document/scripts/generate.ts",
     "playground": "npm run dev --workspace=@wocument/playground",
-    "skill:refs": "vite-node packages/schema/scripts/print-tables.ts > skills/wocument/references/commands.md && vite-node scripts/capabilities.ts --md > skills/wocument/references/capabilities.md"
+    "skill:refs": "vite-node packages/schema/scripts/print-tables.ts > skills/wocument/references/commands.md && vite-node scripts/capabilities.ts --md > skills/wocument/references/capabilities.md",
+    "docs:refs": "(cat docs/_meta/commands-intro.md; vite-node packages/schema/scripts/print-tables.ts | tail -n +2) > docs/reference/commands.md"
   },
   "devDependencies": {
     "@types/node": "^20.14.0",
