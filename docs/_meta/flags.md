@@ -6,12 +6,13 @@ Every place the docs assume an open item is solved. Find them in the pages with 
 
 | Open item | What the docs assume | True today | Pages |
 | :---- | :---- | :---- | :---- |
-| npm release | `npm install --global @wocument/cli` works; packages under `@wocument` | Packages are private; the release waits on the npm name. The manifests also don't list their `@wocument/*` dependencies, so a global install would break once published | start-here/install, build/embed-the-engine, understand/how-the-engine-works |
+| npm release | `npm install --global @wocument/cli` works; packages under `@wocument` | Packages are private; the release waits on the npm name. The manifests also don't list their `@wocument/*` dependencies, so a global install would break once published | start-here/install, build/embed-the-engine, understand/how-the-engine-works, README.md |
 | `npx woc` in the repository | It runs | "Permission denied": the build leaves `dist/cli.js` without its executable bit | start-here/install |
 | VS Code extension | Published as "Wocument" on the Marketplace and Open VSX | Not published | start-here/install |
 | W064 on Vanilla | A page with no design passes | W064 at 1470px and 2560px (about 43 characters a line); also nonsense counts for very short documents | start-here/your-first-page, learn/lay-out-a-feature, learn/open-with-a-scene, build/check-and-polish, reference/diagnostics |
 | Previewing a build | Serving `dist/` (`npx serve dist`) is the recommended way | Not tested. Opened from disk the page is probably blank: an inline script adds `woc-js`, which hides the reading version before the module loads | start-here/your-first-page, build/publish, reference/cli, reference/limits |
 | Render check | Part of the tools a writer has | Runs only from a clone of the repository (Playwright, repo paths) | build/check-and-polish, build/design-with-claude |
+| Contribution guide | Not assumed; readers are asked to open an issue first | No guide, licence promise or sign-off rule yet | README.md |
 | Skill quality | Not claimed | Not measured; recipes never reviewed as designs; tested only in Claude Code | build/design-with-claude |
 
 ## Engine and language gaps
