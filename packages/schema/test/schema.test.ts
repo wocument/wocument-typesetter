@@ -23,6 +23,7 @@ const GRAMMAR_TABLE: Record<string, { arity: string; kind: string | null }> = {
   parent: { arity: "optional", kind: "scene" },
   folio: { arity: "required", kind: "inline" },
   story: { arity: "required", kind: "block" },
+  article: { arity: "none", kind: null },
   scene: { arity: "required", kind: "scene" },
   frame: { arity: "optional", kind: "block" },
   group: { arity: "required", kind: "struct" },

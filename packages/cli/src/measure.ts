@@ -27,7 +27,7 @@ export function lineLengths(rd: ResolvedDocument, widths = TEST_WIDTHS): LineLen
 
 /** The average characters in a full line of body text, or null with no body text. */
 function bodyChars(pd: PositionedDocument): number | null {
-  const lines = pd.scenes.flatMap((s) => s.lines).filter((l) => l.style === "body");
+  const lines = pd.scenes.flatMap((s) => s.lines).filter((l) => l.style === "body" || l.style.endsWith("/body"));
   if (!lines.length) return null;
   const full = Math.max(...lines.map((l) => l.width));
   const filled = lines.filter((l) => l.width > full * 0.97);

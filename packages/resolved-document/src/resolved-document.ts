@@ -560,6 +560,8 @@ export type Scene = {
   linearized: boolean;
   /** The folio shown while this scene is under it: the scene's parent's folio if it declares one, else the document's; `null` when there is none or the scene sets `folio=hide` (spec §10.5). */
   folio: Folio | null;
+  /** The body style of the scene's theme when the scene is in an article with its own theme (spec §07.8), such as `t1/body`; absent: `body`. Layout counts the scene's grid and narrow strips from it. */
+  body?: StyleKey;
   /** Top-level children in paint order: the parent's children first, beneath, then the scene's own, each in source order (spec §08.4, §11.3). Anchored objects are not listed here; they belong to their story. */
   children: ElementRef[];
 };
@@ -815,6 +817,8 @@ export type AnchoredPlacement = {
   height: Len | "auto";
   /** Picture size the object asks for; `auto` lets the engine pick (spec §07.7, §11.3). */
   size: FloatSize | "auto";
+  /** `size=<n>em`: the width the object has on a two-page print spread, in ems of the body text; layout scales it to the screen (spec §11.3, §09.7 rule 16). `null` when unset. */
+  printWidth: number | null;
   /** Where the object goes: `float` is the engine's choice (spec §11.3). */
   place: FloatPlace;
 };

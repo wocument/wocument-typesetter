@@ -10,7 +10,7 @@
  */
 
 import { DEFINITION_COMMANDS } from "@wocument/schema";
-import type { Command, Document, Node, Theme, Trivia } from "./ast.js";
+import type { Article, Command, Document, Node, Theme, Trivia } from "./ast.js";
 import type { Diagnostics } from "./diagnostics.js";
 import type { Frontmatter } from "@wocument/schema";
 
@@ -37,7 +37,7 @@ export function buildDocument(input: DocumentInput): Document {
   const stories: Command[] = [];
   const scenes: Command[] = [];
   const implicitContent: Node[] = [];
-  let folio: Command | null = null;
+  const articles: Article[] = [{ marker: null, folio: null, stories: 0, scenes: 0 }];
   let sawNonDefinition = false;
 
   for (const n of nodes) {
@@ -52,15 +52,26 @@ export function buildDocument(input: DocumentInput): Document {
 
     sawNonDefinition = true;
 
+    const article = articles.at(-1)!;
+
+    if (n.kind === "command" && n.name === "article") {
+      // Rule 7 (2026-11-15): an article marker sits at the top level of an explicit document.
+      if (form === "implicit") diags.add("P020", n.source, { name: n.name, parent: "the document" }, "Add a \\scene.");
+      else if (article.marker === null && article.folio === null && article.stories === 0 && article.scenes === 0) article.marker = n;
+      else articles.push({ marker: n, folio: null, stories: 0, scenes: 0 });
+      continue;
+    }
+
     if (n.kind === "command" && n.name === "folio") {
-      // Rule 5.
-      if (folio !== null) diags.add("P043", n.source);
-      else folio = n;
+      // Rule 5: one folio an article.
+      if (article.folio !== null) diags.add("P043", n.source);
+      else article.folio = n;
       continue;
     }
 
     if (n.kind === "command" && n.name === "scene") {
       scenes.push(n);
+      article.scenes++;
       continue;
     }
 
@@ -69,6 +80,7 @@ export function buildDocument(input: DocumentInput): Document {
         diags.add("P020", n.source, { name: n.name, parent: "the document" }, "Add a \\scene.");
       } else {
         stories.push(n);
+        article.stories++;
       }
       continue;
     }
@@ -96,8 +108,9 @@ export function buildDocument(input: DocumentInput): Document {
     version: 1,
     frontmatter: input.frontmatter ?? ({ wocument: 1, title: "" } as Frontmatter),
     definitions,
-    folio,
+    folio: articles[0]!.folio,
     form,
+    articles: form === "explicit" ? articles : [],
     stories,
     scenes,
     implicitContent,

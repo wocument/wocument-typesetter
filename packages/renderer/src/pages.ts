@@ -15,7 +15,7 @@ const SHY = "­";
 
 /** Where scrolling settles: the top of every screen of every page scene. */
 export function screenPoints(scenes: readonly { y: number; height: number; page: boolean }[], viewportHeight: number): number[] {
-  return scenes.flatMap((s) => (s.page ? Array.from({ length: Math.max(1, Math.round(s.height / viewportHeight)) }, (_, k) => s.y + k * viewportHeight) : []));
+  return scenes.flatMap((s) => (s.page ? Array.from({ length: Math.max(1, Math.ceil(s.height / viewportHeight - 1e-6)) }, (_, k) => s.y + k * viewportHeight) : []));
 }
 
 /** Where scrolling may settle: every page screen (screenPoints), the top of every other scene, and the end. */

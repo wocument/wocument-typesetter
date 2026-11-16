@@ -34,6 +34,10 @@ export type Float = {
   anchorColumn: number;
   heightAt: (width: number) => number;
   crops: boolean;
+  /** Rule 16: a picture sized from print takes `span` columns at `width`, on the outer side, and keeps its size. */
+  print?: { span: number; width: number };
+  /** Anchored before any of its story's text: it waits only when no spot on its anchor's screen is free. */
+  lead?: boolean;
 };
 
 /** A box on this screen, or `wait`: the object goes to a later screen. */
@@ -65,6 +69,7 @@ function placings(span: Spot["span"], n: number): [number, number][] {
 
 export function candidates(f: Float, spots: Spot[], g: ScreenGeometry): Candidate[] {
   const max = 0.85 * g.band;
+  if (f.print && f.place !== "screen") return printed(f, f.print, g, max);
   const menu =
     f.place === "screen" ? [SCREEN_SPOT]
     : f.place === "here" ? []
@@ -92,7 +97,45 @@ export function candidates(f: Float, spots: Spot[], g: ScreenGeometry): Candidat
       out.push({ id: f.id, size: spot.size, spot, first, span, box: { x: a.x, y, width, height } });
     }
   }
-  if (f.anchorScreen >= g.index) out.push({ id: f.id, wait: true });
+  if (f.anchorScreen >= g.index && !(f.lead && f.anchorScreen === g.index && out.length > 0)) out.push({ id: f.id, wait: true });
+  return out;
+}
+
+/** Rule 16: a print-width picture's spots, at the top or the foot of each run of `span` columns. */
+function printed(f: Float, print: NonNullable<Float["print"]>, g: ScreenGeometry, max: number): Candidate[] {
+  const n = g.columns.length;
+  const span = Math.min(print.span, n);
+  const size: FloatSize = span === n ? "hero" : span > 1 ? "wide" : "column";
+  const top = g.origin + Math.ceil((g.top - g.origin) / g.baseline - EPS) * g.baseline;
+  const out: Candidate[] = [];
+  for (const place of f.place === "float" ? (["top", "bottom"] as const) : f.place === "top" || f.place === "bottom" ? [f.place] : []) {
+    const spot: Spot = { size, place, span: { kind: "count", from: span, to: span }, side: null };
+    for (let first = 0; first + span <= n; first++) {
+      const a = g.columns[first]!, b = g.columns[first + span - 1]!;
+      const room = b.x + b.width - a.x;
+      // Rule 8: never taller than 85% of a full band, nor than the room under the band's top (a short
+      // first band under a heading); a taller one narrows, down to half its print width (2026-11-16).
+      const cap = Math.min(max, g.foot - top);
+      let width = Math.min(room, print.width);
+      if (f.heightAt(width) > cap + EPS) {
+        let lo = width / 2, hi = width;
+        if (f.heightAt(lo) > cap + EPS) continue;
+        for (let k = 0; k < 20; k++) {
+          const mid = (lo + hi) / 2;
+          if (f.heightAt(mid) > cap + EPS) hi = mid;
+          else lo = mid;
+        }
+        width = Math.floor(lo);
+      }
+      // On the outer side: the right edge in the last columns, the left elsewhere.
+      const x = first + span === n && n > 1 ? a.x + room - width : a.x;
+      const height = f.heightAt(width);
+      const y = place === "bottom" ? g.origin + Math.floor((g.foot - height - g.origin) / g.baseline + EPS) * g.baseline : top;
+      if (y < top - EPS || y + height > g.foot + EPS) continue;
+      out.push({ id: f.id, size, spot, first, span, box: { x, y, width, height } });
+    }
+  }
+  if (f.anchorScreen >= g.index && !(f.lead && f.anchorScreen === g.index && out.length > 0)) out.push({ id: f.id, wait: true });
   return out;
 }
 

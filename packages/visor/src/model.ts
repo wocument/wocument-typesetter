@@ -42,13 +42,13 @@ export function buildModel(pd: PositionedDocument, explain: Explanation): Screen
       out.push(screen(ps, null, ps.y, ps.height, log));
       continue;
     }
-    const count = Math.max(1, Math.round(ps.height / vh));
+    const count = Math.max(1, Math.ceil(ps.height / vh - 1e-6)); // 2026-11-15: a last screen may be part of one
     for (let k = 0; k < count; k++) {
       const top = ps.y + k * vh;
-      const n = Math.floor((top + 1e-6) / vh) + 1;
+      const n = Math.ceil(top / vh - 1e-6) + 1;
       // A decision with no screen (none expected in a paged scene) goes by where it is drawn.
       const mine = log.filter((d) => (d.screen ?? Math.floor((d.at.y + 1e-6) / vh) + 1) === n);
-      out.push(screen(ps, n, top, vh, mine));
+      out.push(screen(ps, n, top, Math.min(vh, ps.y + ps.height - top), mine));
     }
   }
   return out;

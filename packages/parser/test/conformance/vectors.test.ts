@@ -374,6 +374,16 @@ describe("conformance vectors 32-37", () => {
     expect(whole("\\scene{\\folio{A}\n\\frame{x}}").codes).toContain("P020");
   });
 
+  it("44. \\article starts an article: its folio, stories and scenes are its own", () => {
+    const r = whole("\\scene{\\frame{a}}\n\\article[theme=./b.woct]\n\\folio{B}\n\\story[name=s]{x}\n\\scene{\\frame[story=s]}");
+    expect(r.codes).toEqual([]);
+    expect(r.doc.articles.map((a) => [a.marker?.name ?? null, a.folio !== null, a.stories, a.scenes])).toEqual([
+      [null, false, 0, 1],
+      ["article", true, 1, 1],
+    ]);
+    expect(whole("\\scene{\\frame{a}}\n\\article\n\\folio{B}\n\\folio{C}\n\\scene{\\frame{b}}").codes).toEqual(["P043"]);
+  });
+
   // "Any valid file": every document in the repository. The rules themselves are in unit/format.test.ts.
   for (const dir of ["packages/parser/test/fixtures", "packages/playground/docs"].filter((d) => existsSync(d))) {
     for (const name of readdirSync(dir).filter((f) => f.endsWith(".woc"))) {

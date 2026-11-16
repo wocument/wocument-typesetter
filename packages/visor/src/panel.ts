@@ -48,7 +48,7 @@ export function dotsOf(pd: PositionedDocument, from: number, to: number): number
   const end = stops.at(-1) ?? 0;
   const out = new Set<number>();
   for (const top of screenPoints(kinds, vh)) {
-    const n = Math.floor((top + 1e-6) / vh) + 1;
+    const n = Math.ceil(top / vh - 1e-6) + 1;
     if (n >= from && n <= to) out.add(stops.indexOf(Math.min(top, end)));
   }
   return [...out].sort((a, b) => a - b);

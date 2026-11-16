@@ -24,7 +24,7 @@ import { createServer, type Plugin, type ViteDevServer } from "vite";
 import { createAssetHost } from "@wocument/assets";
 import { format, parse, type Document, type Theme } from "@wocument/parser";
 import type { ResolvedDocument } from "@wocument/resolved-document";
-import { resolve } from "@wocument/resolver";
+import { articleThemes, resolve } from "@wocument/resolver";
 
 export type DevOptions = {
   /** Where site-absolute paths (`/img/a.png`) are read from. */
@@ -91,15 +91,15 @@ export async function dev(target: string, opts: DevOptions): Promise<ViteDevServ
     const doc = parsed.ast as Document;
     const formatted = format(doc);
     try {
-      let theme: Theme | null = null;
-      const path = doc.frontmatter.theme;
-      if (path !== undefined) {
+      const loadTheme = (path: string): Theme => {
         const t = parse(readFileSync(path.startsWith("/") ? join(opts.public, path) : join(folder, path)), { kind: "theme", file: path });
         if (!t.ok) throw new Error(`theme ${path}: ${t.diagnostics.map((d) => `${d.code} ${d.message}`).join("; ")}`);
-        theme = t.ast as Theme;
-      }
+        return t.ast as Theme;
+      };
+      const theme = doc.frontmatter.theme !== undefined ? loadTheme(doc.frontmatter.theme) : null;
+      const themes = Object.fromEntries(articleThemes(doc).map((p) => [p, loadTheme(p)]));
       const host = createAssetHost({ publicDir: opts.public, sourceDir: folder, copy: { url: "/__woc/files" }, webp: { dir: webp, url: "/__woc/files" } });
-      const r = resolve(doc, { file: "editor.woc", theme, assets: host });
+      const r = resolve(doc, { file: "editor.woc", theme, themes, assets: host });
       for (const [url, src] of host.named()) files.set(url, src);
       // Pictures not yet in WebP: make them, then have the open pages compile again (null: every document).
       void host

@@ -117,6 +117,10 @@ type Env = {
   cache: PrepareCache;
   /** Design 2026-09-22 §1: the scene is `height=page`, so multi-column frames fill column bands. */
   page: boolean;
+  /** 2026-11-15: another scene follows this one, so a page scene ends where its content does and the next starts there. */
+  more: boolean;
+  /** §07.8: the body style of the scene's theme. */
+  body: string;
   /** Design 2026-09-29: set when a frame in the scene is set in column bands, which makes the scene screen pages. */
   paged: boolean;
   /** §09.7 rule 2: where the baseline grid counts from while a band is set, its page's top (absent: the scene's top). */
@@ -162,8 +166,8 @@ export function layout(rd: ResolvedDocument, viewport: Viewport, cache: PrepareC
   const explained: Explanation["scenes"] = [];
   const kept: { env: Env; scene: PositionedScene }[] = [];
   let y = 0;
-  for (const scene of v.scenes) {
-    const env = (pageGrids: boolean): Env => ({ rd, v, grid: gridGeometry(scene.grid, viewport), sceneY: y, viewport, cache, page: scene.height === "page", paged: false, pageGrids, budget: opts.composeBudget ?? 40, onCompose: opts.onCompose, onCut: opts.onCut, reports: [], ...(opts.explain ? { explain: [], picks: new Map() } : {}) });
+  v.scenes.forEach((scene, index) => {
+    const env = (pageGrids: boolean): Env => ({ rd, v, grid: gridGeometry(scene.grid, viewport), sceneY: y, viewport, cache, page: scene.height === "page", more: index < v.scenes.length - 1, body: scene.body ?? "body", paged: false, pageGrids, budget: opts.composeBudget ?? 40, onCompose: opts.onCompose, onCut: opts.onCut, reports: [], ...(opts.explain ? { explain: [], picks: new Map() } : {}) });
     const before = new Map(cursors);
     let e = env(false);
     let s = layoutScene(e, scene, cursors);
@@ -177,7 +181,7 @@ export function layout(rd: ResolvedDocument, viewport: Viewport, cache: PrepareC
     if (e.explain) (explained.push({ scene: scene.id, decisions: e.explain }), kept.push({ env: e, scene: s }));
     scenes.push(s);
     y += s.height;
-  }
+  });
   if (opts.explain) noteLines(v, cache, viewport, kept);
   return { viewport, breakpoint, scenes, height: y, ...(opts.explain ? { explain: { version: 1 as const, scenes: explained } } : {}) };
 }
@@ -420,11 +424,13 @@ function layoutScene(env: Env, scene: Scene, cursors: Map<string, Resume>): Posi
   // §08.2: a flow scene is its content plus margin-y; a screen scene is the viewport, or taller
   // when a story grew past it (§09.5 grow); a page scene is at least the viewport (design §1).
   const natural = bottom - sceneY + grid.marginY;
-  const tall = screen || env.page ? Math.max(viewport.height, natural) : natural;
+  // 2026-11-15: a page scene another scene follows ends where its content does, so the next scene (the
+  // next article) starts on the same screen instead of after an empty one; the last scene keeps its screens.
+  const tall = screen || (env.page && !env.more) ? Math.max(viewport.height, natural) : natural;
   // Design 2026-09-29 rule 1: a page scene with column bands is a whole number of screens, so every
   // band has a screen of its own and scrolling can settle on each. With none (one column, as on a
   // phone) the text runs on across screens and the scene scrolls freely.
-  const height = env.paged ? Math.ceil(tall / viewport.height - EPS) * viewport.height : tall;
+  const height = env.paged && !env.more ? Math.ceil(tall / viewport.height - EPS) * viewport.height : tall;
 
   // §11.2 background: fills the whole scene behind everything; never excludes text. First, so it paints beneath.
   const behind = empty();
@@ -470,7 +476,7 @@ type Placement = { placed: Placed; box: Rect; exclusions: Exclusion[] };
  */
 /** The narrowest strip beside a box that body text runs in: the body style's min-slot, else 6em (§09.6). */
 function minStrip(env: Env, ctx: EvalContext): number {
-  const body = env.v.styles["body"];
+  const body = env.v.styles[env.body];
   if (!body) return 0;
   return body.minSlot ? px(body.minSlot, ctx) : 6 * px(body.size, ctx);
 }
@@ -479,6 +485,42 @@ function capWidth(o: ObjectElement, at: { x: number; width: number }, ctx: EvalC
   if (o.maxWidth === null) return at;
   const width = Math.min(at.width, px(o.maxWidth, ctx));
   return { x: at.x + (at.width - width) / 2, width };
+}
+
+/**
+ * §09.7 rule 16 (2026-11-15): a picture's size relative to the text, kept from print. `size=<n>em`
+ * is its width on a two-page spread in ems of the body text; the spread's text area is about
+ * `PRINT_SPREAD` ems. On a screen whose text area in ems is smaller, the picture scales down with
+ * it (`s`), and it is rounded to whole grid columns, at least 8em of the body text. Null: the object
+ * has no print width.
+ */
+const PRINT_SPREAD = { width: 130, height: 77 };
+function printWidth(env: Env, o: ObjectElement, ctx: EvalContext): number | null {
+  if (o.placement.mode !== "anchored" || o.placement.printWidth === null) return null;
+  const style = env.v.styles[env.body];
+  const b = style ? px(style.size, ctx) : 16;
+  const g = env.grid;
+  const s = Math.min(1, g.content / b / PRINT_SPREAD.width, (env.viewport.height - 2 * g.marginY) / b / PRINT_SPREAD.height);
+  const pitch = g.colWidth + g.gutter;
+  if (pitch <= EPS) return null;
+  // Never narrower than 8em of the body text, so a caption under it keeps a few words a line.
+  const cols = Math.max(1, Math.min(g.cols, Math.max(Math.round((o.placement.printWidth * s * b + g.gutter) / pitch), Math.ceil((8 * b + g.gutter) / pitch - EPS))));
+  return cols * pitch - g.gutter;
+}
+
+/**
+ * A print-width picture in text `columns` (each `colWidth`, `gap` apart): the fewest columns that hold
+ * it, and its width there. A frame of one column, or a strip beside it too narrow for a line of body
+ * text, gives it the columns' whole width.
+ */
+function printFit(env: Env, o: ObjectElement, ctx: EvalContext, colWidth: number, gap: number, columns: number): { span: number; width: number } | null {
+  const w = printWidth(env, o, ctx);
+  if (w === null) return null;
+  if (columns <= 1) return { span: 1, width: colWidth };
+  const span = Math.max(1, Math.min(columns, Math.ceil((w + gap) / (colWidth + gap) - EPS)));
+  const room = span * colWidth + (span - 1) * gap;
+  const offset = o.wrap.mode === "none" ? 0 : Math.max(px(o.wrap.offset, ctx), env.grid.gutter);
+  return { span, width: room - w - offset < minStrip(env, ctx) ? room : w };
 }
 
 function placeObject(
@@ -664,7 +706,9 @@ function placeItems(env: Env, g: GalleryObject, at: { x: number; y: number; widt
  */
 function exclusionsOf(env: Env, o: ObjectElement, box: Rect, media: Rect | null): Exclusion[] {
   if (o.layer !== "content" || o.wrap.mode === "none") return [];
-  const offset = px(o.wrap.offset, { viewport: env.viewport, grid: env.grid, pctOf: box.width });
+  // §09.7 rule 16: a print-sized picture ends on a grid line; its text starts at the next grid column or further.
+  const printed = o.placement.mode === "anchored" && o.placement.printWidth !== null;
+  const offset = Math.max(px(o.wrap.offset, { viewport: env.viewport, grid: env.grid, pctOf: box.width }), printed ? env.grid.gutter : 0);
   if (o.wrap.mode === "jump") return [{ id: o.id, box, shape: { kind: "rect" }, offset, side: "both", jump: true }];
   const side = o.wrap.side;
   const rect = (b: Rect): Exclusion => ({ id: o.id, box: b, shape: { kind: "rect" }, offset, side, jump: false });
@@ -750,7 +794,7 @@ function autoColumns(env: Env, frame: Frame, story: Story, width: number, gap: n
 /** The text size `columns=auto` sizes itself by: the story's first paragraph, or the `body` style. */
 function bodySize(env: Env, story: Story, ctx: EvalContext): number {
   const first = story.blocks.find((b) => b.kind === "paragraph");
-  const style = env.v.styles[first?.style ?? "body"] ?? env.v.styles["body"];
+  const style = env.v.styles[first?.style ?? env.body] ?? env.v.styles[env.body];
   return style ? px(style.size, ctx) : 16;
 }
 
@@ -861,7 +905,9 @@ function fillFrame(
   const onBand = (at: number, band: Columns, last: boolean): void => {
     if (frame.columnRule === "rule" && count > 1) band.placed.columnRules.push(...columnRulesOf(frame, columns, at, band));
     // Rule 7: the story carries on in the next band, or in a frame after this one.
-    if (!last || band.stop !== "end") {
+    // 2026-11-15: not after text that ends exactly at the band's foot, with no paragraph left to carry on.
+    const more = band.stop !== "full" || story.blocks.slice(band.cursor.block).some((b) => b.kind === "paragraph");
+    if ((!last || band.stop !== "end") && more) {
       const lines = band.placed.lines.filter((l) => l.frame === frame.id);
       const col = Math.max(-1, ...lines.map((l) => l.column));
       const foot = lines.filter((l) => l.column === col).at(-1);
@@ -991,7 +1037,11 @@ function keptApart(env: Env, lines: readonly PositionedLine[]): boolean {
   });
 }
 
-/** Design §4 column-rule: a line mid-gap between two adjacent columns that both hold text, from the band's first line's top to its tallest column's bottom. */
+/**
+ * Design §4 column-rule: a line mid-gap between two adjacent columns that both hold text, down to the
+ * taller one's last line. It starts at the later of the two columns' first lines (2026-11-15), so it
+ * does not cross what pushes a column's text down, such as a heading block that wraps (§09.2).
+ */
 function columnRulesOf(frame: Frame, columns: Col[], top: number, band: Columns): PositionedColumnRule[] {
   // Limit: `band.bottoms` can carry a phantom entry for a column with zero lines (a paragraph
   // exhausted right at a trial height still reports a moved bottom, from block epilogue alone, before
@@ -1003,8 +1053,12 @@ function columnRulesOf(frame: Frame, columns: Col[], top: number, band: Columns)
   const y = band.placed.lines.length ? Math.min(...band.placed.lines.map((l) => l.y)) : top;
   const bottom = Math.max(y, ...band.placed.lines.map((l) => l.y + l.height));
   const out: PositionedColumnRule[] = [];
+  const firstTop = (c: number): number => Math.min(...band.placed.lines.filter((l) => l.column === c).map((l) => l.y));
   for (let c = 0; c + 1 < columns.length; c++)
-    if (used[c] && used[c + 1]) out.push({ frame: frame.id, x: (columns[c]!.x + columns[c]!.width + columns[c + 1]!.x) / 2, y, height: bottom - y });
+    if (used[c] && used[c + 1]) {
+      const from = Math.max(y, firstTop(c), firstTop(c + 1));
+      out.push({ frame: frame.id, x: (columns[c]!.x + columns[c]!.width + columns[c + 1]!.x) / 2, y: from, height: bottom - from });
+    }
   return out;
 }
 
@@ -1150,7 +1204,8 @@ const box = (r: Rect): Rect => ({ x: r.x, y: r.y, width: r.width, height: r.heig
 /** In screen pages, the screen `y` is on, counted from the document's top (as `ScreenReport`); null when the scene scrolls. */
 function screenAt(env: Env, y: number): number | null {
   const vh = env.viewport.height;
-  return env.pageGrids ? Math.floor((env.sceneY + Math.floor((y - env.sceneY + EPS) / vh) * vh + EPS) / vh) + 1 : null;
+  // A page's screen number counts its top, rounded up: a scene can start part way down a screen (2026-11-15).
+  return env.pageGrids ? Math.ceil((env.sceneY + Math.floor((y - env.sceneY + EPS) / vh) * vh) / vh - EPS) + 1 : null;
 }
 
 const SPACE_RULE: Record<SpaceReason, string> = { "slot-too-narrow": "§09.6 step 3", cropped: "§09.7 rule 12", grown: "§09.7 rule 12", "early-end": "§09.7 rule 12" };
@@ -1287,7 +1342,8 @@ function bands(
       const photos = full.placed.objects.filter((o) => {
         const r = env.v.objects[o.name];
         // Only a photograph that crops (fit=cover): a diagram set to contain keeps all of itself.
-        return r?.kind === "figure" && r.placement.mode !== "contained" && r.media.shape.kind === "rect" && r.media.fit === "cover" && o.media !== null;
+        // Rule 16: a picture sized from print keeps its size.
+        return r?.kind === "figure" && r.placement.mode !== "contained" && !(r.placement.mode === "anchored" && r.placement.printWidth !== null) && r.media.shape.kind === "rect" && r.media.fit === "cover" && o.media !== null;
       });
       const steps = [1, 2, 3, 4, 5, 6, -1, -2, -3];
       search: for (const p of photos)
@@ -1328,9 +1384,14 @@ function bands(
       const fits = (r: Columns): boolean => r.stop !== "full" && !r.collides;
       // 2026-10-20: a page its floating pictures fill is set again with one of them moved on to the
       // next page, the last in story order first, so the stub's lines fit. Only a picture anchored on
-      // that page (the next one is inside its window), never a quote or fact box (it would be alone).
+      // that page (the next one is inside its window), never a quote or fact box (it would be alone),
+      // and never a lead (2026-11-15: anchored before any of its story's text, it would follow it).
+      const lead = (id: string): boolean => {
+        const p = env.v.objects[id]!.placement as AnchoredPlacement;
+        return env.v.stories[p.story]!.blocks.slice(0, p.block).every((b) => b.kind === "object");
+      };
       const movable = [...(prev.floated ?? [])]
-        .flatMap(([id, f]) => (f && !tied(id) && (env.v.objects[id]!.placement as AnchoredPlacement).block >= prev!.from.block ? [id] : []))
+        .flatMap(([id, f]) => (f && !tied(id) && !lead(id) && (env.v.objects[id]!.placement as AnchoredPlacement).block >= prev!.from.block ? [id] : []))
         .sort((a, b) => (env.v.objects[b]!.placement as AnchoredPlacement).block - (env.v.objects[a]!.placement as AnchoredPlacement).block);
       let moved: string | null = null;
       if (!fits(run(prev.limit, prev.at, prev.from, earlier, prev.waiting)))
@@ -1368,6 +1429,17 @@ function bands(
       : band.balanced !== undefined ? { why: "balanced-last-page", numbers: { height: band.balanced } }
       : r3 > 0 ? { why: "rule-3-cut", numbers: { lines: Math.round(r3 / bl) } }
       : undefined;
+    // A band that set nothing would repeat forever: stop, as an overset frame does.
+    const idle = sameResume(band.cursor, from) && band.placed.lines.length === 0 && band.placed.objects.length === 0;
+    // 2026-10-07: a picture taller than a band hangs into the next ones (W043). A band it fills sets
+    // nothing, and the text continues on the first band below the picture's foot.
+    const covered = idle && !done && earlier.some((e) => e.box.y + e.box.height > at + EPS);
+    // 2026-11-15: a band that sets nothing adds no screen (text that ended exactly at the last foot).
+    if (idle && !covered) {
+      env.origin = undefined;
+      env.floated = undefined;
+      return { placed: out, cursor: band.cursor, stop: band.stop, tops, bottoms, carried: earlier, deferred: band.deferred, why: [] };
+    }
     prev = { mark: mark(out), tops: tops.length, bottoms: bottoms.length, earlier: earlier.length, at, limit, from, waiting, page, band, floated: env.floated, explain: env.explain?.length ?? 0, over };
     onBand(at, band, done);
     append(out, band.placed);
@@ -1375,11 +1447,6 @@ function bands(
     tops.push(...band.tops);
     bottoms.push(...band.bottoms);
     earlier.push(...band.carried);
-    // A band that set nothing would repeat forever: stop, as an overset frame does.
-    const idle = sameResume(band.cursor, from) && band.placed.lines.length === 0 && band.placed.objects.length === 0;
-    // 2026-10-07: a picture taller than a band hangs into the next ones (W043). A band it fills sets
-    // nothing, and the text continues on the first band below the picture's foot.
-    const covered = idle && !done && earlier.some((e) => e.box.y + e.box.height > at + EPS);
     // A floating object still to place keeps the frame going, as objects held over do.
     if ((done && holdOver.length === 0 && !compose?.left()) || (idle && !covered)) {
       env.origin = undefined;
@@ -1483,7 +1550,7 @@ function screenReports(env: Env, frameId: string, story: Story, start: Resume, c
       const screens = o.anchoredAt === null ? 0 : p - screenOf(o.anchoredAt);
       return floating.has(o.name) && screens >= 2 ? [{ object: o.name, screens }] : [];
     });
-    return { screen: Math.floor((top + EPS) / vh) + 1, short, lastParagraph: words, photo: photo?.name ?? null, far };
+    return { screen: Math.ceil(top / vh - EPS) + 1, short, lastParagraph: words, photo: photo?.name ?? null, far };
   });
 }
 
@@ -1628,10 +1695,16 @@ function trials(env: Env, frameId: string, columns: Col[], ends: (band: Columns)
       }
       return false;
     });
+    // A drop cap cut short counts as lines alone (2026-11-16): a box left its paragraph fewer lines at a
+    // column's top than the cap spans, so the cap could not be set.
+    const capCut = lines.some((l) => {
+      const blk = v.stories[l.story]?.blocks[l.block];
+      return l.paragraphStart && blk?.kind === "paragraph" && blk.dropcap && !t.placed.caps.some((c) => c.story === l.story && c.block === l.block);
+    });
     const screen = combo.some((c) => "box" in c && v.objects[c.id]!.placement.mode === "anchored" && (v.objects[c.id]!.placement as AnchoredPlacement).place === "screen");
     const feet = screen ? columns.map(() => g.foot) : ends(t).map((f) => (Number.isFinite(f) ? f : g.top));
     const alone = lines.length === 0 && combo.some((c) => "box" in c && (v.objects[c.id]!.kind === "pullquote" || v.objects[c.id]!.kind === "sidebar"));
-    return { allSet, overlaps, stubs, feet, last: t.stop !== "full", alone, gaps: holes(t, lines, objects, g.baseline) };
+    return { allSet, overlaps, stubs: stubs || capCut, feet, last: t.stop !== "full", alone, gaps: holes(t, lines, objects, g.baseline) };
   };
   return { overflow, summarise };
 }
@@ -1685,8 +1758,14 @@ function floatMaker(env: Env, columns: Col[], ids: readonly string[]) {
       : ratio >= 1.2 ? ["wide", "column"]
       : ratio < 0.9 ? ["column", "small"]
       : ["column", "wide"];
+    const ctx: EvalContext = { viewport: env.viewport, grid: env.grid, pctOf: w };
+    const gap = columns.length > 1 ? columns[1]!.x - columns[0]!.x - w : 0;
+    const print = printFit(env, o, ctx, w, gap, columns.length);
     return {
       id, order: ids.indexOf(id), sizes, place: p.place, kind, anchorScreen: a.screen, anchorColumn: a.column,
+      ...(print ? { print } : {}),
+      // Before any of its story's text: a lead, which does not wait on its anchor's screen while a spot there is free.
+      lead: v.stories[p.story]!.blocks.slice(0, p.block).every((b) => b.kind === "object"),
       heightAt: (width) => heightAt(o, width),
       crops: "media" in o && o.media.fit === "cover" && o.media.shape.kind === "rect",
     };
@@ -1738,7 +1817,7 @@ function composer(
   /** The visor: an object's window, the anchor's screen and one either side, 1-based across the document. */
   const window = (id: string): Record<string, number> => {
     const a = anchors.get(id)?.screen;
-    const doc = (p: number): number => Math.floor((sceneY + p * viewport.height + EPS) / viewport.height) + 1;
+    const doc = (p: number): number => Math.ceil((sceneY + p * viewport.height) / viewport.height - EPS) + 1;
     return a === undefined ? {} : { windowFrom: doc(Math.max(0, a - 1)), windowTo: doc(a + 1) };
   };
 
@@ -1965,18 +2044,26 @@ function composer(
  * ends exactly on it, at the same place on every page and every screen; what a screen holds beyond
  * whole lines (a screen is rarely a whole number of them) goes to the top margin instead.
  */
+/** A body line's leading, and its drop: from the line's top to its baseline, as fillColumn sets body text. */
+function bodyLine(env: Env, ctx: EvalContext): { lead: number; drop: number } {
+  const body = env.v.styles[env.body];
+  const lead = body ? px(body.leading, ctx) : env.grid.baseline;
+  if (!body) return { lead, drop: lead };
+  const font = engineFont(body, ctx);
+  const m = env.cache.get([{ text: "x", font }], font);
+  return { lead, drop: (lead - (m.ascent + m.descent)) / 2 + m.ascent };
+}
+
+/** From a body line's baseline to the foot of its box. */
+function bodyBelow(env: Env, ctx: EvalContext): number {
+  const { lead, drop } = bodyLine(env, ctx);
+  return lead - drop;
+}
+
 function pageOrigin(env: Env, p: number): number {
-  const { grid, viewport, sceneY, v } = env;
-  const body = v.styles["body"];
+  const { grid, viewport, sceneY } = env;
   const ctx: EvalContext = { viewport, grid, pctOf: 0 };
-  const lead = body ? px(body.leading, ctx) : grid.baseline;
-  let drop = lead;
-  if (body) {
-    const font = engineFont(body, ctx);
-    const m = env.cache.get([{ text: "x", font }], font);
-    // From a line's top to its baseline, as fillColumn sets body text.
-    drop = (lead - (m.ascent + m.descent)) / 2 + m.ascent;
-  }
+  const { lead, drop } = bodyLine(env, ctx);
   const top = sceneY + p * viewport.height;
   const lastBaseline = top + viewport.height - grid.marginY - lead + drop;
   return lastBaseline - Math.floor((lastBaseline - top) / grid.baseline) * grid.baseline;
@@ -2114,11 +2201,21 @@ function fillColumns(
     // rule 12 gives it).
     const scored = f.box.height + (f.fixed ? 0 : (env.grow?.get(id) ?? 0));
     if (r.box.height > scored + EPS) r = placeObject(env, o, f.box, scored, null, true);
-    const off = o.wrap.mode === "none" ? 0 : px(o.wrap.offset, { viewport: env.viewport, grid: env.grid, pctOf: r.box.width });
+    const printed = o.placement.mode === "anchored" && o.placement.printWidth !== null;
+    const off = o.wrap.mode === "none" ? 0 : Math.max(px(o.wrap.offset, { viewport: env.viewport, grid: env.grid, pctOf: r.box.width }), printed ? env.grid.gutter : 0);
     const whole = o.placement.mode === "anchored" && o.placement.place === "screen";
+    // A print-sized cut-out keeps its own shape (§12.2, rule 16): text runs along its outline, not its box.
+    if (!whole && printed && o.wrap.mode === "contour" && r.exclusions.length) {
+      append(placed, r.placed);
+      boxed.push(...r.exclusions);
+      continue;
+    }
     // The standoff above stays inside the band: above it is another frame's text, or the screen before.
+    // At the sides it is at most a gutter (2026-11-16): a box that fills its columns then ends where the
+    // next column starts, and one inside a column keeps its text a gutter away.
     const above = Math.max(top, r.box.y - off);
-    const box = whole ? { x: span.x, y: top, width: span.width, height: limit } : { ...r.box, y: above, height: r.box.y + r.box.height + off - above };
+    const side = Math.min(off, env.grid.gutter);
+    const box = whole ? { x: span.x, y: top, width: span.width, height: limit } : { x: r.box.x - side, y: above, width: r.box.width + 2 * side, height: r.box.y + r.box.height + off - above };
     const cut: Exclusion = { id, box, shape: { kind: "rect" }, offset: 0, side: "both", jump: false };
     r.placed.objects[0]!.exclusion = cut;
     append(placed, r.placed);
@@ -2473,7 +2570,10 @@ function fillColumn(
     // Rule 15 (2026-10-20): in a band, an object at its anchor's side leaves a strip a line of body
     // text fits in, or takes the column's width.
     if (defer.banded && !slot && h.mode === "side" && col.width - given - (o.wrap.mode === "none" ? 0 : px(o.wrap.offset, ctx)) < minStrip(env, ctx)) given = col.width;
-    const at = slot ? slot.x : h.mode !== "side" || h.side === "left" ? col.x : col.x + (col.width - given) * (h.side === "right" ? 1 : 0.5);
+    // Rule 16: a print-width picture at its anchor, on the column's outer side in a fill's last column.
+    const print = !slot && h.mode === "full" ? printFit(env, o, ctx, col.width, 0, defer.span && defer.span.width > col.width + EPS ? 2 : 1) : null;
+    if (print) given = Math.min(col.width, print.width);
+    const at = slot ? slot.x : print ? (defer.last && defer.span && defer.span.width > col.width + EPS ? col.x + col.width - given : col.x) : h.mode !== "side" || h.side === "left" ? col.x : col.x + (col.width - given) * (h.side === "right" ? 1 : 0.5);
     const capped = capWidth(o, { x: at, width: given }, ctx);
     const x = capped.x;
     let width = capped.width;
@@ -2482,7 +2582,7 @@ function fillColumn(
     // §12.1: an object that follows text keeps its standoff from the line above too (2026-10-07: with
     // no space between paragraphs, a quote otherwise sat inside its own standoff).
     const underSpan = atTop && env.spanTops?.has(y) === true;
-    const above = (!atTop || underSpan) && o.wrap.mode !== "none" ? px(o.wrap.offset, ctx) : 0;
+    const above = (!atTop || underSpan) && o.wrap.mode !== "none" ? Math.max(px(o.wrap.offset, ctx), o.placement.mode === "anchored" && o.placement.printWidth !== null ? env.grid.gutter : 0) : 0;
     let objTop = pin?.y ?? (atTop && !underSpan ? y : snapUp(y + above));
     const fixed = o.placement.height === "auto" ? null : px(o.placement.height, ctx);
     let r = placeObject(env, o, { x, y: objTop, width }, fixed, objTop, defer.banded);
@@ -2687,6 +2787,11 @@ function fillColumn(
     const metrics = prepare(pieces[0]!);
     const baselineOffset = (leading - (metrics.ascent + metrics.descent)) / 2 + metrics.ascent;
     const snap = style.snap === "baseline";
+    // 2026-11-15: a snapped line that reaches further below its baseline than a body line does (text
+    // set smaller than the body, one step tall) trims its box by the difference at top and bottom, so
+    // its baseline stays and the line after it is one step down, not two.
+    const trim = snap ? Math.min(Math.max(0, leading - baselineOffset - bodyBelow(env, ctx)), leading / 4) : 0;
+    const lineH = leading - 2 * trim;
     const indent = resuming ? 0 : px(indentOf(b, block), ctx);
     const cap = block.dropcap && !resuming ? dropcap(env, block, style, metrics.capHeight, leading, ctx, pcol.x) : null;
     const minSlot = style.minSlot ? px(style.minSlot, ctx) : 6 * base.size; // §09.6 step 3: min-slot, else 6em
@@ -2720,12 +2825,12 @@ function fillColumn(
       let baseline = y + baselineOffset;
       if (snap) {
         baseline = snapUp(baseline);
-        lineY = baseline - baselineOffset;
+        lineY = baseline - baselineOffset + trim;
       }
       // The first line at a column's top is always set, so a column can never refuse text forever;
       // but once exclusions made it skip bands, running past the limit would set a stray line below
       // the column (into the next band's space), so it ends here, empty, like any full column.
-      if (lineY + leading > limitY + EPS && !(atTop && n === 0 && !skipped)) {
+      if (lineY + lineH > limitY + EPS && !(atTop && n === 0 && !skipped)) {
         // Keep-with-next: when this block moves on whole, its predecessor comes along (§07.6).
         const backToKept = (k: NonNullable<typeof kept>) => {
           rollback(out, k.at);
@@ -2743,7 +2848,8 @@ function fillColumn(
           if (!(defer.last || defer.turn) || i < 0 || !last || last.block !== b || !last.text.endsWith(SHY_CHAR)) return null;
           const from = starts[i]!.resume;
           const src = pieces[from.piece]!;
-          for (let w = last.width - base.size / 2; w > minSlot; w -= base.size / 2) {
+          // 2026-11-15: in a slot little wider than min-slot, the break may still come as far in as 60% of the line.
+          for (let w = last.width - base.size / 2; w > Math.min(minSlot, 0.6 * last.width); w -= base.size / 2) {
             const shorter = cache.engine.nextLine(prepare(src), from.at, w);
             if (!shorter) return null;
             const aligned = alignLine(src.map((r) => r.text).join(""), from.offset, shorter.text);
@@ -2760,8 +2866,19 @@ function fillColumn(
           return null;
         };
         // Column full. Orphans: a paragraph that started here and would leave too few
-        // lines behind moves whole, and a block kept with it comes along.
-        if (!resuming && n > 0 && n < style.orphans && !(atTop && blockMark.at.lines === 0)) {
+        // lines behind moves whole, and a block kept with it comes along. A drop cap counts as
+        // its lines: a paragraph split before them would lose its cap (2026-11-16).
+        // At a column's top the paragraph stays (a column never refuses text forever), except one too
+        // short for its cap when a later column can take it and a lead (anchored before any of its
+        // story's text) set over the column left only those lines. Elsewhere a cut cap is a hard rule
+        // of the setting search (rule 13).
+        const leadOf = (id: string): boolean => {
+          const p = env.v.objects[id]?.placement;
+          return p?.mode === "anchored" && env.v.stories[p.story]!.blocks.slice(0, p.block).every((x) => x.kind === "object");
+        };
+        const under = cap !== null && exclusions.some((e) => leadOf(e.id) && e.box.y + e.box.height > blockTop + EPS && e.box.y + e.box.height <= (starts[0]?.y ?? blockTop) + EPS && e.box.x < pcol.x + pcol.width - EPS && e.box.x + e.box.width > pcol.x + EPS);
+        const short = cap !== null && n < cap.lines && !defer.last && under;
+        if (!resuming && n > 0 && n < Math.max(style.orphans, cap ? cap.lines : 0) && !(atTop && blockMark.at.lines === 0 && !short)) {
           if (kept) return backToKept(kept);
           rollback(out, blockMark.at);
           return { placed: out, cursor, bottom: blockMark.y, stop: "full", why: "orphans", moved: n };
@@ -2804,14 +2921,14 @@ function fillColumn(
       // pictures on phones). Only a column narrower than minSlot keeps its widest gap, or it would
       // never set a line.
       const dropped: Col[] | undefined = out.narrow ? [] : undefined;
-      const slots = slotsFor(pcol, exclusions, lineY, lineY + leading, minSlot, defer.banded || pcol.width >= minSlot, dropped);
+      const slots = slotsFor(pcol, exclusions, lineY, lineY + lineH, minSlot, defer.banded || pcol.width >= minSlot, dropped);
       for (const d of dropped ?? []) {
         // The object whose side the strip is on: its extent on this band meets the strip.
         const by = exclusions.find((e) => {
-          const x = bandExtent(e, lineY, lineY + leading);
+          const x = bandExtent(e, lineY, lineY + lineH);
           return x !== null && (Math.abs(x[0] - (d.x + d.width)) < 0.5 || Math.abs(x[1] - d.x) < 0.5);
         });
-        out.narrow!.push({ x: d.x, y: lineY, width: d.width, height: leading, min: minSlot, frame: frameId, column, ...(by ? { object: by.id } : {}) });
+        out.narrow!.push({ x: d.x, y: lineY, width: d.width, height: lineH, min: minSlot, frame: frameId, column, ...(by ? { object: by.id } : {}) });
       }
       // A column with no width (a viewport narrower than its margins) has no slot on any band;
       // in a flow frame the bands never run out, so the column ends here as if full.
@@ -2869,7 +2986,7 @@ function fillColumn(
           baseline,
           width,
           measured: line.width,
-          height: leading,
+          height: lineH,
           text: aligned.text,
           start: line.start,
           end: line.end,
@@ -2884,7 +3001,7 @@ function fillColumn(
         offset = aligned.next;
         n++;
       }
-      y = lineY + leading;
+      y = lineY + lineH;
     }
     // A paragraph that ended exactly at the foot of the last column resumes here with nothing left:
     // it sets no line, so it must not add its space-after either, and the column is still at its top.

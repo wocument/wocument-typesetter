@@ -529,6 +529,7 @@ A full-width band of the article (spec §08.1).
 | `bg` | [`Color`](#color) | Scene background color (spec §08.1). |
 | `linearized` | `boolean` | True when this scene linearized at this breakpoint. Placements below are already rewritten: stacked in source order at full width, one internal column, wrap `jump` (spec §07.5). |
 | `folio` | [`Folio`](#folio) \| `null` | The folio shown while this scene is under it: the scene's parent's folio if it declares one, else the document's; `null` when there is none or the scene sets `folio=hide` (spec §10.5). |
+| `body` | [`StyleKey`](#stylekey) | The body style of the scene's theme when the scene is in an article with its own theme (spec §07.8), such as `t1/body`; absent: `body`. Layout counts the scene's grid and narrow strips from it. |
 | `children` | [`ElementRef`](#elementref)[] | Top-level children in paint order: the parent's children first, beneath, then the scene's own, each in source order (spec §08.4, §11.3). Anchored objects are not listed here; they belong to their story. |
 
 ### Frame
@@ -669,6 +670,12 @@ The persistent label fixed to the viewport (spec §10.5).
 | `story` | [`StoryId`](#storyid) | Its text as an anonymous story: `folio#text` for the document's folio, `<parentName>#folio` for a parent's. |
 | `position` | `"top-left"` \| `"top-right"` \| `"bottom-left"` \| `"bottom-right"` \| `"margin-left"` \| `"margin-right"` | Viewport corner. |
 | `progress` | `boolean` | Show a reading-progress indicator for the whole article. |
+
+### StyleKey
+
+Style key: an author or theme style name for a block style, or a composed key for a run style (see `ResolvedStyle`).
+
+Type: `string`
 
 ### ElementRef
 
@@ -1193,12 +1200,6 @@ A horizontal rule's appearance (spec §10.4).
 | `width` | [`Len`](#len) | Length of the line; `pct` is of the column or box it sits in. |
 | `align` | `"left"` \| `"center"` \| `"right"` | Where a rule shorter than its column sits. |
 
-### StyleKey
-
-Style key: an author or theme style name for a block style, or a composed key for a run style (see `ResolvedStyle`).
-
-Type: `string`
-
 ### Dropcap
 
 A drop cap: the inputs to measuring and placing it. Its width is measured during prepare and lives on the prepared paragraph, not here (spec §10.4).
@@ -1263,6 +1264,7 @@ Anchored: written in a story, so it travels with the text (spec §11.3).
 | `horizontal` | [`AnchorHorizontal`](#anchorhorizontal) | Horizontal position (spec §11.3 table). |
 | `height` | [`Len`](#len) \| `"auto"` | Box height, or `auto` from ratio or content (spec §11.1). |
 | `size` | [`FloatSize`](#floatsize) \| `"auto"` | Picture size the object asks for; `auto` lets the engine pick (spec §07.7, §11.3). |
+| `printWidth` | `number` \| `null` | `size=<n>em`: the width the object has on a two-page print spread, in ems of the body text; layout scales it to the screen (spec §11.3, §09.7 rule 16). `null` when unset. |
 | `place` | [`FloatPlace`](#floatplace) | Where the object goes: `float` is the engine's choice (spec §11.3). |
 
 ### BackgroundPlacement

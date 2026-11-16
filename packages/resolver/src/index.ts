@@ -77,7 +77,19 @@ export type ResolveOptions = {
   assets?: AssetHost;
   /** The parsed theme file named in frontmatter `theme:`, if any (spec §07.8). */
   theme?: Theme | null;
+  /** The parsed theme files named by `\article[theme=]`, by path as written (spec §07.8; `articleThemes`). */
+  themes?: Readonly<Record<string, Theme>>;
 };
+
+/** The theme files a document's articles name (spec §07.8), each once, in source order: the caller parses them for `ResolveOptions.themes`. */
+export function articleThemes(doc: Document): string[] {
+  const out: string[] = [];
+  for (const a of doc.articles) {
+    const v = a.marker?.attrs.find((x) => x.key === "theme")?.value;
+    if (v?.t === "path" && !out.includes(v.s)) out.push(v.s);
+  }
+  return out;
+}
 
 export type ResolveResult = {
   doc: ResolvedDocument;
@@ -145,11 +157,50 @@ function magazineForm(ast: Document): Document {
 export function resolve(source: Document, options: ResolveOptions = {}): ResolveResult {
   const ast = magazineForm(source);
   const file = options.file ?? "document.woc";
-  const defs = new Definitions([builtinTheme().definitions, options.theme?.definitions ?? [], ast.definitions]);
-  const design = new Design(defs);
+  // §07.8 (2026-11-15): each article is set in its own theme. A namespace is a theme's cascade (built-in,
+  // theme, document); "" is the document's theme, `t<n>` an article's. Style keys of an article's stories
+  // carry the namespace (`t1/body+em`); grids, palettes, parents and tokens are looked up in it while its
+  // scenes and stories resolve. `defs` and `design` are the namespace in use (`use`).
+  const paths = articleThemes(ast);
+  const spaces = new Map<string, { defs: Definitions; design: Design }>();
+  const space = (theme: Theme | null | undefined) => {
+    const d = new Definitions([builtinTheme().definitions, theme?.definitions ?? [], ast.definitions]);
+    return { defs: d, design: new Design(d) };
+  };
+  spaces.set("", space(options.theme));
+  paths.forEach((p, i) => {
+    const t = options.themes?.[p];
+    if (!t) throw new Error(`\\article names the theme ${p}, but it was not given (ResolveOptions.themes)`);
+    spaces.set(`t${i + 1}`, space(t));
+  });
+  const articleNs = ast.articles.map((a) => {
+    const v = a.marker?.attrs.find((x) => x.key === "theme")?.value;
+    return v?.t === "path" ? `t${paths.indexOf(v.s) + 1}` : "";
+  });
+  let ns = "";
+  let { defs, design } = spaces.get("")!;
+  const use = (k: string): void => {
+    ns = k;
+    ({ defs, design } = spaces.get(k)!);
+  };
+  /** A style key in namespace `k`. */
+  const scoped = (k: string, key: string): string => (k === "" ? key : `${k}/${key}`);
+  /** Any style key, its namespace's. */
+  const styleIn = (key: string, bp: string): ResolvedStyle => {
+    const i = key.indexOf("/");
+    return i < 0 ? spaces.get("")!.design.styleKey(key, bp) : spaces.get(key.slice(0, i))!.design.styleKey(key.slice(i + 1), bp);
+  };
   const variants = design.variants();
+  /** The article of each scene and named story, by node id. */
+  const articleOf = new Map<number, number>();
+  let story0 = 0;
+  let scene0 = 0;
+  ast.articles.forEach((a, i) => {
+    for (const c of [...ast.stories.slice(story0, (story0 += a.stories)), ...ast.scenes.slice(scene0, (scene0 += a.scenes))]) articleOf.set(c.id, i);
+  });
   const lang = ast.frontmatter.lang ?? "en";
-  const ids = new Ids([...ast.definitions, ...(ast.folio ? [ast.folio] : []), ...ast.stories, ...ast.scenes], ast.implicitContent);
+  const folios = ast.articles.length ? ast.articles.flatMap((a) => (a.folio ? [a.folio] : [])) : ast.folio ? [ast.folio] : [];
+  const ids = new Ids([...ast.definitions, ...folios, ...ast.stories, ...ast.scenes], ast.implicitContent);
   const diagnostics: Diagnostic[] = [];
   /** `at` is null for the implicit form's synthesized scene and frame, which have no source of their own. */
   const warn = (
@@ -232,6 +283,22 @@ export function resolve(source: Document, options: ResolveOptions = {}): Resolve
 
   /** Stories are built once, in first-use order, so the string table is deterministic. */
   const stories = new Map<string, Story>();
+  /** The namespace each story was built in (§07.8). */
+  const storyNs = new Map<string, string>();
+  /** A story's style keys put in namespace `k`. */
+  const scopeBlocks = (k: string, blocks: Story["blocks"]): Story["blocks"] =>
+    k === ""
+      ? blocks
+      : blocks.map((b) =>
+          b.kind !== "paragraph"
+            ? b
+            : {
+                ...b,
+                style: scoped(k, b.style),
+                dropcap: b.dropcap && { ...b.dropcap, style: scoped(k, b.dropcap.style) },
+                runs: b.runs.map((r) => ("style" in r ? { ...r, style: scoped(k, r.style) } : r)),
+              },
+        );
   /** What each story was built from, to build it again for a breakpoint whose values differ (§06.3). */
   const storySources = new Map<string, { content: Node[]; cmd: Command | null; prose: string; proseAt: Map<string, string> }>();
   /** `at`: the variant asking, whose prose style (a pull quote's `style@at`) may differ from the first build's. */
@@ -240,13 +307,14 @@ export function resolve(source: Document, options: ResolveOptions = {}): Resolve
     const hit = stories.get(id);
     if (hit) return hit;
     storySources.set(id, { content, cmd, prose, proseAt: new Map([[at, prose]]) });
+    storyNs.set(id, ns);
     const a = cmd ? elementAttrs(cmd, BASE, "story", deref) : new Map<string, Value>();
     const s: Story = {
       id,
       origin,
       owner,
       overset: (enumId(a.get("overset")) || "grow") as Story["overset"],
-      blocks: storyBlocks(content, storyCtx(ident(a.get("style")) || prose, id)),
+      blocks: scopeBlocks(ns, storyBlocks(content, storyCtx(ident(a.get("style")) || prose, id))),
     };
     stories.set(id, s);
     return s;
@@ -256,10 +324,18 @@ export function resolve(source: Document, options: ResolveOptions = {}): Resolve
     const src = storySources.get(s.id)!;
     const prose = src.proseAt.get(bp) ?? src.prose;
     if (bp === BASE || (prose === src.prose && !hasOverrides([src.content, src.cmd]))) return s;
+    const was = ns;
+    use(storyNs.get(s.id)!);
     const a = src.cmd ? elementAttrs(src.cmd, bp, "story", deref) : new Map<string, Value>();
-    return { ...s, overset: (enumId(a.get("overset")) || "grow") as Story["overset"], blocks: storyBlocks(src.content, storyCtx(ident(a.get("style")) || prose, s.id, bp, true)) };
+    const out = { ...s, overset: (enumId(a.get("overset")) || "grow") as Story["overset"], blocks: scopeBlocks(ns, storyBlocks(src.content, storyCtx(ident(a.get("style")) || prose, s.id, bp, true))) };
+    use(was);
+    return out;
   };
-  for (const s of ast.stories) story(ident(s.attrs.find((a) => a.key === "name")?.value), "named", null, s.body as Node[], s);
+  for (const s of ast.stories) {
+    use(articleNs[articleOf.get(s.id) ?? 0] ?? "");
+    story(ident(s.attrs.find((a) => a.key === "name")?.value), "named", null, s.body as Node[], s);
+  }
+  use("");
 
   // ---- scenes -------------------------------------------------------------
   const sources: SceneSource[] =
@@ -401,6 +477,12 @@ export function resolve(source: Document, options: ResolveOptions = {}): Resolve
       };
     };
 
+    /** `size=<n>em` (§11.3): ems of the body text on a print spread; any other unit has no effect. */
+    const printEm = (v: Extract<Value, { t: "length" }>, cmd: Command): number | null => {
+      if (v.unit === "em" && v.n > 0) return v.n;
+      if (bp === BASE) warn("W035", `\\${cmd.name} size=${v.raw} has no effect: a picture's print width is in em.`, cmd, null, "Write it in ems of the body text, as size=24em.");
+      return null;
+    };
     /** An object at `bp` (spec §11). `where` is its scene (grid-placed) or its anchor (anchored). */
     const objectOf = (cmd: Command, id: string, where: ObjectWhere, reveal: Reveal, z: number): ObjectElement => {
       const oa: Attrs = new Map([...schemaDefaults(cmd.name), ...elementAttrs(cmd, bp, cmd.name, deref)]);
@@ -426,11 +508,14 @@ export function resolve(source: Document, options: ResolveOptions = {}): Resolve
         const own = elementAttrs(cmd, bp, cmd.name, deref);
         const set = (k: string): boolean => own.has(k);
         const sized = side !== "full" || set("width");
-        const asked = enumId(oa.get("size")) as FloatSize | "auto";
+        // §11.3 size=<n>em: a width in body ems on a print spread; layout scales it to the screen.
+        const sizeV = oa.get("size");
+        const printWidth = set("size") && sizeV?.t === "length" ? printEm(sizeV, cmd) : null;
+        const asked = (printWidth !== null ? "auto" : enumId(sizeV)) as FloatSize | "auto";
         const size = set("size") ? asked : sized ? "small" : "auto";
         // §09.7 rule 15: anchor spots are set at the anchor, not scored, so a small object stays there.
         const place = small ? "here" : set("place") ? (enumId(oa.get("place")) as FloatPlace) : sized || set("cols") || enumId(oa.get("shape")) === "alpha" ? "here" : "float";
-        placement = { mode: "anchored", story: where.story, block: where.block, horizontal, height: lenOrAuto(oa.get("height")), size, place };
+        placement = { mode: "anchored", story: where.story, block: where.block, horizontal, height: lenOrAuto(oa.get("height")), size, printWidth, place };
       } else if (layer === "background") placement = { mode: "background", scene: where.scene };
       else
         placement = {
@@ -445,7 +530,9 @@ export function resolve(source: Document, options: ResolveOptions = {}): Resolve
       // §12.1: the default wrap depends on how the object is placed; only the content layer wraps.
       const h = placement.mode === "anchored" ? placement.horizontal.mode : null;
       const explicit = cmd.attrs.some((x) => x.key === "wrap");
-      const mode = explicit ? enumId(oa.get("wrap")) : h === "side" || h === "cols" ? "rect" : h === "full" ? "jump" : "none";
+      // §09.7 rule 16: a picture sized from print may leave text room beside it, so it wraps as a rect.
+      const printed = placement.mode === "anchored" && placement.printWidth !== null;
+      const mode = explicit ? enumId(oa.get("wrap")) : h === "side" || h === "cols" || printed ? "rect" : h === "full" ? "jump" : "none";
       const offset = oa.has("wrap-offset") ? len(oa.get("wrap-offset")!) : ({ u: "px", n: 0 } as const);
       const wrap: Wrap =
         layer !== "content" || mode === "none" || where.mode === "contained"
@@ -584,6 +671,8 @@ export function resolve(source: Document, options: ResolveOptions = {}): Resolve
     };
 
     const scenes: Scene[] = sources.map((src) => {
+      const article = src.cmd ? (articleOf.get(src.cmd.id) ?? 0) : 0;
+      use(articleNs[article] ?? "");
       const parentName = src.cmd ? ident(elementAttrs(src.cmd, bp, "scene", deref).get("parent")) || null : null;
       if (parentName && !defs.has("parent", parentName)) throw new Error(`unknown parent ${parentName} (line ${src.cmd!.source.line})`);
       const a: Attrs = new Map([
@@ -744,10 +833,12 @@ export function resolve(source: Document, options: ResolveOptions = {}): Resolve
         turn,
         bg: colorOf(a.get("bg")) ?? { role: "paper" },
         linearized,
-        folio: enumId(a.get("folio")) === "hide" ? null : folioFor(parentName, bp),
+        folio: enumId(a.get("folio")) === "hide" ? null : folioFor(parentName, bp, article),
         children: children.map((c) => ({ kind: frames[c.id] ? ("frame" as const) : ("object" as const), id: c.id })),
+        ...(ns === "" ? {} : { body: scoped(ns, "body") }),
       };
     });
+    use("");
 
     // Anchored objects, where their story put them (§11.3). one whose cols do not
     // fit a breakpoint's grid linearizes alone, since its scene is known only to layout.
@@ -755,6 +846,7 @@ export function resolve(source: Document, options: ResolveOptions = {}): Resolve
     const lastColOf = (sid: string): number =>
       Math.min(...Object.values(frames).filter((f) => f.story === sid).map((f) => scenes.find((s) => s.id === f.scene)!.grid.cols), ...(Object.values(frames).some((f) => f.story === sid) ? [] : scenes.map((s) => s.grid.cols)));
     for (const { cmd, story: sid, block } of anchored) {
+      use(storyNs.get(sid) ?? "");
       const narrowest = lastColOf(sid);
       const id = ids.of(cmd);
       const oa: Attrs = new Map([...schemaDefaults(cmd.name), ...elementAttrs(cmd, bp, cmd.name, deref)]);
@@ -767,6 +859,7 @@ export function resolve(source: Document, options: ResolveOptions = {}): Resolve
       }
       objects[id] = o;
     }
+    use("");
 
     // Threads (§09.3): visible frames per story, scene order then source order, into groups depth first.
     const threads: Record<string, string[]> = {};
@@ -782,18 +875,21 @@ export function resolve(source: Document, options: ResolveOptions = {}): Resolve
       if (!threads[name]) throw new Error(`story "${name}" has no visible frame on ${bp} (spec §09.3)`);
     }
 
-    const styleAt = (k: string): ResolvedStyle => design.styleKey(k, bp);
+    const styleAt = (k: string): ResolvedStyle => styleIn(k, bp);
     const variantStories = [...stories.values()].map((s) => storyAt(s, bp));
     const storyTable = Object.fromEntries(variantStories.map((s) => [s.id, withIndents(s, styleAt)]));
-    return { name: bp, styles: styleTable(variantStories, styleAt), stories: storyTable, scenes, frames, objects, threads, spots: design.spots(bp) };
+    const styles = styleTable(variantStories, styleAt);
+    for (const sc of scenes) if (sc.body && !(sc.body in styles)) styles[sc.body] = styleAt(sc.body);
+    // ponytail: spots are the document theme's; an article theme's \spot rows are not used yet.
+    return { name: bp, styles, stories: storyTable, scenes, frames, objects, threads, spots: spaces.get("")!.design.spots(bp) };
   };
 
-  /** The folio over a scene: its parent's if the parent declares one, else the document's (§10.5). */
-  const folioFor = (parentName: string | null, bp: string): Folio | null => {
+  /** The folio over a scene: its parent's if the parent declares one, else its article's (§10.5, §07.8). */
+  const folioFor = (parentName: string | null, bp: string, article: number): Folio | null => {
     const fromParent = parentName ? defs.body("parent", parentName, bp).find((n): n is Command => n.kind === "command" && n.name === "folio") : undefined;
-    const cmd = fromParent ?? ast.folio;
+    const cmd = fromParent ?? (ast.articles.length ? ast.articles[article]!.folio : ast.folio);
     if (!cmd) return null;
-    const id = fromParent ? `${parentName}#folio` : "folio#text";
+    const id = fromParent ? `${scoped(ns, parentName!)}#folio` : article === 0 ? "folio#text" : `folio-${article + 1}#text`;
     const a = new Map([...schemaDefaults("folio"), ...elementAttrs(cmd, bp, "folio", deref)]);
     // §10.5: its text in its own style, `folio` unless it names one.
     story(id, "folio", null, [{ kind: "paragraph", id: cmd.id, runs: cmd.body as never, source: cmd.source }], null, ident(a.get("style")) || "folio", bp);
@@ -844,7 +940,7 @@ export function resolve(source: Document, options: ResolveOptions = {}): Resolve
 
   // §07.1: a font that fails to load falls back to the style's next family, with an asset warning.
   if (options.assets)
-    for (const c of defs.all("font")) {
+    for (const c of uniqueFonts([...spaces.values()].map((x) => x.defs))) {
       const src = c.attrs.find((a) => a.key === "src")?.value;
       if (src?.t === "path" && !options.assets.file(src.s))
         warn("W050", `Missing font file ${src.s}: text falls back to the style's next family`, c, null, "Add the file.", "asset-warning");
@@ -867,7 +963,7 @@ export function resolve(source: Document, options: ResolveOptions = {}): Resolve
     version: 1,
     meta: meta(ast.frontmatter, lang, socialImage),
     breakpoints: design.breakpoints(),
-    fonts: fonts(defs, (src) => options.assets?.file(src)?.url ?? src, new Set(built.flatMap(([, v]) => Object.values(v.styles).flatMap((st) => st.family.map((f) => f.toLowerCase()))))),
+    fonts: fonts([...spaces.values()].map((x) => x.defs), (src) => options.assets?.file(src)?.url ?? src, new Set(built.flatMap(([, v]) => Object.values(v.styles).flatMap((st) => st.family.map((f) => f.toLowerCase()))))),
     strings,
     assets,
     variants: Object.fromEntries(built) as Variants,
@@ -910,10 +1006,10 @@ function meta(fm: Document["frontmatter"], lang: string, socialImage: string | n
  * Only faces of a family some style uses (`used`, lower case) are kept (2026-11-06), so a page does not download fonts it never shows,
  * such as the built-in theme's when a theme file sets other families.
  */
-function fonts(defs: Definitions, url: (src: string) => string, used: ReadonlySet<string>): ResolvedDocument["fonts"] {
+function fonts(defs: Definitions[], url: (src: string) => string, used: ReadonlySet<string>): ResolvedDocument["fonts"] {
   const out: ResolvedDocument["fonts"] = [];
   // \font has no name; every definition registers a face.
-  for (const c of defs.all("font")) {
+  for (const c of uniqueFonts(defs)) {
     const a = new Map([...schemaDefaults("font"), ...c.attrs.map((x) => [x.key, x.value] as const)]);
     const family = (a.get("family") as { s: string }).s;
     if (!used.has(family.toLowerCase())) continue; // CSS family names ignore case
@@ -926,6 +1022,11 @@ function fonts(defs: Definitions, url: (src: string) => string, used: ReadonlySe
     });
   }
   return out;
+}
+
+/** Every theme's `\font` definitions, each command once (the built-in theme and the document are in every namespace). */
+function uniqueFonts(defs: Definitions[]): Command[] {
+  return [...new Set(defs.flatMap((d) => d.all("font")))];
 }
 
 /** Style keys in order of first reference, each flattened. */

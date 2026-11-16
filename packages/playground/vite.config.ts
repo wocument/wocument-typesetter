@@ -13,7 +13,7 @@ import { defineConfig, type Plugin } from "vite";
 import { createAssetHost } from "@wocument/assets";
 import { format, parse, type Document, type Theme } from "@wocument/parser";
 import type { ResolvedDocument } from "@wocument/resolved-document";
-import { resolve } from "@wocument/resolver";
+import { articleThemes, resolve } from "@wocument/resolver";
 import { renderStatic } from "@wocument/renderer";
 
 const publicDir = fileURLToPath(new URL("./public", import.meta.url));
@@ -49,14 +49,14 @@ function compile(source: string, dir: string): Compiled {
   const doc = parsed.ast as Document;
   const formatted = format(doc);
   try {
-    let theme: Theme | null = null;
-    const path = doc.frontmatter.theme;
-    if (path !== undefined) {
+    const loadTheme = (path: string): Theme => {
       const t = parse(readFileSync(path.startsWith("/") ? join(publicDir, path) : join(dir, path)), { kind: "theme", file: path });
       if (!t.ok) throw new Error(`theme ${path}: ${t.diagnostics.map((d) => `${d.code} ${d.message}`).join("; ")}`);
-      theme = t.ast as Theme;
-    }
-    const r = resolve(doc, { file: "editor.woc", theme, assets: createAssetHost({ publicDir, sourceDir: dir }) });
+      return t.ast as Theme;
+    };
+    const theme = doc.frontmatter.theme !== undefined ? loadTheme(doc.frontmatter.theme) : null;
+    const themes = Object.fromEntries(articleThemes(doc).map((p) => [p, loadTheme(p)]));
+    const r = resolve(doc, { file: "editor.woc", theme, themes, assets: createAssetHost({ publicDir, sourceDir: dir }) });
     for (const d of r.diagnostics) {
       problems.push({ severity: "warning", code: d.code, message: d.fix ? `${d.message} ${d.fix}` : d.message, line: d.line, column: d.column });
     }

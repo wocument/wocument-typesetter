@@ -2,6 +2,14 @@
 
 exports[`fixtures > forty-questions.woc has a snapshot-stable AST 1`] = `
 {
+  "articles": [
+    {
+      "folio": null,
+      "marker": null,
+      "scenes": 3,
+      "stories": 1,
+    },
+  ],
   "definitions": [
     {
       "attrs": [
@@ -2392,6 +2400,7 @@ exports[`fixtures > forty-questions.woc has a snapshot-stable AST 1`] = `
 
 exports[`fixtures > minimum.woc has a snapshot-stable AST 1`] = `
 {
+  "articles": [],
   "definitions": [],
   "folio": null,
   "form": "implicit",
@@ -2456,6 +2465,59 @@ exports[`fixtures > minimum.woc has a snapshot-stable AST 1`] = `
 
 exports[`fixtures > stone-and-strategy.woc has a snapshot-stable AST 1`] = `
 {
+  "articles": [
+    {
+      "folio": {
+        "attrs": [
+          {
+            "at": null,
+            "key": "position",
+            "source": {
+              "column": 8,
+              "length": 17,
+              "line": 25,
+            },
+            "value": {
+              "id": "top-left",
+              "raw": "top-left",
+              "t": "enum",
+            },
+          },
+          {
+            "at": null,
+            "key": "progress",
+            "source": {
+              "column": 27,
+              "length": 8,
+              "line": 25,
+            },
+            "value": {
+              "b": true,
+              "raw": "",
+              "t": "boolean",
+            },
+          },
+        ],
+        "body": [
+          {
+            "type": "text",
+            "value": "Architecture Today · Heritage",
+          },
+        ],
+        "id": 12,
+        "kind": "command",
+        "name": "folio",
+        "source": {
+          "column": 1,
+          "length": 66,
+          "line": 25,
+        },
+      },
+      "marker": null,
+      "scenes": 4,
+      "stories": 1,
+    },
+  ],
   "definitions": [
     {
       "attrs": [
@@ -5361,6 +5423,59 @@ exports[`fixtures > stone-and-strategy.woc has a snapshot-stable AST 1`] = `
 
 exports[`fixtures > the-last-signalman.woc has a snapshot-stable AST 1`] = `
 {
+  "articles": [
+    {
+      "folio": {
+        "attrs": [
+          {
+            "at": null,
+            "key": "position",
+            "source": {
+              "column": 8,
+              "length": 17,
+              "line": 33,
+            },
+            "value": {
+              "id": "top-left",
+              "raw": "top-left",
+              "t": "enum",
+            },
+          },
+          {
+            "at": null,
+            "key": "progress",
+            "source": {
+              "column": 27,
+              "length": 8,
+              "line": 33,
+            },
+            "value": {
+              "b": true,
+              "raw": "",
+              "t": "boolean",
+            },
+          },
+        ],
+        "body": [
+          {
+            "type": "text",
+            "value": "The Last Signalman",
+          },
+        ],
+        "id": 14,
+        "kind": "command",
+        "name": "folio",
+        "source": {
+          "column": 1,
+          "length": 55,
+          "line": 33,
+        },
+      },
+      "marker": null,
+      "scenes": 6,
+      "stories": 1,
+    },
+  ],
   "definitions": [
     {
       "attrs": [
@@ -8923,6 +9038,59 @@ exports[`fixtures > the-last-signalman.woc has a snapshot-stable AST 1`] = `
 
 exports[`fixtures > white-desert.woc has a snapshot-stable AST 1`] = `
 {
+  "articles": [
+    {
+      "folio": {
+        "attrs": [
+          {
+            "at": null,
+            "key": "position",
+            "source": {
+              "column": 8,
+              "length": 21,
+              "line": 23,
+            },
+            "value": {
+              "id": "bottom-right",
+              "raw": "bottom-right",
+              "t": "enum",
+            },
+          },
+          {
+            "at": null,
+            "key": "progress",
+            "source": {
+              "column": 31,
+              "length": 8,
+              "line": 23,
+            },
+            "value": {
+              "b": true,
+              "raw": "",
+              "t": "boolean",
+            },
+          },
+        ],
+        "body": [
+          {
+            "type": "text",
+            "value": "White Desert",
+          },
+        ],
+        "id": 10,
+        "kind": "command",
+        "name": "folio",
+        "source": {
+          "column": 1,
+          "length": 53,
+          "line": 23,
+        },
+      },
+      "marker": null,
+      "scenes": 7,
+      "stories": 0,
+    },
+  ],
   "definitions": [
     {
       "attrs": [

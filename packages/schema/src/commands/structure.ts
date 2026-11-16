@@ -124,7 +124,25 @@ export const FRAME: CommandSchema = {
   spec: "§09.2",
 };
 
-export const STRUCTURE_COMMANDS: readonly CommandSchema[] = [SCENE, PARENT, STORY, FRAME];
+/**
+ * An article (2026-11-15): a marker at the document's top level. The stories, scenes and folio after it,
+ * to the next \article, are one article, set in its own theme (§07.8). Without `theme`, the document's.
+ */
+export const ARTICLE: CommandSchema = {
+  name: "article",
+  class: "block",
+  arity: "none",
+  kind: null,
+  children: [],
+  maxOnce: [],
+  attrs: {
+    theme: { types: ["path"], responsive: false, note: "a .woct file; without it, the document's theme" },
+  },
+  rules: [],
+  spec: "§07.8",
+};
+
+export const STRUCTURE_COMMANDS: readonly CommandSchema[] = [SCENE, PARENT, STORY, FRAME, ARTICLE];
 
 /** Re-exported for phase C, which needs to know what may sit at the root. */
 export const ROOT_CONTENT: readonly string[] = [...TEXT_EL, ...MARKER, ...OBJECT];
