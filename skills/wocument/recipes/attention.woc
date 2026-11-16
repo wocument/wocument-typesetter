@@ -35,18 +35,6 @@ The model compares each query with every key. A high match means the two words a
 
 None of these comparisons depends on another. They can all be done in a single large multiplication of matrices, which is exactly the kind of work a graphics chip does best. That one property, more than any gain in accuracy, explains the speed with which the idea spread.
 
-\sidebar[bg=$panel, inset=1bl]{
-\title{Key terms}
-
-**Token.** A piece of text the model reads: a word, or part of a rare one.
-
-**Query, key, value.** Three lists of numbers made from each token: what it looks for, what it offers, and what it passes on.
-
-**Attention head.** One set of queries, keys and values. A layer runs several side by side.
-
-**Layer.** Attention followed by a small network for each token. Models stack dozens.
-}
-
 \subhead{Eight heads are better than one}
 
 A single set of queries, keys and values captures one kind of relation between words. Language has many at once: grammar, reference, meaning, position. So the authors split the work across eight attention heads, each with its own small set of queries, keys and values, and joined their results. When researchers later looked inside trained models, they found heads that had specialised without being told to. One tracked which noun a pronoun pointed to; another linked verbs with their objects; another simply attended to the next word.
