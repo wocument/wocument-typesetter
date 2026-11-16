@@ -36,10 +36,11 @@ const one = (pd: PositionedDocument, reason: string): Decision => {
   return d!;
 };
 /** Every (screen, frame, column) of a scene's frame text that holds lines. */
+/** A line's screen is its page's (§09.7): a scene can start part way down a screen (2026-11-15). */
 function columnsWithLines(rd: ResolvedDocument, pd: PositionedDocument): string[] {
   const v = rd.variants[pd.breakpoint]!;
   return pd.scenes.flatMap((s) => [
-    ...new Set(s.lines.filter((l) => v.frames[l.frame]).map((l) => `${s.paged ? Math.floor((l.y + 1e-6) / pd.viewport.height) + 1 : null}|${l.frame}|${l.column}`)),
+    ...new Set(s.lines.filter((l) => v.frames[l.frame]).map((l) => `${s.paged ? Math.ceil((s.y + Math.floor((l.y - s.y + 1e-6) / pd.viewport.height) * pd.viewport.height) / pd.viewport.height - 1e-6) + 1 : null}|${l.frame}|${l.column}`)),
   ]);
 }
 const keyOf = (d: Decision): string => `${d.screen}|${d.frame}|${d.column}`;
@@ -411,7 +412,7 @@ describe("column-end at", () => {
 // Minimal stories for the codes that need a setting just so (lengths found by a search at 1280x800, fixed engine).
 // A long tail follows the first three, so their page is a full band: the last band is balanced by lines.
 /** A subhead whose paragraph has no room under it at column 1's foot. */
-const KEEP = page(`${para(15, "a")}\n\n\\subhead{The keepers}\n\n${para(20, "b")}\n\n${para(300, "z")}`);
+const KEEP = page(`${para(15, "a")} ${"Stone keeps. ".repeat(2)}\n\n\\subhead{The keepers}\n\n${para(20, "b")}\n\n${para(300, "z")}`);
 /** A paragraph whose first line alone would end column 1. */
 const ORPHANS = page(`${para(17, "a")}\n\n${para(20, "b")}\n\n${para(300, "z")}`);
 /** A paragraph whose last line alone would start column 3. */

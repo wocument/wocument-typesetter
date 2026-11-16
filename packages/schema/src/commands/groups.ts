@@ -53,7 +53,7 @@ export const ROW_SIZING: Attrs = {
  * Only the objects that can float take these.
  */
 export const FLOAT: Attrs = {
-  size: { types: ["enum"], enum: ["hero", "wide", "column", "small", "auto"], default: "auto", note: "how big the object is on a wide page; auto: the engine chooses" },
+  size: { types: ["enum", "length"], enum: ["hero", "wide", "column", "small", "auto"], default: "auto", note: "how big the object is on a wide page; auto: the engine chooses; <n>em: its width on a two-page print spread, in ems of the body text, scaled to the screen" },
   place: { types: ["enum"], enum: ["float", "here", "top", "bottom", "screen"], default: "float", note: "float: the best spot near the text; here: where it stands in the text" },
 };
 

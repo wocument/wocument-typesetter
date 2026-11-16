@@ -285,6 +285,7 @@ Child sets used below:
 | `parent` | optional | scene | as `scene` | §08.4 |
 | `folio` | required | inline | | §10.5 |
 | `story` | required | block | STORY-CONTENT | §09.1 |
+| `article` | none | | | §07.8 |
 | `scene` | required | scene | `frame group rule` + OBJECT, or STORY-CONTENT in shorthand form | §08.1 |
 | `frame` | optional | block | STORY-CONTENT | §09.2 |
 | `group` | required | struct | `frame rule` + OBJECT | §11.11 |
@@ -342,17 +343,18 @@ The root content is shaped as a `block` body, then:
 ```
 document   ::= definition* doc-item*                    /* explicit form  */
              | definition* ( story-content | folio )*   /* implicit form  */
-doc-item   ::= story | scene | folio
+doc-item   ::= story | scene | folio | article
 definition ::= font | token | palette | breakpoint | grid | style | parent
 theme      ::= definition*
 ```
 
 1. **Form.** If the root contains at least one `\scene`, the document is explicit. Otherwise it is implicit.
 2. **Explicit form**: a root paragraph, TEXT-EL, MARKER or OBJECT is `P041`. `\frame` or `\group` at the root is `P020`.
-3. **Implicit form**: `\story`, `\frame`, `\group` at the root are `P020` (hint: "add a `\scene`"). Everything that is not a definition or `\folio` becomes `implicitContent`.
+3. **Implicit form**: `\story`, `\frame`, `\group`, `\article` at the root are `P020` (hint: "add a `\scene`"). Everything that is not a definition or `\folio` becomes `implicitContent`.
 4. A definition after the first non-definition node: `P040`.
-5. More than one `\folio` at document level: `P043`. A `\parent` may hold one more of its own (§06 notes).
+5. More than one `\folio` in one article (rule 7): `P043`. A `\parent` may hold one more of its own (§06 notes).
 6. Theme files: any non-definition node, or any paragraph: `P045`.
+7. **Articles** (2026-11-15). In the explicit form, an `\article` at the root starts an article: the stories, scenes and folio after it, up to the next `\article`, are that article's. Content before the first `\article` is an article with no marker. Each article is listed in `articles` with how many stories and scenes it holds: they are the next ones in `stories` and `scenes`.
 
 Name resolution (does grid `feature` exist, does story `main` have frames, do breakpoints overlap) is **not** the parser's job. That is the resolve stage.
 
@@ -367,13 +369,16 @@ type Document = {
   version: 1
   frontmatter: Frontmatter
   definitions: Command[]
-  folio: Command | null                 // added
+  folio: Command | null                 // added; the first article's
   form: "explicit" | "implicit"         // added
+  articles: Article[]                   // explicit form, added 2026-11-15 (§07 rule 7)
   stories: Command[]                    // explicit form
   scenes: Command[]                     // explicit form
   implicitContent: Node[]               // implicit form, added
   trivia: Trivia[]                      // added
 }
+
+type Article = { marker: Command | null; folio: Command | null; stories: number; scenes: number }   // how many of `stories` and `scenes`, in order
 
 type Node = Command | Paragraph
 
@@ -572,4 +577,5 @@ Minimum vectors. `→` is the expected result. `¶` is a paragraph node.
 | 41 | `\figure[src=/a.png, alt="", focus="40px 20px"]` | `P015`: `focus` is a pair of percentages. |
 | 42 | `\story[name=s]{Text %% c\n}` and a body ending in a whole-line comment | Trailing trivia attaches to the story's id with placement `end-of-body`; no `attachTo` points at a missing node. |
 | 43 | `\parent[name=p]{\frame{x} \folio{A}}` | No diagnostics; the parent stays `explicit`. A second `\folio` in the parent is `P020`; `\folio` in a `\scene` is `P020`. |
+| 44 | A `\scene`, then `\article[theme=./b.woct]`, `\folio{B}`, a `\story` and a `\scene` | Two articles: the first with no marker and one scene, the second with the marker, its folio, one story and one scene. A second `\folio` after the marker is `P043`. |
 | 37 | Any valid file | `format(format(x)) == format(x)` and `parse(format(parse(x)))` equals `parse(x)` ignoring positions. |

@@ -35,7 +35,8 @@ export function format(ast: Document | Theme): string {
 
 function rootNodes(ast: Document | Theme): Node[] {
   if (!("version" in ast)) return ast.definitions;
-  const all: Node[] = [...ast.definitions, ...(ast.folio ? [ast.folio] : []), ...ast.stories, ...ast.scenes, ...ast.implicitContent];
+  const chrome = ast.articles.length ? ast.articles.flatMap((a) => [a.marker, a.folio]) : [ast.folio];
+  const all: Node[] = [...ast.definitions, ...chrome.filter((c): c is Command => c !== null), ...ast.stories, ...ast.scenes, ...ast.implicitContent];
   // Ids are handed out in document order, so they restore the interleaving phase C split apart.
   return all.sort((a, b) => a.id - b.id);
 }

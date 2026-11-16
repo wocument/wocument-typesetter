@@ -60,8 +60,15 @@ export type Document = {
   version: 1;
   frontmatter: Frontmatter;
   definitions: Command[];
+  /** The first article's folio. */
   folio: Command | null;
   form: "explicit" | "implicit";
+  /**
+   * Explicit form: the articles (spec §07.8), in source order. Each runs from one `\article` marker to the
+   * next; content before the first marker is an article with no marker. An article's stories and scenes
+   * are the next `stories` and `scenes` of those lists, in order.
+   */
+  articles: Article[];
   /** Explicit form. */
   stories: Command[];
   /** Explicit form. */
@@ -70,6 +77,9 @@ export type Document = {
   implicitContent: Node[];
   trivia: Trivia[];
 };
+
+/** An article: its marker (null for content before the first), its folio, and how many stories and scenes it holds. */
+export type Article = { marker: Command | null; folio: Command | null; stories: number; scenes: number };
 
 export type Theme = {
   definitions: Command[];

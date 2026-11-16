@@ -48,15 +48,18 @@ export function readability(variants: readonly (readonly [string, Variant])[]): 
     found.set(code + detail, f);
   };
   for (const [bp, v] of variants) {
-    const body = v.styles["body"];
-    const baseline = v.scenes[0]?.grid.baseline ?? 28;
-    if (body) {
-      const size = px(body.size, baseline);
-      const leading = px(body.leading, baseline, size ?? 16);
-      if (size !== null && size < 16) add("W060", `Body text is ${round(size)}px; under 16px is hard to read on screen.`, "Set the body style's size to 16px or more.", bp);
-      if (size !== null && leading !== null && leading < 1.4 * size)
-        add("W061", `Body leading is ${round(leading / size, 2)} times the text size; under 1.4 makes lines hard to follow.`, "Set leading to 1.4 to 1.65 times the size (on the grid: a baseline step that large).", bp);
-      if (body.weight < 350) add("W063", `Body weight is ${body.weight}; under 350 is faint at reading sizes.`, "Use a regular (400) or medium (500) weight for running text.", bp);
+    // §07.8: each theme's body style, the document's and every article's.
+    for (const key of new Set(["body", ...v.scenes.map((sc) => sc.body ?? "body")])) {
+      const body = v.styles[key];
+      const baseline = (v.scenes.find((sc) => (sc.body ?? "body") === key) ?? v.scenes[0])?.grid.baseline ?? 28;
+      if (body) {
+        const size = px(body.size, baseline);
+        const leading = px(body.leading, baseline, size ?? 16);
+        if (size !== null && size < 16) add("W060", `Body text is ${round(size)}px; under 16px is hard to read on screen.`, "Set the body style's size to 16px or more.", bp);
+        if (size !== null && leading !== null && leading < 1.4 * size)
+          add("W061", `Body leading is ${round(leading / size, 2)} times the text size; under 1.4 makes lines hard to follow.`, "Set leading to 1.4 to 1.65 times the size (on the grid: a baseline step that large).", bp);
+        if (body.weight < 350) add("W063", `Body weight is ${body.weight}; under 350 is faint at reading sizes.`, "Use a regular (400) or medium (500) weight for running text.", bp);
+      }
     }
     // Every palette a scene uses: its text roles against its paper.
     for (const scene of v.scenes) {

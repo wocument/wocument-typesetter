@@ -17,7 +17,7 @@ import { pathToFileURL } from "node:url";
 import { parseArgs } from "node:util";
 import { createAssetHost } from "@wocument/assets";
 import { format, parse, type Diagnostic, type Document, type ParseResult, type Theme } from "@wocument/parser";
-import { resolve, type AssetHost, type ResolveResult } from "@wocument/resolver";
+import { articleThemes, resolve, type AssetHost, type ResolveResult } from "@wocument/resolver";
 import { buildSite } from "./build.js";
 import { copyfit, lineLengths, tooShortOrLong } from "./measure.js";
 
@@ -161,21 +161,30 @@ function resolveFile(file: string, opts: Options, host?: AssetHost, quiet = fals
   const doc = parsed.ast as Document;
   const sourceDir = dirname(file);
 
-  let theme: Theme | null = null;
-  if (doc.frontmatter.theme !== undefined) {
-    const path = doc.frontmatter.theme;
+  /** A theme file (spec §07.8), or null when it is missing or does not parse. */
+  const loadTheme = (path: string): Theme | null => {
     const themeFile = path.startsWith("/") ? join(opts.public, path) : resolvePath(sourceDir, path);
     if (!existsSync(themeFile)) {
       if (!quiet) console.error(`woc: cannot read the theme ${path} (${themeFile}): no such file`);
       return null;
     }
     const t = parseFile(themeFile, quiet);
-    if (!t.ok) return null;
-    theme = t.ast as Theme;
+    return t.ok ? (t.ast as Theme) : null;
+  };
+  let theme: Theme | null = null;
+  if (doc.frontmatter.theme !== undefined) {
+    theme = loadTheme(doc.frontmatter.theme);
+    if (!theme) return null;
+  }
+  const themes: Record<string, Theme> = {};
+  for (const path of articleThemes(doc)) {
+    const t = loadTheme(path);
+    if (!t) return null;
+    themes[path] = t;
   }
 
   try {
-    const r = resolve(doc, { file, theme, assets: host ?? createAssetHost({ publicDir: opts.public, sourceDir }) });
+    const r = resolve(doc, { file, theme, themes, assets: host ?? createAssetHost({ publicDir: opts.public, sourceDir }) });
     if (!quiet)
       for (const d of r.diagnostics) {
         console.error(`woc: ${d.category.replace("-", " ")} [${d.code}] at ${d.file}:${d.line}:${d.column}`);

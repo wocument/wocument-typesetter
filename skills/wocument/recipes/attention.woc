@@ -1,0 +1,131 @@
+---
+wocument: 1
+title: Attention Is All You Need
+lang: en-GB
+theme: ./centred.woct
+description: "A long feature in the centred theme, its benchmark: three screens of three columns on a wide screen."
+---
+%% RECIPE: a long feature in the centred theme (centred.woct). A centred header (label, rules,
+%% headline, deck, byline), a cut-out illustration in the middle of the page with no text
+%% around it, and the text in three justified columns with a drop cap and crossheads.
+%% Smaller cut-outs sit in the text, and the text follows their outline.
+
+\story[name=attention]{
+\dropcap[lines=4]
+
+In June 2017 eight researchers posted a fifteen-page paper with a title that sounded more like a song lyric than a contribution to machine translation. Its claim was narrow and technical: a translation system could do without the recurrent machinery that every serious system of the day relied on, and keep only a mechanism called attention. Within five years almost every large language model, image model and protein model in use was built on the architecture that paper described. Few scientific papers change a field. This one changed the tools of several.
+
+To see why, it helps to remember what translation software looked like before it. A sentence was read one word at a time, from left to right, by a recurrent network that carried a running summary of everything it had seen so far. The summary was a list of a few hundred numbers. By the end of a long sentence it had to hold the subject, the tense, the object and every qualifying clause, and it was always at risk of forgetting the beginning by the time it reached the end.
+
+\subhead{The bottleneck}
+
+Researchers had known about the problem for years and had built a partial fix. In 2014 a group in Montreal let the decoder, the half of the network that writes the translation, look back at every word of the source sentence instead of relying only on the summary. At each step it gave each source word a weight, a score for how relevant that word was to the word it was about to write, and took a weighted average. They called the weighting attention, and it worked: translations of long sentences improved sharply.
+
+But attention was an addition, not the engine. The recurrent network was still there, still reading one word after another. That made it slow to train. A computer chip built for graphics can do thousands of multiplications at the same moment, and a recurrent network wastes most of that power, because step ten cannot start until step nine has finished. The longer the sentence, the longer the wait.
+
+The question the 2017 paper asked was simple to state. If attention was doing the useful work, what would happen if everything else was removed?
+
+\figure[src=./pictures/cutout-lightbulb.png, alt="A drawn light bulb", size=small, shape=alpha, wrap=contour]
+
+\subhead{Every word looks at every other word}
+
+The answer was an architecture the authors called the Transformer. In place of a network that reads left to right, each layer of the Transformer lets every word in a sentence look at every other word at once. For each word, the model computes three vectors. One is a query: what this word is looking for. One is a key: what this word offers to others. The third is a value: the information it passes on if it is chosen.
+
+The model compares each query with every key. A high match means the two words are relevant to each other, and the value of the matching word flows strongly into the new version of the querying word. In the sentence about an animal that did not cross the street because it was too tired, a good model learns that “it” should draw most of its meaning from “animal”, not from “street”. Change “tired” to “wide” and the attention should move to the street.
+
+None of these comparisons depends on another. They can all be done in a single large multiplication of matrices, which is exactly the kind of work a graphics chip does best. That one property, more than any gain in accuracy, explains the speed with which the idea spread.
+
+\subhead{Eight heads are better than one}
+
+A single set of queries, keys and values captures one kind of relation between words. Language has many at once: grammar, reference, meaning, position. So the authors split the work across eight attention heads, each with its own small set of queries, keys and values, and joined their results. When researchers later looked inside trained models, they found heads that had specialised without being told to. One tracked which noun a pronoun pointed to; another linked verbs with their objects; another simply attended to the next word.
+
+There was one more trick. When the dot products of queries and keys grow large, the weighting function saturates and learning slows almost to a stop. The fix was to divide every score by the square root of the vectors' length before taking the weights. It is a single line of arithmetic, and it is one of the reasons the paper's design trained reliably where others had not.
+
+\pullquote{Step ten no longer has to wait for step nine. Every word is read at the same moment.}
+
+\subhead{Where is each word?}
+
+Removing the recurrence removed something useful with it: a sense of order. A network that reads every word at the same moment cannot tell “the dog bit the man” from “the man bit the dog”. The authors put order back by adding to each word a pattern of waves, sines and cosines of different frequencies, that is unique to its position. Nearby positions get similar patterns, distant ones different patterns, and the model learns to read the difference.
+
+It was an elegant solution, and like many elegant solutions it was later replaced. Most current models learn their position information or rotate their queries and keys according to position. But the principle stayed: order is something the model is told, not something it has to discover from the way it reads.
+
+\subhead{The rest of the machine}
+
+Around the attention layers sits a small amount of ordinary machinery. After attention, each word passes on its own through a small feed-forward network, two layers wide, which is where much of what the model knows is thought to be stored. Each block keeps a copy of its input and adds it back to its output, so that information and the training signal can pass through dozens of layers without fading. A normalisation step keeps the numbers in a steady range.
+
+The original model stacked six of these blocks to read the source sentence and six more to write the translation. The writing half has one extra layer of attention that looks across at the source, much as the Montreal system had done, and it is masked so that a word can only see the words before it. Without the mask the model would learn to copy the answer instead of predicting it.
+
+\figure[src=./pictures/cutout-magnifier.png, alt="A drawn magnifying glass", size=small, shape=alpha, wrap=contour]
+
+\subhead{The results}
+
+The paper tested the model on the standard translation benchmarks of the day, English to German and English to French, built from news articles. On English to German its larger version scored 28.4 on the usual measure of overlap with human translations, more than two points above the best previous result, including ensembles of several models. On English to French it set a new record for a single model at 41.8.
+
+The scores mattered less than the cost. The large model trained in three and a half days on eight graphics processors; the small one, which already beat most earlier systems, in about twelve hours. Competing systems had taken weeks on more hardware. The authors also showed that the same design could parse the grammar of English sentences with little change, a first hint that it was not a translation system so much as a general way of processing sequences.
+
+\subhead{From translation to everything}
+
+The next year two teams took the two halves of the design in different directions. One kept only the reading half, trained it to fill in words that had been hidden in a sentence, and released a model that improved nearly every benchmark of language understanding at once. The other kept only the writing half and trained it to predict the next word of ordinary text from the web. The first line of work led to better search and classification. The second led, through several larger versions, to the chat assistants that millions of people now use every day.
+
+What both found was that the architecture scaled. Make a Transformer larger and give it more text and more computation, and it becomes better at a predictable rate. Earlier designs had stopped improving long before that. A recurrent network with ten times the parameters was not much better and took ten times longer to train; a Transformer with ten times the parameters was clearly better, and the extra work could be spread across many chips.
+
+The design also proved indifferent to what the sequence contained. Cut an image into small squares and treat each one as a word, and a Transformer classifies images as well as the networks that had been designed for vision over a decade. Treat amino acids as words and it predicts how proteins fold. Treat notes, actions in a game or lines of code as words and the same blocks, almost unchanged, do useful work.
+
+\pullquote{It was not a translation system so much as a general way of reading sequences.}
+
+\subhead{The cost of looking everywhere}
+
+The idea has a well-known weakness. Because every word compares itself with every other word, the work grows with the square of the text's length. Double the length of a document and attention needs four times the computation and memory. For a sentence that hardly matters. For a book, a long conversation or an hour of audio it becomes the main limit on what a model can read at once.
+
+Much of the research since 2017 has been about this one problem. Some methods let each word attend only to its neighbours and to a few chosen words further away. Others approximate the full comparison with something cheaper. The most widely used improvement changed none of the mathematics at all: it reorganised the computation so that the chip moves data between its fast and slow memory far less often, which made exact attention several times faster and let models read hundreds of thousands of words.
+
+At the same time, other researchers have revisited the recurrent designs the paper left behind, building networks that read in order but can still be trained in parallel. Several now match Transformers of the same size on some tasks. Whether they replace attention or end up working beside it is one of the open questions of the field.
+
+\figure[src=./pictures/cutout-pen.png, alt="A drawn fountain pen", size=small, shape=alpha, wrap=contour]
+
+\subhead{Reading a sentence, step by step}
+
+It is worth following one sentence through a trained model, because the description in the paper is compact enough to hide how much happens. First the text is cut into pieces, usually whole words for common words and fragments for rare ones. Each piece is looked up in a table and becomes a list of numbers, and the position signal is added to it. At this point every piece knows only what it is and where it stands.
+
+Then the first layer of attention runs. Every piece sends out its query and compares it with the keys of all the others, and each piece comes out of the layer as a mixture of itself and the pieces it found most relevant. A pronoun has taken in something of its noun; an adjective has taken in something of the thing it describes. The feed-forward step then works on each mixed piece alone, and the result goes to the next layer, where the same process starts again on richer material.
+
+By the last layer each piece carries information gathered from across the whole text, filtered dozens of times. A model that writes takes the final version of the last piece and turns it into a score for every word it knows, picks one, adds it to the end of the text and runs the whole process again. A long answer is thousands of these steps, one word at a time: the writing half of the design still produces its output in order, even though it reads its input all at once.
+
+\subhead{Attention outside the laboratory}
+
+For most people the result is invisible. They meet it as a search box that understands a question instead of matching its words, a phone that transcribes speech in a noisy room, a translation of a menu that reads like a menu, or an assistant that drafts an email. Each of these systems is built from the blocks the paper described, trained on far more data and with far more computation than its authors could have used.
+
+The same mechanism has made its way into fields that have nothing to do with language. Weather services now test models that read the state of the atmosphere as a sequence of patches and predict its next state faster than the physical simulations they were trained on. Chemists use them to propose molecules; biologists to read the genome; engineers to complete code. In each case the trick is the same one: describe the problem as a sequence of pieces, and let every piece decide which others matter.
+
+The success has a cost that the paper could not have foreseen. Training the largest models now uses as much electricity as a small town does in a year, and the chips they run on are among the most sought-after products in the world. A design chosen in part because it trained in days rather than weeks has become the reason companies build data centres the size of factories.
+
+\subhead{A paper written for a deadline}
+
+The paper itself was written quickly, for a conference deadline, by a group that spanned two research teams at one company and an intern from a university. Its authors are listed in random order, with a note that all contributed equally, and a footnote sets out who did what: who proposed replacing recurrence with self-attention, who designed the scaled and multi-head forms, who wrote and tuned the code that made the experiments possible. It is an unusually honest record of how a research result is actually made, by many hands, over many failed runs.
+
+Within a few years every one of the eight had left to found or join other companies. The model they named almost as an afterthought gave its name to a whole family of systems, and its title became one of the most borrowed phrases in computing, rewritten in hundreds of later paper titles that claim some other thing is all you need.
+
+\subhead{What the title got right}
+
+Read now, the title overstates its case. The Transformer never used attention alone: it needed its feed-forward layers, its normalisation, its position signals and its residual connections, and later models have added a great deal more. Attention was not all that was needed.
+
+But the title was right about the thing that mattered. The mechanism that had been added to recurrent networks as a repair turned out to be strong enough to carry the whole design, and removing everything else made it fast enough to grow. Much of the progress since has come from that single decision to stop reading one word at a time and let each word find, for itself, the others it needs. ■
+
+\bio{This feature was written to test the centred theme. It describes the 2017 paper in its own words; the illustrations are cut-outs with transparent backgrounds.}
+}
+
+\scene[height=page]{
+  \frame[cols=all]{\kicker{Ideas · Machine learning}}
+  \rule[weight=4px, color=ink]
+  \rule[weight=1px]
+  \frame[cols=3-10, cols@tablet=all, cols@phone=all]{
+    \headline{Attention Is All You Need}
+    \deck{In 2017 a short paper on translation removed the part every language system relied on. What was left now runs nearly all of modern AI.}
+    \byline{By the Wocument editors}
+    \meta{14 min read}
+  }
+  \frame[cols=4-9, cols@tablet=2-7, cols@phone=all]{
+    \figure[src=./pictures/cutout-brain.png, alt="A drawn brain, the illustration for the article", height=30vh, height@compact=22vh, fit=contain, place=here]{\caption{Attention lets every part of a sentence look at every other part at once.}}
+  }
+  \frame[story=attention, cols=all, columns=3, columns@compact=2, cols@compact=2-11, columns@tablet=2, cols@tablet=all, columns@phone=1]
+}

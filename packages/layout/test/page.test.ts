@@ -156,6 +156,23 @@ describe("column rules (design §4)", () => {
     expect(lay(src("column-rule=none", LONG)).scenes[0]!.columnRules).toEqual([]);
   });
 
+  it("starts below a heading block that wraps, where a column's text starts lower (2026-11-15)", () => {
+    const s = lay(
+      `\\story[name=s]{${LONG}}\n\\scene[height=page, grid=page]{\\frame[cols=1-8, wrap=rect]{\\headline{A heading over two columns}}\n\\frame[story=s, cols=1-12, top=0, columns=3, column-rule=rule]}`,
+    ).scenes[0]!;
+    const first = s.columnRules.filter((r) => r.y < 800);
+    expect(first).toHaveLength(2);
+    for (const r of first) {
+      const left = s.lines.filter((l) => l.frame !== "frame-1" && l.y < 800 && l.x + l.width < r.x);
+      const right = s.lines.filter((l) => l.frame !== "frame-1" && l.y < 800 && l.x > r.x);
+      const top = (ls: typeof left) => Math.min(...ls.filter((l) => Math.abs(l.x - Math.max(...ls.map((m) => m.x))) < 1).map((l) => l.y));
+      expect(r.y).toBeCloseTo(Math.max(top(left), top(right)), 6);
+    }
+    // The heading's lines are above where both rules start.
+    const head = s.lines.filter((l) => l.frame === "frame-1");
+    expect(Math.min(...first.map((r) => r.y))).toBeGreaterThanOrEqual(Math.max(...head.map((l) => l.y + l.height)) - 1e-6);
+  });
+
   it("is not inflated by a column that finishes with a moved bottom but no lines (regression)", () => {
     // A paragraph that exhausts itself in columns 1-2 can leave column 3 a "phantom" continuation:
     // fillColumn discovers there is no text left only after its epilogue (space-after) has already

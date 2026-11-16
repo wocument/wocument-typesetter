@@ -1,5 +1,13 @@
 # Wocument command schema
 
+### \article  — spec §07.8
+
+class: block · body: none
+
+| Attribute | Type | Default | Notes |
+| :---- | :---- | :---- | :---- |
+| `theme` | path | none | not responsive; a .woct file; without it, the document's theme |
+
 ### \audio  — spec §11.8
 
 class: block · body: optional (struct)
@@ -216,7 +224,7 @@ at most once: caption credit
 | `ease` | standard in out linear | standard |  |
 | `replay` | boolean | false |  |
 | `motion` | always | none | spec §13 rule 3; emits a resolve warning |
-| `size` | hero wide column small auto | auto | how big the object is on a wide page; auto: the engine chooses |
+| `size` | hero wide column small auto or length | auto | how big the object is on a wide page; auto: the engine chooses; <n>em: its width on a two-page print spread, in ems of the body text, scaled to the screen |
 | `place` | float here top bottom screen | float | float: the best spot near the text; here: where it stands in the text |
 | `shape` | rect circle ellipse alpha or poly | rect |  |
 | `clip` | boolean | false |  |
@@ -330,7 +338,7 @@ at most once: caption credit
 | `ease` | standard in out linear | standard |  |
 | `replay` | boolean | false |  |
 | `motion` | always | none | spec §13 rule 3; emits a resolve warning |
-| `size` | hero wide column small auto | auto | how big the object is on a wide page; auto: the engine chooses |
+| `size` | hero wide column small auto or length | auto | how big the object is on a wide page; auto: the engine chooses; <n>em: its width on a two-page print spread, in ems of the body text, scaled to the screen |
 | `place` | float here top bottom screen | float | float: the best spot near the text; here: where it stands in the text |
 | `caption-side` | below above overlay | below |  |
 | `layout` | grid strip | grid |  |
@@ -457,7 +465,7 @@ at most once: caption credit
 | `ease` | standard in out linear | standard |  |
 | `replay` | boolean | false |  |
 | `motion` | always | none | spec §13 rule 3; emits a resolve warning |
-| `size` | hero wide column small auto | auto | how big the object is on a wide page; auto: the engine chooses |
+| `size` | hero wide column small auto or length | auto | how big the object is on a wide page; auto: the engine chooses; <n>em: its width on a two-page print spread, in ems of the body text, scaled to the screen |
 | `place` | float here top bottom screen | float | float: the best spot near the text; here: where it stands in the text |
 | `shape` | rect circle ellipse alpha or poly | rect |  |
 | `clip` | boolean | false |  |
@@ -565,7 +573,7 @@ at most once: cite
 | `ease` | standard in out linear | standard |  |
 | `replay` | boolean | false |  |
 | `motion` | always | none | spec §13 rule 3; emits a resolve warning |
-| `size` | hero wide column small auto | auto | how big the object is on a wide page; auto: the engine chooses |
+| `size` | hero wide column small auto or length | auto | how big the object is on a wide page; auto: the engine chooses; <n>em: its width on a two-page print spread, in ems of the body text, scaled to the screen |
 | `place` | float here top bottom screen | float | float: the best spot near the text; here: where it stands in the text |
 | `style` | ident | none |  |
 
@@ -649,7 +657,7 @@ at most once: title
 | `ease` | standard in out linear | standard |  |
 | `replay` | boolean | false |  |
 | `motion` | always | none | spec §13 rule 3; emits a resolve warning |
-| `size` | hero wide column small auto | auto | how big the object is on a wide page; auto: the engine chooses |
+| `size` | hero wide column small auto or length | auto | how big the object is on a wide page; auto: the engine chooses; <n>em: its width on a two-page print spread, in ems of the body text, scaled to the screen |
 | `place` | float here top bottom screen | float | float: the best spot near the text; here: where it stands in the text |
 | `style` | ident | none |  |
 | `bg` | role or color | none |  |
@@ -790,7 +798,7 @@ at most once: caption credit
 | `ease` | standard in out linear | standard |  |
 | `replay` | boolean | false |  |
 | `motion` | always | none | spec §13 rule 3; emits a resolve warning |
-| `size` | hero wide column small auto | auto | how big the object is on a wide page; auto: the engine chooses |
+| `size` | hero wide column small auto or length | auto | how big the object is on a wide page; auto: the engine chooses; <n>em: its width on a two-page print spread, in ems of the body text, scaled to the screen |
 | `place` | float here top bottom screen | float | float: the best spot near the text; here: where it stands in the text |
 | `shape` | rect circle ellipse alpha or poly | rect |  |
 | `clip` | boolean | false |  |

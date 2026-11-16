@@ -63,7 +63,7 @@ export function parse(input: string | Uint8Array, options: ParseOptions = {}): P
 export { format } from "./format.js";
 export { parseSurface } from "./surface.js";
 export type { SurfaceNode, SurfaceResult, SCommand, SText, SEscape, SBlank, SComment } from "./surface.js";
-export type { Attr, Command, Document, Inline, Node, NodeId, Paragraph, Theme, Trivia } from "./ast.js";
+export type { Article, Attr, Command, Document, Inline, Node, NodeId, Paragraph, Theme, Trivia } from "./ast.js";
 export type { Diagnostic } from "./diagnostics.js";
 export type { Pos } from "./positions.js";
 export type { SourceKind } from "./prepare.js";

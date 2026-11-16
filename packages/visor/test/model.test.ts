@@ -41,7 +41,7 @@ describe("the visor model", () => {
 
   it("every screen has a model", () => {
     const expected = pd.scenes.flatMap((s) =>
-      s.paged ? Array.from({ length: Math.round(s.height / VIEW.height) }, (_, k) => `${s.name}|${Math.floor((s.y + k * VIEW.height + 1e-6) / VIEW.height) + 1}`) : [`${s.name}|null`],
+      s.paged ? Array.from({ length: Math.ceil(s.height / VIEW.height - 1e-6) }, (_, k) => `${s.name}|${Math.ceil((s.y + k * VIEW.height) / VIEW.height - 1e-6) + 1}`) : [`${s.name}|null`],
     );
     expect(models.map((m) => `${m.scene}|${m.screen}`)).toEqual(expected);
     expect(expected.length).toBeGreaterThanOrEqual(4);
@@ -100,7 +100,7 @@ describe("the visor model", () => {
       for (let i = 1; i < baselines.length; i++) expect(baselines[i]! - baselines[i - 1]!).toBeCloseTo(g.baseline);
       const bottom = m.shapes.filter((s) => s.kind === "bottom-line");
       if (m.screen === null) expect(bottom).toEqual([]);
-      else expect(bottom.map((s) => s.y)).toEqual([m.top + VIEW.height - g.marginY]);
+      else expect(bottom.map((s) => s.y)).toEqual([m.top + m.height - g.marginY]);
     }
   });
 });
