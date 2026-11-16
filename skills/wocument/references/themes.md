@@ -45,6 +45,21 @@ You get this with no design at all. Design from it: change what the edition need
 
 `wocument-specification.md` §16 has the full tables.
 
+## Several articles, several themes
+
+A magazine section is one `.woc`: one article after another in one scroll, each in its own theme. `\article[theme=./sponsored.woct]` at the top level starts an article; its stories, scenes and folio (one each) use that theme's styles, grids, palettes and tokens. The design changes where the article starts. Content before the first `\article` uses the frontmatter `theme:`. Name stories and frames so they are unique across the whole file. Breakpoints and spots come from the frontmatter theme. Spec §07.8.
+
+## Ready-made themes
+
+- `recipes/edition.woct`: a warm serif edition with a night palette for openers.
+- `recipes/centred.woct`: a white page with a centred header (tracked label, heavy and hairline
+  rules, medium sans headline, italic serif deck, upper-case byline), three justified columns of a
+  light sans, sentence-case crossheads and a serif drop cap. Inter and Newsreader only, so it needs
+  no font files. `recipes/attention.woc` shows it at length.
+
+To use one, copy it next to the page and name it in the frontmatter (`theme: ./centred.woct`) or
+on an article (`\article[theme=./centred.woct]`).
+
 ## Writing a theme
 
 ```

@@ -90,4 +90,6 @@ from the document's folder.
 - `references/checking.md`: the check and render workflow, every warning, the visual checklist.
 - `references/commands.md`: every command and attribute, generated from the schema.
 - `references/capabilities.md`: what every attribute does in practice, and the engine's limits.
-- `recipes/`: tested starting points; each one passes `woc check`.
+- `recipes/`: tested starting points; each one passes `woc check`. Two themes: `edition.woct`
+  (warm serif edition) and `centred.woct` (white page, centred header, three justified sans
+  columns, serif drop cap); `attention.woc` is the long benchmark for `centred.woct`.
