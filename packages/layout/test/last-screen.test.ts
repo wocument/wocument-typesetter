@@ -38,7 +38,7 @@ function lay(src: string, viewport: { width: number; height: number }) {
 /** Every picture is 800x600, and one named `tall` is 600x900. */
 const fake: AssetHost = {
   image: (path) => ({ url: path, type: "image/jpeg", width: path.includes("tall") ? 600 : 800, height: path.includes("tall") ? 900 : 600, animated: false }),
-  contour: () => null,
+  contour: (path) => (path.includes("cut") ? [[0, 0], [1, 0], [1, 1], [0, 1]] : null),
   file: (path) => ({ url: path, type: "video/mp4" }),
 };
 function layp(src: string, viewport: { width: number; height: number }) {
@@ -166,6 +166,57 @@ ${story(18)}}
     const s = layp(src, viewport).scenes[0]!;
     const p = s.objects.find((o) => o.media)!;
     expect(p.box.y + p.box.height).toBeLessThanOrEqual(s.y + viewport.height);
+  });
+});
+
+describe("rule 1: a picture above the first band", () => {
+  /** A heading, a picture in its own frame `h` tall, and a 3-column story under it. */
+  const opener = (h: string) => `${FM}\\story[name=s]{\\dropcap[lines=3]
+
+${story(60)}}
+\\scene[height=page]{
+  \\frame[cols=all]{\\headline{Heading}}
+  \\frame[cols=4-9]{\\figure[src=/missing.jpg, alt="", height=${h}, fit=contain, place=here]}
+  \\frame[story=s, cols=all, columns=3]
+}
+`;
+
+  it("gives way, so the text starts on the first screen rather than leave it short", () => {
+    const viewport = { width: 1872, height: 941 };
+    // A picture that leaves the text just under a quarter of the screen.
+    let hit = false;
+    for (let vh = 40; vh <= 60; vh += 1) {
+      const pd = layp(opener(`${vh}vh`), viewport);
+      const s = pd.scenes[0]!;
+      const p = s.objects.find((o) => o.media)!;
+      const lines = s.lines.filter((l) => l.y > p.box.y + p.box.height);
+      const start = Math.min(...lines.map((l) => l.y));
+      // Either the text starts on the first screen, or the picture is already at its smallest.
+      if (start >= viewport.height) expect(p.box.height, `${vh}vh`).toBeLessThanOrEqual((viewport.height * vh) / 100 * 0.7 + 1);
+      if (p.box.height < (viewport.height * vh) / 100 - 1 && start < viewport.height) hit = true;
+    }
+    expect(hit, "some height made the picture give way").toBe(true);
+  });
+
+  it("keeps its size when the text already starts under it", () => {
+    const pd = layp(opener("20vh"), { width: 1872, height: 941 });
+    const p = pd.scenes[0]!.objects.find((o) => o.media)!;
+    expect(p.box.height).toBeCloseTo(941 * 0.2, 0);
+  });
+});
+
+describe("§07.5 outdent and a cut-out", () => {
+  it("moves the cut-out into the margin instead of drawing it larger", () => {
+    const FMO = FM.replace("body=1-12]", "body=1-12, outdent=40px]");
+    const src = (shape: string) => `${FMO}\\story[name=s]{\\figure[src=/${shape === "alpha" ? "cut" : "photo"}.jpg, alt="", side=left, width=50%, shape=${shape}, wrap=rect]
+
+${story(20)}}
+\\scene{\\frame[story=s, cols=1-6]}
+`;
+    const rect = layp(src("rect"), { width: 1280, height: 800 }).scenes[0]!.objects.find((o) => o.media)!;
+    const cut = layp(src("alpha"), { width: 1280, height: 800 }).scenes[0]!.objects.find((o) => o.media)!;
+    expect(rect.box.width - cut.box.width).toBeCloseTo(40, 0);
+    expect(cut.box.x).toBeCloseTo(rect.box.x, 0);
   });
 });
 

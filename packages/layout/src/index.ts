@@ -146,6 +146,10 @@ type Env = {
   explain?: Decision[];
   /** The visor: why each floating object took its spot, as the composer last decided; absent when `explain` is off. */
   picks?: Map<string, Pick>;
+  /** §09.7 rule 1 (2026-11-16): the first band of the scene's first screen was pushed to the next screen; `top` is where it would have started, `need` the room it lacked. */
+  pushed?: { top: number; need: number };
+  /** §09.7 rule 1: the pictures above that band, set at `factor` of their size so the text starts under them. */
+  shrink?: { factor: number; ids: ReadonlySet<string> };
 };
 /** The visor: a floating object's reason, and for a chosen spot its score parts and the alternatives. */
 type Pick = { reason: PictureReason; numbers: Record<string, number>; alternatives?: NonNullable<Decision["alternatives"]> };
@@ -177,6 +181,30 @@ export function layout(rd: ResolvedDocument, viewport: Viewport, cache: PrepareC
       cursors.clear();
       for (const [k, c] of before) cursors.set(k, c);
       s = layoutScene((e = env(true)), scene, cursors);
+    }
+    // §09.7 rule 1 (2026-11-16): the text would wait for the next screen, under a quarter of the first
+    // being left. The pictures above it give way first: each is set smaller, 5% at a time and to 70% at
+    // most, until the text starts under them. Where none is enough, the first setting stands.
+    if (s.paged && e.pushed) {
+      const top = e.pushed.top;
+      const ids = new Set(s.objects.filter((o) => o.media && o.box.y + o.box.height <= top + EPS).map((o) => o.name));
+      const first = { s, e, cursors: new Map(cursors) };
+      let fitted = false;
+      for (let factor = 0.95; ids.size && factor > 0.7 - EPS; factor -= 0.05) {
+        cursors.clear();
+        for (const [k, c] of before) cursors.set(k, c);
+        const t = { ...env(true), shrink: { factor, ids } };
+        const r = layoutScene(t, scene, cursors);
+        if (!t.pushed) {
+          (s = r), (e = t), (fitted = true);
+          break;
+        }
+      }
+      if (!fitted) {
+        (s = first.s), (e = first.e);
+        cursors.clear();
+        for (const [k, c] of first.cursors) cursors.set(k, c);
+      }
     }
     if (e.explain) (explained.push({ scene: scene.id, decisions: e.explain }), kept.push({ env: e, scene: s }));
     scenes.push(s);
@@ -542,8 +570,15 @@ function placeObject(
   // not text breaks the column edge a little. Text never does.
   const { originX, content, outdent } = env.grid;
   if (o.bleed === "none" && outdent > 0) {
-    if (Math.abs(x - originX) < EPS) (x -= outdent), (width += outdent);
-    if (Math.abs(x + width - (originX + content)) < EPS) width += outdent;
+    // 2026-11-16: a cut-out has no crop, so a wider box would draw it larger; it moves into the margin instead.
+    const cutout = "media" in o && o.media.shape.kind === "polygon";
+    const left = Math.abs(x - originX) < EPS;
+    const right = Math.abs(x + width - (originX + content)) < EPS;
+    if (cutout) x += left && !right ? -outdent : right && !left ? outdent : 0;
+    else {
+      if (left) (x -= outdent), (width += outdent);
+      if (right) width += outdent;
+    }
   }
   const y = at.y + px(o.offsetY, ctx);
 
@@ -608,6 +643,13 @@ function placeObject(
     return { placed: text.placed, box, exclusions };
   }
   if (o.kind !== "figure" && o.kind !== "video" && o.kind !== "embed" && o.kind !== "audio" && o.kind !== "gallery") notYet(`\\${o.kind} objects`);
+  // §09.7 rule 1 (2026-11-16): a picture above a first band that would wait for the next screen is set
+  // smaller: a fixed height shrinks (fit keeps the picture in it); a picture its ratio sizes narrows, centred.
+  const shrink = env.shrink?.ids.has(o.id) ? env.shrink.factor : 1;
+  if (shrink < 1 && (o.kind === "figure" || o.kind === "video")) {
+    if (fixedHeight !== null) fixedHeight *= shrink;
+    else (x += (width * (1 - shrink)) / 2), (width *= shrink);
+  }
 
   // The caption is laid out once to learn its height, then again where it goes.
   const caption = o.caption;
@@ -1265,6 +1307,7 @@ function bands(
   // Design 2026-09-29 rule 1: less than a quarter of a band left (a third until 2026-09-30, when the
   // one-line grid pushed a laptop's first band just under it), and the text starts on the next screen.
   const next = limit < grid.baseline || limit < screen / 4;
+  if (next && k === 0 && limit >= grid.baseline) env.pushed ??= { top: at, need: screen / 4 - limit };
   if (next) (at = sceneY + (k + 1) * viewport.height + grid.marginY), (limit = screen);
   /** The screen the current band is on: every later band starts on the next screen (rule 1). */
   let page = next ? k + 1 : k;
