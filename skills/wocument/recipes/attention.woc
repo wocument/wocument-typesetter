@@ -25,7 +25,7 @@ But attention was an addition, not the engine. The recurrent network was still t
 
 The question the 2017 paper asked was simple to state. If attention was doing the useful work, what would happen if everything else was removed?
 
-\figure[src=./pictures/cutout-lightbulb.png, alt="A drawn light bulb", size=13em, shape=alpha, wrap=contour]
+\figure[src=./pictures/cutout-lightbulb.png, alt="A drawn light bulb", size=small, shape=alpha, wrap=contour]
 
 \subhead{Every word looks at every other word}
 
@@ -34,6 +34,18 @@ The answer was an architecture the authors called the Transformer. In place of a
 The model compares each query with every key. A high match means the two words are relevant to each other, and the value of the matching word flows strongly into the new version of the querying word. In the sentence about an animal that did not cross the street because it was too tired, a good model learns that “it” should draw most of its meaning from “animal”, not from “street”. Change “tired” to “wide” and the attention should move to the street.
 
 None of these comparisons depends on another. They can all be done in a single large multiplication of matrices, which is exactly the kind of work a graphics chip does best. That one property, more than any gain in accuracy, explains the speed with which the idea spread.
+
+\sidebar[bg=$panel, inset=1bl]{
+\title{Key terms}
+
+**Token.** A piece of text the model reads: a word, or part of a rare one.
+
+**Query, key, value.** Three lists of numbers made from each token: what it looks for, what it offers, and what it passes on.
+
+**Attention head.** One set of queries, keys and values. A layer runs several side by side.
+
+**Layer.** Attention followed by a small network for each token. Models stack dozens.
+}
 
 \subhead{Eight heads are better than one}
 
@@ -55,7 +67,7 @@ Around the attention layers sits a small amount of ordinary machinery. After att
 
 The original model stacked six of these blocks to read the source sentence and six more to write the translation. The writing half has one extra layer of attention that looks across at the source, much as the Montreal system had done, and it is masked so that a word can only see the words before it. Without the mask the model would learn to copy the answer instead of predicting it.
 
-\figure[src=./pictures/cutout-magnifier.png, alt="A drawn magnifying glass", size=13em, shape=alpha, wrap=contour]
+\figure[src=./pictures/cutout-magnifier.png, alt="A drawn magnifying glass", size=small, shape=alpha, wrap=contour]
 
 \subhead{The results}
 
@@ -81,7 +93,7 @@ Much of the research since 2017 has been about this one problem. Some methods le
 
 At the same time, other researchers have revisited the recurrent designs the paper left behind, building networks that read in order but can still be trained in parallel. Several now match Transformers of the same size on some tasks. Whether they replace attention or end up working beside it is one of the open questions of the field.
 
-\figure[src=./pictures/cutout-pen.png, alt="A drawn fountain pen", size=12em, shape=alpha, wrap=contour]
+\figure[src=./pictures/cutout-pen.png, alt="A drawn fountain pen", size=small, shape=alpha, wrap=contour]
 
 \subhead{Reading a sentence, step by step}
 
@@ -109,7 +121,9 @@ Within a few years every one of the eight had left to found or join other compan
 
 Read now, the title overstates its case. The Transformer never used attention alone: it needed its feed-forward layers, its normalisation, its position signals and its residual connections, and later models have added a great deal more. Attention was not all that was needed.
 
-But the title was right about the thing that mattered. The mechanism that had been added to recurrent networks as a repair turned out to be strong enough to carry the whole design, and removing everything else made it fast enough to grow. Much of the progress since has come from that single decision to stop reading one word at a time and let each word find, for itself, the others it needs.
+But the title was right about the thing that mattered. The mechanism that had been added to recurrent networks as a repair turned out to be strong enough to carry the whole design, and removing everything else made it fast enough to grow. Much of the progress since has come from that single decision to stop reading one word at a time and let each word find, for itself, the others it needs. ■
+
+\bio{This feature was written to test the centred theme. It describes the 2017 paper in its own words; the illustrations are cut-outs with transparent backgrounds.}
 }
 
 \scene[height=page]{
@@ -119,10 +133,11 @@ But the title was right about the thing that mattered. The mechanism that had be
   \frame[cols=3-10, cols@tablet=all, cols@phone=all]{
     \headline{Attention Is All You Need}
     \deck{In 2017 a short paper on translation removed the part every language system relied on. What was left now runs nearly all of modern AI.}
-    \meta{A Wocument benchmark · 14 min read}
+    \byline{By the Wocument editors}
+    \meta{14 min read}
   }
   \frame[cols=4-9, cols@tablet=2-7, cols@phone=all]{
-    \figure[src=./pictures/cutout-brain.png, alt="A drawn brain, the illustration for the article", height=30vh, height@compact=22vh, fit=contain, place=here]
+    \figure[src=./pictures/cutout-brain.png, alt="A drawn brain, the illustration for the article", height=30vh, height@compact=22vh, fit=contain, place=here]{\caption{Attention lets every part of a sentence look at every other part at once.}}
   }
-  \frame[story=attention, cols=all, columns=3, columns@tablet=1, cols@tablet=2-7, columns@phone=1]
+  \frame[story=attention, cols=all, columns=3, columns@compact=2, cols@compact=2-11, columns@tablet=2, cols@tablet=all, columns@phone=1]
 }
