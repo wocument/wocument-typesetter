@@ -6,7 +6,7 @@ This guide is for developers. It shows how to run Wocument's engine inside your 
 
 ## Before you start
 
-- Node.js 20 or later, and a bundler for browser code (esbuild, Vite, or similar).
+- Node.js 22 or later, and a bundler for browser code (esbuild, Vite, or similar).
 - You know the shape of the engine. [How the engine works](../understand/how-the-engine-works.md) is the short tour.
 
 ### The pipeline in one paragraph

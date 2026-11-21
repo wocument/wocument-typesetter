@@ -7,7 +7,7 @@
     "declarationMap": false,
     "sourceMap": false,
     "types": ["node"],
-    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
     "paths": {
       "@wocument/schema": ["./packages/schema/src/index.ts"],
       "@wocument/parser": ["./packages/parser/src/index.ts"],

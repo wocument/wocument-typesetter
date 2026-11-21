@@ -17,7 +17,7 @@
     "docs:refs": "(cat docs/_meta/commands-intro.md; vite-node packages/schema/scripts/print-tables.ts | tail -n +2) > docs/reference/commands.md"
   },
   "devDependencies": {
-    "@types/node": "^20.14.0",
+    "@types/node": "^22.20.5",
     "ajv": "^8.20.0",
     "fast-check": "^3.19.0",
     "playwright": "^1.64.1",
@@ -27,6 +27,6 @@
   },
   "license": "Apache-2.0",
   "engines": {
-    "node": ">=20"
+    "node": ">=22"
   }
 }
