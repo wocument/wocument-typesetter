@@ -4,7 +4,7 @@
  * space and Page Up to the one before, instead of the browser's jump: a page is each screen of a page
  * scene and each other scene's top (snapStops); a document without pages moves a screen at a time.
  * A vertical line of dots at the right edge shows the pages, the current one larger; a dot glides to
- * its page. Under reduced motion there is no easing and no glide: the browser's own scrolling.
+ * its page. The dots are a labelled navigation, so a keyboard or screen-reader user can jump too. Under reduced motion there is no easing and no glide: the browser's own scrolling.
  * (Settling on every screen, by proximity, from 2026-09-29 to 2026-10-09.)
  */
 
@@ -47,8 +47,9 @@ export function continuingLines(lines: readonly PositionedLine[]): Set<Positione
 
 const CSS = `
 .woc-dots { position: fixed; right: 20px; top: 50%; transform: translateY(-50%); z-index: 20; display: flex; flex-direction: column; align-items: center; gap: 10px; }
-.woc-dots button { all: unset; cursor: pointer; width: 6px; height: 6px; border-radius: 50%; background: var(--dot); opacity: 0.35; transition: width 200ms, height 200ms, opacity 200ms; }
-.woc-dots button[aria-current="true"] { width: 10px; height: 10px; opacity: 1; }`;
+.woc-dots button { all: unset; cursor: pointer; width: 10px; height: 10px; border-radius: 50%; background: var(--dot); opacity: 0.35; scale: 0.6; transition: scale 200ms, opacity 200ms; }
+.woc-dots button[aria-current="page"] { scale: 1; opacity: 1; }
+.woc-dots button:focus-visible { outline: 2px solid var(--dot); outline-offset: 3px; opacity: 1; }`;
 
 /** Where Space (dir 1) or Shift + Space (dir -1) goes from `y`: the next page's top, or a screen on. */
 export function pageStep(y: number, dir: 1 | -1, stops: readonly number[], viewportHeight: number, max: number): number {
@@ -76,20 +77,26 @@ export function installPages(win: Window, _root: HTMLElement, stops: readonly nu
 
   const bar = doc.createElement("nav");
   bar.className = "woc-dots";
-  bar.setAttribute("aria-hidden", "true");
+  bar.setAttribute("aria-label", "Pages");
   if (points.length >= 2) {
-    for (const y of points) {
+    for (const [i, y] of points.entries()) {
       const dot = doc.createElement("button");
+      dot.type = "button";
+      dot.setAttribute("aria-label", `Page ${i + 1} of ${points.length}`);
       dot.addEventListener("click", () => to(y));
       bar.append(dot);
     }
     doc.body.append(bar);
   }
 
+  /** The page last shown: the dots change only when it does, not on every scroll event. */
+  let shown = -1;
   const update = (): void => {
     if (points.length < 2) return;
     const now = currentPage(win.scrollY, points);
-    Array.from(bar.children).forEach((d, i) => d.setAttribute("aria-current", String(i === now)));
+    if (now === shown) return;
+    shown = now;
+    Array.from(bar.children).forEach((d, i) => (i === now ? d.setAttribute("aria-current", "page") : d.removeAttribute("aria-current")));
     // The dots take the accent of the scene under the middle of the screen.
     const under = doc.elementsFromPoint(win.innerWidth / 2, win.innerHeight / 2).find((e) => e.classList.contains("woc-scene"));
     if (under) bar.style.setProperty("--dot", getComputedStyle(under).getPropertyValue("--woc-accent"));
