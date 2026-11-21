@@ -1934,7 +1934,6 @@
           },
           "height": "screen",
           "snap": "hard",
-          "turn": null,
           "bg": {
             "role": "paper"
           },
@@ -2001,7 +2000,6 @@
           },
           "height": "flow",
           "snap": "none",
-          "turn": null,
           "bg": {
             "role": "paper"
           },
@@ -2068,7 +2066,6 @@
           },
           "height": "screen",
           "snap": "hard",
-          "turn": null,
           "bg": {
             "role": "paper"
           },
@@ -2135,7 +2132,6 @@
           },
           "height": "flow",
           "snap": "none",
-          "turn": null,
           "bg": {
             "role": "paper"
           },
@@ -2189,17 +2185,7 @@
           "bg": null,
           "z": 1,
           "hidden": false,
-          "wrap": null,
-          "reveal": {
-            "enter": "rise",
-            "exit": "none",
-            "enterAt": 0.15,
-            "durationMs": 600,
-            "delayMs": 0,
-            "ease": "standard",
-            "replay": false,
-            "motion": "reduce"
-          }
+          "wrap": null
         },
         "frame-2": {
           "id": "frame-2",
@@ -2230,17 +2216,7 @@
           "bg": null,
           "z": 0,
           "hidden": false,
-          "wrap": null,
-          "reveal": {
-            "enter": "none",
-            "exit": "none",
-            "enterAt": 0.15,
-            "durationMs": 600,
-            "delayMs": 0,
-            "ease": "standard",
-            "replay": false,
-            "motion": "reduce"
-          }
+          "wrap": null
         },
         "frame-3": {
           "id": "frame-3",
@@ -2273,17 +2249,7 @@
           "bg": null,
           "z": 1,
           "hidden": false,
-          "wrap": null,
-          "reveal": {
-            "enter": "fade",
-            "exit": "none",
-            "enterAt": 0.15,
-            "durationMs": 600,
-            "delayMs": 80,
-            "ease": "standard",
-            "replay": false,
-            "motion": "reduce"
-          }
+          "wrap": null
         },
         "frame-4": {
           "id": "frame-4",
@@ -2314,17 +2280,7 @@
           "bg": null,
           "z": 0,
           "hidden": false,
-          "wrap": null,
-          "reveal": {
-            "enter": "none",
-            "exit": "none",
-            "enterAt": 0.15,
-            "durationMs": 600,
-            "delayMs": 0,
-            "ease": "standard",
-            "replay": false,
-            "motion": "reduce"
-          }
+          "wrap": null
         },
         "frame-5": {
           "id": "frame-5",
@@ -2355,17 +2311,7 @@
           "bg": null,
           "z": 1,
           "hidden": false,
-          "wrap": null,
-          "reveal": {
-            "enter": "none",
-            "exit": "none",
-            "enterAt": 0.15,
-            "durationMs": 600,
-            "delayMs": 0,
-            "ease": "standard",
-            "replay": false,
-            "motion": "reduce"
-          }
+          "wrap": null
         }
       },
       "objects": {
@@ -2389,16 +2335,7 @@
               "n": 1
             }
           },
-          "reveal": {
-            "enter": "rise",
-            "exit": "none",
-            "enterAt": 0.15,
-            "durationMs": 600,
-            "delayMs": 0,
-            "ease": "standard",
-            "replay": false,
-            "motion": "reduce"
-          },
+          "motion": "reduce",
           "hidden": false,
           "layer": "content",
           "id": "pullquote-1",
@@ -2442,16 +2379,7 @@
               "n": 16
             }
           },
-          "reveal": {
-            "enter": "fade",
-            "exit": "none",
-            "enterAt": 0.15,
-            "durationMs": 600,
-            "delayMs": 0,
-            "ease": "standard",
-            "replay": false,
-            "motion": "reduce"
-          },
+          "motion": "reduce",
           "hidden": false,
           "layer": "content",
           "id": "figure-1",
@@ -2513,16 +2441,7 @@
           "wrap": {
             "mode": "none"
           },
-          "reveal": {
-            "enter": "none",
-            "exit": "none",
-            "enterAt": 0.15,
-            "durationMs": 600,
-            "delayMs": 0,
-            "ease": "standard",
-            "replay": false,
-            "motion": "reduce"
-          },
+          "motion": "reduce",
           "hidden": false,
           "layer": "background",
           "id": "video-1",
@@ -2571,16 +2490,7 @@
           "wrap": {
             "mode": "none"
           },
-          "reveal": {
-            "enter": "fade",
-            "exit": "none",
-            "enterAt": 0.15,
-            "durationMs": 600,
-            "delayMs": 0,
-            "ease": "standard",
-            "replay": false,
-            "motion": "reduce"
-          },
+          "motion": "reduce",
           "hidden": false,
           "layer": "content",
           "id": "sidebar-1",
@@ -2627,16 +2537,7 @@
           "wrap": {
             "mode": "none"
           },
-          "reveal": {
-            "enter": "fade",
-            "exit": "none",
-            "enterAt": 0.15,
-            "durationMs": 600,
-            "delayMs": 0,
-            "ease": "standard",
-            "replay": false,
-            "motion": "reduce"
-          },
+          "motion": "reduce",
           "hidden": false,
           "layer": "background",
           "id": "figure-2",
@@ -2685,16 +2586,7 @@
               "n": 1
             }
           },
-          "reveal": {
-            "enter": "none",
-            "exit": "none",
-            "enterAt": 0.15,
-            "durationMs": 600,
-            "delayMs": 0,
-            "ease": "standard",
-            "replay": false,
-            "motion": "reduce"
-          },
+          "motion": "reduce",
           "hidden": false,
           "layer": "content",
           "id": "pullquote-2",
@@ -4435,7 +4327,6 @@
           },
           "height": "screen",
           "snap": "hard",
-          "turn": null,
           "bg": {
             "role": "paper"
           },
@@ -4502,7 +4393,6 @@
           },
           "height": "flow",
           "snap": "none",
-          "turn": null,
           "bg": {
             "role": "paper"
           },
@@ -4569,7 +4459,6 @@
           },
           "height": "screen",
           "snap": "hard",
-          "turn": null,
           "bg": {
             "role": "paper"
           },
@@ -4636,7 +4525,6 @@
           },
           "height": "flow",
           "snap": "none",
-          "turn": null,
           "bg": {
             "role": "paper"
           },
@@ -4690,17 +4578,7 @@
           "bg": null,
           "z": 1,
           "hidden": false,
-          "wrap": null,
-          "reveal": {
-            "enter": "rise",
-            "exit": "none",
-            "enterAt": 0.15,
-            "durationMs": 600,
-            "delayMs": 0,
-            "ease": "standard",
-            "replay": false,
-            "motion": "reduce"
-          }
+          "wrap": null
         },
         "frame-2": {
           "id": "frame-2",
@@ -4731,17 +4609,7 @@
           "bg": null,
           "z": 0,
           "hidden": false,
-          "wrap": null,
-          "reveal": {
-            "enter": "none",
-            "exit": "none",
-            "enterAt": 0.15,
-            "durationMs": 600,
-            "delayMs": 0,
-            "ease": "standard",
-            "replay": false,
-            "motion": "reduce"
-          }
+          "wrap": null
         },
         "frame-3": {
           "id": "frame-3",
@@ -4774,17 +4642,7 @@
           "bg": null,
           "z": 1,
           "hidden": false,
-          "wrap": null,
-          "reveal": {
-            "enter": "fade",
-            "exit": "none",
-            "enterAt": 0.15,
-            "durationMs": 600,
-            "delayMs": 80,
-            "ease": "standard",
-            "replay": false,
-            "motion": "reduce"
-          }
+          "wrap": null
         },
         "frame-4": {
           "id": "frame-4",
@@ -4815,17 +4673,7 @@
           "bg": null,
           "z": 0,
           "hidden": false,
-          "wrap": null,
-          "reveal": {
-            "enter": "none",
-            "exit": "none",
-            "enterAt": 0.15,
-            "durationMs": 600,
-            "delayMs": 0,
-            "ease": "standard",
-            "replay": false,
-            "motion": "reduce"
-          }
+          "wrap": null
         },
         "frame-5": {
           "id": "frame-5",
@@ -4856,17 +4704,7 @@
           "bg": null,
           "z": 1,
           "hidden": false,
-          "wrap": null,
-          "reveal": {
-            "enter": "none",
-            "exit": "none",
-            "enterAt": 0.15,
-            "durationMs": 600,
-            "delayMs": 0,
-            "ease": "standard",
-            "replay": false,
-            "motion": "reduce"
-          }
+          "wrap": null
         }
       },
       "objects": {
@@ -4890,16 +4728,7 @@
               "n": 1
             }
           },
-          "reveal": {
-            "enter": "rise",
-            "exit": "none",
-            "enterAt": 0.15,
-            "durationMs": 600,
-            "delayMs": 0,
-            "ease": "standard",
-            "replay": false,
-            "motion": "reduce"
-          },
+          "motion": "reduce",
           "hidden": false,
           "layer": "content",
           "id": "pullquote-1",
@@ -4943,16 +4772,7 @@
               "n": 16
             }
           },
-          "reveal": {
-            "enter": "fade",
-            "exit": "none",
-            "enterAt": 0.15,
-            "durationMs": 600,
-            "delayMs": 0,
-            "ease": "standard",
-            "replay": false,
-            "motion": "reduce"
-          },
+          "motion": "reduce",
           "hidden": false,
           "layer": "content",
           "id": "figure-1",
@@ -5014,16 +4834,7 @@
           "wrap": {
             "mode": "none"
           },
-          "reveal": {
-            "enter": "none",
-            "exit": "none",
-            "enterAt": 0.15,
-            "durationMs": 600,
-            "delayMs": 0,
-            "ease": "standard",
-            "replay": false,
-            "motion": "reduce"
-          },
+          "motion": "reduce",
           "hidden": false,
           "layer": "background",
           "id": "video-1",
@@ -5072,16 +4883,7 @@
           "wrap": {
             "mode": "none"
           },
-          "reveal": {
-            "enter": "fade",
-            "exit": "none",
-            "enterAt": 0.15,
-            "durationMs": 600,
-            "delayMs": 0,
-            "ease": "standard",
-            "replay": false,
-            "motion": "reduce"
-          },
+          "motion": "reduce",
           "hidden": false,
           "layer": "content",
           "id": "sidebar-1",
@@ -5128,16 +4930,7 @@
           "wrap": {
             "mode": "none"
           },
-          "reveal": {
-            "enter": "fade",
-            "exit": "none",
-            "enterAt": 0.15,
-            "durationMs": 600,
-            "delayMs": 0,
-            "ease": "standard",
-            "replay": false,
-            "motion": "reduce"
-          },
+          "motion": "reduce",
           "hidden": false,
           "layer": "background",
           "id": "figure-2",
@@ -5186,16 +4979,7 @@
               "n": 1
             }
           },
-          "reveal": {
-            "enter": "none",
-            "exit": "none",
-            "enterAt": 0.15,
-            "durationMs": 600,
-            "delayMs": 0,
-            "ease": "standard",
-            "replay": false,
-            "motion": "reduce"
-          },
+          "motion": "reduce",
           "hidden": false,
           "layer": "content",
           "id": "pullquote-2",
@@ -6936,7 +6720,6 @@
           },
           "height": "screen",
           "snap": "hard",
-          "turn": null,
           "bg": {
             "role": "paper"
           },
@@ -7003,7 +6786,6 @@
           },
           "height": "flow",
           "snap": "none",
-          "turn": null,
           "bg": {
             "role": "paper"
           },
@@ -7070,7 +6852,6 @@
           },
           "height": "screen",
           "snap": "hard",
-          "turn": null,
           "bg": {
             "role": "paper"
           },
@@ -7137,7 +6918,6 @@
           },
           "height": "flow",
           "snap": "none",
-          "turn": null,
           "bg": {
             "role": "paper"
           },
@@ -7191,17 +6971,7 @@
           "bg": null,
           "z": 1,
           "hidden": false,
-          "wrap": null,
-          "reveal": {
-            "enter": "rise",
-            "exit": "none",
-            "enterAt": 0.15,
-            "durationMs": 600,
-            "delayMs": 0,
-            "ease": "standard",
-            "replay": false,
-            "motion": "reduce"
-          }
+          "wrap": null
         },
         "frame-2": {
           "id": "frame-2",
@@ -7232,17 +7002,7 @@
           "bg": null,
           "z": 0,
           "hidden": false,
-          "wrap": null,
-          "reveal": {
-            "enter": "none",
-            "exit": "none",
-            "enterAt": 0.15,
-            "durationMs": 600,
-            "delayMs": 0,
-            "ease": "standard",
-            "replay": false,
-            "motion": "reduce"
-          }
+          "wrap": null
         },
         "frame-3": {
           "id": "frame-3",
@@ -7275,17 +7035,7 @@
           "bg": null,
           "z": 1,
           "hidden": false,
-          "wrap": null,
-          "reveal": {
-            "enter": "fade",
-            "exit": "none",
-            "enterAt": 0.15,
-            "durationMs": 600,
-            "delayMs": 80,
-            "ease": "standard",
-            "replay": false,
-            "motion": "reduce"
-          }
+          "wrap": null
         },
         "frame-4": {
           "id": "frame-4",
@@ -7316,17 +7066,7 @@
           "bg": null,
           "z": 0,
           "hidden": false,
-          "wrap": null,
-          "reveal": {
-            "enter": "none",
-            "exit": "none",
-            "enterAt": 0.15,
-            "durationMs": 600,
-            "delayMs": 0,
-            "ease": "standard",
-            "replay": false,
-            "motion": "reduce"
-          }
+          "wrap": null
         },
         "frame-5": {
           "id": "frame-5",
@@ -7357,17 +7097,7 @@
           "bg": null,
           "z": 1,
           "hidden": false,
-          "wrap": null,
-          "reveal": {
-            "enter": "none",
-            "exit": "none",
-            "enterAt": 0.15,
-            "durationMs": 600,
-            "delayMs": 0,
-            "ease": "standard",
-            "replay": false,
-            "motion": "reduce"
-          }
+          "wrap": null
         }
       },
       "objects": {
@@ -7391,16 +7121,7 @@
               "n": 1
             }
           },
-          "reveal": {
-            "enter": "rise",
-            "exit": "none",
-            "enterAt": 0.15,
-            "durationMs": 600,
-            "delayMs": 0,
-            "ease": "standard",
-            "replay": false,
-            "motion": "reduce"
-          },
+          "motion": "reduce",
           "hidden": false,
           "layer": "content",
           "id": "pullquote-1",
@@ -7444,16 +7165,7 @@
               "n": 16
             }
           },
-          "reveal": {
-            "enter": "fade",
-            "exit": "none",
-            "enterAt": 0.15,
-            "durationMs": 600,
-            "delayMs": 0,
-            "ease": "standard",
-            "replay": false,
-            "motion": "reduce"
-          },
+          "motion": "reduce",
           "hidden": false,
           "layer": "content",
           "id": "figure-1",
@@ -7515,16 +7227,7 @@
           "wrap": {
             "mode": "none"
           },
-          "reveal": {
-            "enter": "none",
-            "exit": "none",
-            "enterAt": 0.15,
-            "durationMs": 600,
-            "delayMs": 0,
-            "ease": "standard",
-            "replay": false,
-            "motion": "reduce"
-          },
+          "motion": "reduce",
           "hidden": false,
           "layer": "background",
           "id": "video-1",
@@ -7573,16 +7276,7 @@
           "wrap": {
             "mode": "none"
           },
-          "reveal": {
-            "enter": "fade",
-            "exit": "none",
-            "enterAt": 0.15,
-            "durationMs": 600,
-            "delayMs": 0,
-            "ease": "standard",
-            "replay": false,
-            "motion": "reduce"
-          },
+          "motion": "reduce",
           "hidden": false,
           "layer": "content",
           "id": "sidebar-1",
@@ -7629,16 +7323,7 @@
           "wrap": {
             "mode": "none"
           },
-          "reveal": {
-            "enter": "fade",
-            "exit": "none",
-            "enterAt": 0.15,
-            "durationMs": 600,
-            "delayMs": 0,
-            "ease": "standard",
-            "replay": false,
-            "motion": "reduce"
-          },
+          "motion": "reduce",
           "hidden": false,
           "layer": "background",
           "id": "figure-2",
@@ -7687,16 +7372,7 @@
               "n": 1
             }
           },
-          "reveal": {
-            "enter": "none",
-            "exit": "none",
-            "enterAt": 0.15,
-            "durationMs": 600,
-            "delayMs": 0,
-            "ease": "standard",
-            "replay": false,
-            "motion": "reduce"
-          },
+          "motion": "reduce",
           "hidden": false,
           "layer": "content",
           "id": "pullquote-2",
@@ -9437,7 +9113,6 @@
           },
           "height": "screen",
           "snap": "hard",
-          "turn": null,
           "bg": {
             "role": "paper"
           },
@@ -9504,7 +9179,6 @@
           },
           "height": "flow",
           "snap": "none",
-          "turn": null,
           "bg": {
             "role": "paper"
           },
@@ -9571,7 +9245,6 @@
           },
           "height": "screen",
           "snap": "hard",
-          "turn": null,
           "bg": {
             "role": "paper"
           },
@@ -9638,7 +9311,6 @@
           },
           "height": "flow",
           "snap": "none",
-          "turn": null,
           "bg": {
             "role": "paper"
           },
@@ -9692,17 +9364,7 @@
           "bg": null,
           "z": 1,
           "hidden": false,
-          "wrap": null,
-          "reveal": {
-            "enter": "rise",
-            "exit": "none",
-            "enterAt": 0.15,
-            "durationMs": 600,
-            "delayMs": 0,
-            "ease": "standard",
-            "replay": false,
-            "motion": "reduce"
-          }
+          "wrap": null
         },
         "frame-2": {
           "id": "frame-2",
@@ -9733,17 +9395,7 @@
           "bg": null,
           "z": 0,
           "hidden": false,
-          "wrap": null,
-          "reveal": {
-            "enter": "none",
-            "exit": "none",
-            "enterAt": 0.15,
-            "durationMs": 600,
-            "delayMs": 0,
-            "ease": "standard",
-            "replay": false,
-            "motion": "reduce"
-          }
+          "wrap": null
         },
         "frame-3": {
           "id": "frame-3",
@@ -9774,17 +9426,7 @@
           "bg": null,
           "z": 1,
           "hidden": false,
-          "wrap": null,
-          "reveal": {
-            "enter": "fade",
-            "exit": "none",
-            "enterAt": 0.15,
-            "durationMs": 600,
-            "delayMs": 80,
-            "ease": "standard",
-            "replay": false,
-            "motion": "reduce"
-          }
+          "wrap": null
         },
         "frame-4": {
           "id": "frame-4",
@@ -9815,17 +9457,7 @@
           "bg": null,
           "z": 0,
           "hidden": false,
-          "wrap": null,
-          "reveal": {
-            "enter": "none",
-            "exit": "none",
-            "enterAt": 0.15,
-            "durationMs": 600,
-            "delayMs": 0,
-            "ease": "standard",
-            "replay": false,
-            "motion": "reduce"
-          }
+          "wrap": null
         },
         "frame-5": {
           "id": "frame-5",
@@ -9856,17 +9488,7 @@
           "bg": null,
           "z": 1,
           "hidden": false,
-          "wrap": null,
-          "reveal": {
-            "enter": "none",
-            "exit": "none",
-            "enterAt": 0.15,
-            "durationMs": 600,
-            "delayMs": 0,
-            "ease": "standard",
-            "replay": false,
-            "motion": "reduce"
-          }
+          "wrap": null
         }
       },
       "objects": {
@@ -9890,16 +9512,7 @@
               "n": 1
             }
           },
-          "reveal": {
-            "enter": "rise",
-            "exit": "none",
-            "enterAt": 0.15,
-            "durationMs": 600,
-            "delayMs": 0,
-            "ease": "standard",
-            "replay": false,
-            "motion": "reduce"
-          },
+          "motion": "reduce",
           "hidden": false,
           "layer": "content",
           "id": "pullquote-1",
@@ -9943,16 +9556,7 @@
               "n": 16
             }
           },
-          "reveal": {
-            "enter": "fade",
-            "exit": "none",
-            "enterAt": 0.15,
-            "durationMs": 600,
-            "delayMs": 0,
-            "ease": "standard",
-            "replay": false,
-            "motion": "reduce"
-          },
+          "motion": "reduce",
           "hidden": false,
           "layer": "content",
           "id": "figure-1",
@@ -10014,16 +9618,7 @@
           "wrap": {
             "mode": "none"
           },
-          "reveal": {
-            "enter": "none",
-            "exit": "none",
-            "enterAt": 0.15,
-            "durationMs": 600,
-            "delayMs": 0,
-            "ease": "standard",
-            "replay": false,
-            "motion": "reduce"
-          },
+          "motion": "reduce",
           "hidden": false,
           "layer": "background",
           "id": "video-1",
@@ -10072,16 +9667,7 @@
           "wrap": {
             "mode": "none"
           },
-          "reveal": {
-            "enter": "fade",
-            "exit": "none",
-            "enterAt": 0.15,
-            "durationMs": 600,
-            "delayMs": 0,
-            "ease": "standard",
-            "replay": false,
-            "motion": "reduce"
-          },
+          "motion": "reduce",
           "hidden": true,
           "layer": "content",
           "id": "sidebar-1",
@@ -10128,16 +9714,7 @@
           "wrap": {
             "mode": "none"
           },
-          "reveal": {
-            "enter": "fade",
-            "exit": "none",
-            "enterAt": 0.15,
-            "durationMs": 600,
-            "delayMs": 0,
-            "ease": "standard",
-            "replay": false,
-            "motion": "reduce"
-          },
+          "motion": "reduce",
           "hidden": false,
           "layer": "background",
           "id": "figure-2",
@@ -10186,16 +9763,7 @@
               "n": 1
             }
           },
-          "reveal": {
-            "enter": "none",
-            "exit": "none",
-            "enterAt": 0.15,
-            "durationMs": 600,
-            "delayMs": 0,
-            "ease": "standard",
-            "replay": false,
-            "motion": "reduce"
-          },
+          "motion": "reduce",
           "hidden": false,
           "layer": "content",
           "id": "pullquote-2",
@@ -11936,7 +11504,6 @@
           },
           "height": "screen",
           "snap": "hard",
-          "turn": null,
           "bg": {
             "role": "paper"
           },
@@ -12003,7 +11570,6 @@
           },
           "height": "flow",
           "snap": "none",
-          "turn": null,
           "bg": {
             "role": "paper"
           },
@@ -12070,7 +11636,6 @@
           },
           "height": "screen",
           "snap": "hard",
-          "turn": null,
           "bg": {
             "role": "paper"
           },
@@ -12137,7 +11702,6 @@
           },
           "height": "flow",
           "snap": "none",
-          "turn": null,
           "bg": {
             "role": "paper"
           },
@@ -12191,17 +11755,7 @@
           "bg": null,
           "z": 1,
           "hidden": false,
-          "wrap": null,
-          "reveal": {
-            "enter": "rise",
-            "exit": "none",
-            "enterAt": 0.15,
-            "durationMs": 600,
-            "delayMs": 0,
-            "ease": "standard",
-            "replay": false,
-            "motion": "reduce"
-          }
+          "wrap": null
         },
         "frame-2": {
           "id": "frame-2",
@@ -12232,17 +11786,7 @@
           "bg": null,
           "z": 0,
           "hidden": false,
-          "wrap": null,
-          "reveal": {
-            "enter": "none",
-            "exit": "none",
-            "enterAt": 0.15,
-            "durationMs": 600,
-            "delayMs": 0,
-            "ease": "standard",
-            "replay": false,
-            "motion": "reduce"
-          }
+          "wrap": null
         },
         "frame-3": {
           "id": "frame-3",
@@ -12275,17 +11819,7 @@
           "bg": null,
           "z": 1,
           "hidden": false,
-          "wrap": null,
-          "reveal": {
-            "enter": "fade",
-            "exit": "none",
-            "enterAt": 0.15,
-            "durationMs": 600,
-            "delayMs": 80,
-            "ease": "standard",
-            "replay": false,
-            "motion": "reduce"
-          }
+          "wrap": null
         },
         "frame-4": {
           "id": "frame-4",
@@ -12316,17 +11850,7 @@
           "bg": null,
           "z": 0,
           "hidden": false,
-          "wrap": null,
-          "reveal": {
-            "enter": "none",
-            "exit": "none",
-            "enterAt": 0.15,
-            "durationMs": 600,
-            "delayMs": 0,
-            "ease": "standard",
-            "replay": false,
-            "motion": "reduce"
-          }
+          "wrap": null
         },
         "frame-5": {
           "id": "frame-5",
@@ -12357,17 +11881,7 @@
           "bg": null,
           "z": 1,
           "hidden": false,
-          "wrap": null,
-          "reveal": {
-            "enter": "none",
-            "exit": "none",
-            "enterAt": 0.15,
-            "durationMs": 600,
-            "delayMs": 0,
-            "ease": "standard",
-            "replay": false,
-            "motion": "reduce"
-          }
+          "wrap": null
         }
       },
       "objects": {
@@ -12391,16 +11905,7 @@
               "n": 1
             }
           },
-          "reveal": {
-            "enter": "rise",
-            "exit": "none",
-            "enterAt": 0.15,
-            "durationMs": 600,
-            "delayMs": 0,
-            "ease": "standard",
-            "replay": false,
-            "motion": "reduce"
-          },
+          "motion": "reduce",
           "hidden": false,
           "layer": "content",
           "id": "pullquote-1",
@@ -12443,16 +11948,7 @@
               "n": 16
             }
           },
-          "reveal": {
-            "enter": "fade",
-            "exit": "none",
-            "enterAt": 0.15,
-            "durationMs": 600,
-            "delayMs": 0,
-            "ease": "standard",
-            "replay": false,
-            "motion": "reduce"
-          },
+          "motion": "reduce",
           "hidden": false,
           "layer": "content",
           "id": "figure-1",
@@ -12510,16 +12006,7 @@
           "wrap": {
             "mode": "none"
           },
-          "reveal": {
-            "enter": "none",
-            "exit": "none",
-            "enterAt": 0.15,
-            "durationMs": 600,
-            "delayMs": 0,
-            "ease": "standard",
-            "replay": false,
-            "motion": "reduce"
-          },
+          "motion": "reduce",
           "hidden": false,
           "layer": "background",
           "id": "video-1",
@@ -12568,16 +12055,7 @@
           "wrap": {
             "mode": "none"
           },
-          "reveal": {
-            "enter": "fade",
-            "exit": "none",
-            "enterAt": 0.15,
-            "durationMs": 600,
-            "delayMs": 0,
-            "ease": "standard",
-            "replay": false,
-            "motion": "reduce"
-          },
+          "motion": "reduce",
           "hidden": true,
           "layer": "content",
           "id": "sidebar-1",
@@ -12624,16 +12102,7 @@
           "wrap": {
             "mode": "none"
           },
-          "reveal": {
-            "enter": "fade",
-            "exit": "none",
-            "enterAt": 0.15,
-            "durationMs": 600,
-            "delayMs": 0,
-            "ease": "standard",
-            "replay": false,
-            "motion": "reduce"
-          },
+          "motion": "reduce",
           "hidden": false,
           "layer": "background",
           "id": "figure-2",
@@ -12682,16 +12151,7 @@
               "n": 1
             }
           },
-          "reveal": {
-            "enter": "none",
-            "exit": "none",
-            "enterAt": 0.15,
-            "durationMs": 600,
-            "delayMs": 0,
-            "ease": "standard",
-            "replay": false,
-            "motion": "reduce"
-          },
+          "motion": "reduce",
           "hidden": false,
           "layer": "content",
           "id": "pullquote-2",

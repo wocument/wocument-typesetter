@@ -1,8 +1,8 @@
 /**
  * The editor's live preview, in an iframe so the page gets a viewport of its
  * own. The editor posts each Resolved Document it compiles; this lays it out
- * and renders it, keeping the scroll position. `?motion=on` plays reveals;
- * otherwise they are off, so the page does not re-animate on every keystroke.
+ * and renders it, keeping the scroll position. `?motion=on` lets animated
+ * pictures and self-playing video move; otherwise the preview shows them still.
  */
 import "./purity.js";
 import type { ResolvedDocument } from "@wocument/resolved-document";

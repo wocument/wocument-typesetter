@@ -3,7 +3,7 @@
  * (spec §15.1 stage 5).
  *
  * The Positioned Document carries geometry; everything else (palette, element
- * kind, style, reveal) is looked up in the Resolved Document by the ids it
+ * kind, style) is looked up in the Resolved Document by the ids it
  * carries.
  *
  * Rules that make the text real text (spec §14):
@@ -16,11 +16,11 @@
  *     whole. A drop cap is emitted just before its paragraph's first line, so
  *     the copied word is whole there too.
  *
- * Reveals use opacity and transform only and never move layout (spec §13).
+ * Nothing on the page animates into place: reveals and page turns were removed on 2026-11-21 (spec §13).
  */
 
 import { type EvalContext, type PositionedDocument, type PositionedLine, engineFont, justifySpacing, px } from "@wocument/layout";
-import type { Color, Folio, ObjectElement, ParagraphBlock, ResolvedDocument, ResolvedStyle, Reveal, RuleBlock } from "@wocument/resolved-document";
+import type { Color, Folio, ObjectElement, ParagraphBlock, ResolvedDocument, ResolvedStyle, RuleBlock } from "@wocument/resolved-document";
 import { cssFont } from "@wocument/text-engine";
 import { continuingLines, installPages, snapStops } from "./pages.js";
 import { soundtrack } from "./music.js";
@@ -49,24 +49,6 @@ const CSS = `
 .woc-facade::after { content: ""; position: absolute; left: 50%; top: 50%; width: 68px; height: 48px; margin: -24px 0 0 -34px; border-radius: 12px; background: rgba(0,0,0,.7) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 68 48'%3E%3Cpath d='M27 15v18l16-9z' fill='%23fff'/%3E%3C/svg%3E"); }
 .woc-facade:focus-visible::after, .woc-facade:hover::after { background-color: #c00; }
 .woc-embed { border: 0; }
-.woc-reveal { transition-property: opacity, transform, mask-position, -webkit-mask-position; will-change: opacity, transform; }
-/* Enter: the start state until .woc-in. Exit: the end state while .woc-out (left through the top). */
-.woc-reveal:not(.woc-in), .woc-reveal.woc-out { opacity: 0; }
-.woc-reveal[data-enter="rise"]:not(.woc-in), .woc-reveal[data-exit="rise"].woc-out { transform: translateY(24px); }
-.woc-reveal[data-enter="drop"]:not(.woc-in), .woc-reveal[data-exit="drop"].woc-out { transform: translateY(-24px); }
-.woc-reveal[data-enter="slide-left"]:not(.woc-in), .woc-reveal[data-exit="slide-left"].woc-out { transform: translateX(32px); }
-.woc-reveal[data-enter="slide-right"]:not(.woc-in), .woc-reveal[data-exit="slide-right"].woc-out { transform: translateX(-32px); }
-.woc-reveal[data-enter="zoom"]:not(.woc-in), .woc-reveal[data-exit="zoom"].woc-out { transform: scale(0.96); }
-/* A wipe uncovers left to right. A mask, not clip-path: a clipped target never intersects, so its reveal would never fire. */
-.woc-reveal[data-enter="wipe"], .woc-reveal[data-exit="wipe"] {
-  -webkit-mask-image: linear-gradient(90deg, #000 50%, transparent 50%); mask-image: linear-gradient(90deg, #000 50%, transparent 50%);
-  -webkit-mask-size: 200% 100%; mask-size: 200% 100%; -webkit-mask-position: 0 0; mask-position: 0 0;
-}
-.woc-reveal[data-enter="wipe"]:not(.woc-in), .woc-reveal[data-exit="wipe"].woc-out { opacity: 1; -webkit-mask-position: 100% 0; mask-position: 100% 0; }
-.woc-turn { position: absolute; inset: 0; pointer-events: none; }
-.woc-scene.woc-away > .woc-turn { opacity: 0; }
-.woc-scene[data-turn="slide"].woc-away[data-from="below"] > .woc-turn { transform: translateY(8vh); }
-.woc-scene[data-turn="slide"].woc-away[data-from="above"] > .woc-turn { transform: translateY(-8vh); }
 .woc-folio { position: absolute; z-index: 10; pointer-events: none; white-space: nowrap; }
 .woc-progress { position: fixed; top: 0; left: 0; height: 2px; z-index: 11; transform-origin: 0 0; }
 .woc-sound { position: relative; display: block; width: 28px; height: 28px;
@@ -92,7 +74,6 @@ const CSS = `
 }
 ${READ_ASSIST_CSS}`;
 
-const EASE: Record<Reveal["ease"], string> = { standard: "cubic-bezier(.2,.7,.2,1)", in: "ease-in", out: "ease-out", linear: "linear" };
 
 export { renderStatic } from "./static.js";
 export { type MountOptions, type Mounted, mount } from "./mount.js";
@@ -145,11 +126,8 @@ export function render(root: HTMLElement, pd: PositionedDocument, rd: ResolvedDo
   root.style.height = `${pd.height}px`;
   root.lang = rd.meta.lang;
 
-  const reveals: { el: HTMLElement; reveal: Reveal }[] = [];
   /** Videos with play=visible: they play while in the viewport and pause outside it (§11.5). */
   const videos: HTMLVideoElement[] = [];
-  /** Page sections with turn effects. */
-  const turns: HTMLElement[] = [];
   let anySnap: "none" | "soft" | "hard" = "none";
 
   for (const ps of pd.scenes) {
@@ -162,16 +140,7 @@ export function render(root: HTMLElement, pd: PositionedDocument, rd: ResolvedDo
     for (const [role, hex] of Object.entries(scene.palette)) section.style.setProperty(`--woc-${role}`, hex);
     section.style.background = color(scene.bg);
     section.style.color = "var(--woc-ink)";
-    // Design §3 turn: the page's layers sit in one wrapper that the turn moves; the section's paper stays put.
-    // §13 rule 3: none under reduced motion.
-    const turn = scene.turn && !reduce ? scene.turn : null;
-    const layer = turn ? section.appendChild(doc.createElement("div")) : section;
-    if (turn) {
-      layer.className = "woc-turn";
-      section.dataset.turn = turn.effect;
-      layer.style.transition = ["opacity", "transform"].map((p) => `${p} ${turn.durationMs}ms ${EASE[turn.ease]}`).join(", ");
-      turns.push(section);
-    }
+    const layer = section;
     // §08.3: soft is proximity, hard is mandatory (already downgraded on flow scenes by the resolver).
     if (scene.snap !== "none") {
       section.dataset.snap = scene.snap;
@@ -198,10 +167,6 @@ export function render(root: HTMLElement, pd: PositionedDocument, rd: ResolvedDo
         // Paint order by layer (§11.2): background beneath text, overlay above it.
         el.style.zIndex = obj?.layer === "background" ? "0" : obj?.layer === "overlay" ? "2" : "1";
         el.dataset.frame = id;
-        const reveal = v.frames[id]?.reveal ?? v.objects[id]?.reveal;
-        // §13 rule 3: under reduced motion every reveal is none, unless the author forced it.
-        const moves = reveal && (reveal.enter !== "none" || reveal.exit !== "none");
-        if (moves && (!reduce || reveal.motion === "always")) reveals.push({ el, reveal });
         const box = boxes.get(id);
         if (box) {
           const b = el.appendChild(objectBox(doc, obj!, box, ps.y, rd, reduce, videos));
@@ -313,62 +278,12 @@ export function render(root: HTMLElement, pd: PositionedDocument, rd: ResolvedDo
   // fling cannot skip past it.
   doc.documentElement.style.scrollSnapType = anySnap === "none" ? "" : "y proximity";
 
-  // §13 reveals: fire once the element is `enterAt` inside the viewport.
-  const observers = reveals.map(({ el, reveal }) => {
-    el.classList.add("woc-reveal");
-    el.dataset.enter = reveal.enter;
-    el.dataset.exit = reveal.exit;
-    // Nothing to enter: it starts in place, and only its exit moves it.
-    if (reveal.enter === "none") el.classList.add("woc-in");
-    el.style.transitionDuration = `${reveal.durationMs}ms`;
-    el.style.transitionDelay = `${reveal.delayMs}ms`;
-    el.style.transitionTimingFunction = EASE[reveal.ease];
-    const io = new win.IntersectionObserver(
-      ([e]) => {
-        if (e?.isIntersecting) {
-          el.classList.add("woc-in");
-          if (!reveal.replay) io.disconnect();
-        } else if (reveal.replay) el.classList.remove("woc-in");
-      },
-      { threshold: Math.min(1, Math.max(0, reveal.enterAt)) },
-    );
-    // The frame box is the whole scene and paragraph wrappers have no height (their lines are
-    // positioned), so observe the first line: the threshold then means the content. An object's
-    // `.woc-frame` has no `.woc-line` (it holds its box directly as `el`'s first child, also
-    // scene-sized via inset:0), so fall back to that box rather than the whole-scene wrapper --
-    // otherwise both its enter and exit observers watch the whole scene and exit never visibly plays.
-    const target = el.querySelector(".woc-line") ?? el.firstElementChild ?? el;
-    if (reveal.enter !== "none") io.observe(target);
-    if (reveal.exit === "none") return [io];
-    // §13 exit: plays when the element leaves through the top of the viewport, and undoes when it comes back.
-    const out = new win.IntersectionObserver(([e]) => {
-      if (e) el.classList.toggle("woc-out", !e.isIntersecting && e.boundingClientRect.bottom <= 0);
-    });
-    out.observe(target);
-    return [io, out];
-  }).flat();
-
   const playing = videos.map((video) => {
     const io = new win.IntersectionObserver(([e]) => {
       if (e?.isIntersecting) void video.play().catch(() => {});
       else video.pause();
     });
     io.observe(video);
-    return io;
-  });
-
-  // Design §3: a page away from the viewport waits in its start state, on the side the reader will
-  // meet it from; entering plays the turn. The first callback (on observe) sets pages already off-screen.
-  const turning = turns.map((section) => {
-    const io = new win.IntersectionObserver(([e]) => {
-      if (!e) return;
-      if (e.isIntersecting) section.classList.remove("woc-away");
-      else {
-        section.dataset.from = e.boundingClientRect.top > 0 ? "below" : "above";
-        section.classList.add("woc-away");
-      }
-    });
-    io.observe(section);
     return io;
   });
 
@@ -383,7 +298,7 @@ export function render(root: HTMLElement, pd: PositionedDocument, rd: ResolvedDo
   readAssist(root);
   return {
     destroy() {
-      for (const io of [...observers, ...playing, ...turning]) io.disconnect();
+      for (const io of playing) io.disconnect();
       folio.destroy();
       pages.destroy();
     },
@@ -624,7 +539,7 @@ function objectBox(
     if (el instanceof HTMLImageElement && asset?.kind === "image") {
       el.src = asset.fallback;
       // §13 rule 3 (and §11.4): under reduced motion an animated GIF shows a still.
-      if (asset.animated && reduce && o.reveal.motion !== "always") el.addEventListener("load", () => el.replaceWith(still(doc, el)), { once: true });
+      if (asset.animated && reduce && o.motion !== "always") el.addEventListener("load", () => el.replaceWith(still(doc, el)), { once: true });
     }
     if (el instanceof HTMLVideoElement && asset?.kind === "video") {
       for (const s of asset.sources) el.appendChild(Object.assign(doc.createElement("source"), { src: s.url, type: s.type }));
@@ -636,7 +551,7 @@ function objectBox(
         el.playsInline = true;
         el.preload = "metadata";
         // §13 rule 3: under reduced motion nothing plays by itself, unless the author forced it.
-        const play = reduce && o.reveal.motion !== "always" ? "manual" : o.play;
+        const play = reduce && o.motion !== "always" ? "manual" : o.play;
         el.controls = o.controls || play === "manual";
         if (play === "auto") el.autoplay = true;
         if (play === "visible") videos.push(el);

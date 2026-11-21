@@ -18,7 +18,7 @@ lang: en
 
 \style[name=headline-hero, extends=headline, size=fluid(48px, 128px)]
 
-\parent[name=plate, grid=essay, palette=dark, height=screen, snap=hard, enter=fade]
+\parent[name=plate, grid=essay, palette=dark, height=screen, snap=hard]
 
 \folio[position=bottom-right, progress]{White Desert}
 
@@ -28,7 +28,7 @@ lang: en
 
   %% GAP 1: white headline over a bright photo. There is no scrim or tint, so
   %% legibility depends on the photo. The only workaround is baking a gradient into the image.
-  \frame[cols=1-7, rows=6-8, cols@phone=all, valign=bottom, enter=rise]{
+  \frame[cols=1-7, rows=6-8, cols@phone=all, valign=bottom]{
     \kicker{Photo essay}
     \headline[style=headline-hero]{White \br Desert}
     \deck{Eight months a year, forty thousand families harvest salt from the Little Rann of Kutch.}

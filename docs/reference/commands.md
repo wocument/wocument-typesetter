@@ -12,6 +12,14 @@ Each command starts with a short block:
 
 In each table, **Type** lists the values an attribute accepts (see [Syntax and values](syntax.md)), **Default** is what you get when you leave it out, and "not responsive" means the attribute can't take a breakpoint suffix such as `@phone`. For what the engine doesn't build yet, and what to do instead, see [What isn't built yet](limits.md).
 
+### \article  — spec §07.8
+
+class: block · body: none
+
+| Attribute | Type | Default | Notes |
+| :---- | :---- | :---- | :---- |
+| `theme` | path | none | not responsive; a .woct file; without it, the document's theme |
+
 ### \audio  — spec §11.8
 
 class: block · body: optional (struct)
@@ -38,14 +46,14 @@ at most once: caption credit
 | `wrap` | none rect contour jump | none | default depends on placement mode: rect when anchored with side=left|right or cols, jump for side=full, none when grid-placed |
 | `wrap-side` | both left right largest | largest |  |
 | `wrap-offset` | length | 1bl |  |
-| `enter` | none fade rise drop slide-left slide-right zoom wipe | none |  |
-| `exit` | none fade rise drop slide-left slide-right zoom wipe | none |  |
-| `enter-at` | percentage | 15% |  |
-| `duration` | time | 600ms |  |
-| `delay` | time | 0ms |  |
-| `ease` | standard in out linear | standard |  |
-| `replay` | boolean | false |  |
-| `motion` | always | none | spec §13 rule 3; emits a resolve warning |
+| `enter` | none fade rise drop slide-left slide-right zoom wipe | none | removed 2026-11-21: ignored, warning W036 |
+| `exit` | none fade rise drop slide-left slide-right zoom wipe | none | removed 2026-11-21: ignored, warning W036 |
+| `enter-at` | percentage | 15% | removed 2026-11-21: ignored, warning W036 |
+| `duration` | time | 600ms | removed 2026-11-21: ignored, warning W036 |
+| `delay` | time | 0ms | removed 2026-11-21: ignored, warning W036 |
+| `ease` | standard in out linear | standard | removed 2026-11-21: ignored, warning W036 |
+| `replay` | boolean | false | removed 2026-11-21: ignored, warning W036 |
+| `motion` | always | none | spec §13; keeps an animated picture or a video moving under reduced motion; emits a resolve warning |
 | `src` | path | required |  |
 | `title` | string | none | missing is a warning |
 | `captions` | path | none |  |
@@ -169,14 +177,14 @@ rule (P016): provider=youtube|vimeo requires id; provider=iframe requires url
 | `wrap` | none rect contour jump | none | default depends on placement mode: rect when anchored with side=left|right or cols, jump for side=full, none when grid-placed |
 | `wrap-side` | both left right largest | largest |  |
 | `wrap-offset` | length | 1bl |  |
-| `enter` | none fade rise drop slide-left slide-right zoom wipe | none |  |
-| `exit` | none fade rise drop slide-left slide-right zoom wipe | none |  |
-| `enter-at` | percentage | 15% |  |
-| `duration` | time | 600ms |  |
-| `delay` | time | 0ms |  |
-| `ease` | standard in out linear | standard |  |
-| `replay` | boolean | false |  |
-| `motion` | always | none | spec §13 rule 3; emits a resolve warning |
+| `enter` | none fade rise drop slide-left slide-right zoom wipe | none | removed 2026-11-21: ignored, warning W036 |
+| `exit` | none fade rise drop slide-left slide-right zoom wipe | none | removed 2026-11-21: ignored, warning W036 |
+| `enter-at` | percentage | 15% | removed 2026-11-21: ignored, warning W036 |
+| `duration` | time | 600ms | removed 2026-11-21: ignored, warning W036 |
+| `delay` | time | 0ms | removed 2026-11-21: ignored, warning W036 |
+| `ease` | standard in out linear | standard | removed 2026-11-21: ignored, warning W036 |
+| `replay` | boolean | false | removed 2026-11-21: ignored, warning W036 |
+| `motion` | always | none | spec §13; keeps an animated picture or a video moving under reduced motion; emits a resolve warning |
 | `caption-side` | below above overlay | below |  |
 | `provider` | youtube vimeo iframe | required | not responsive |
 | `id` | string | none | for youtube and vimeo |
@@ -220,15 +228,15 @@ at most once: caption credit
 | `wrap` | none rect contour jump | none | default depends on placement mode: rect when anchored with side=left|right or cols, jump for side=full, none when grid-placed |
 | `wrap-side` | both left right largest | largest |  |
 | `wrap-offset` | length | 1bl |  |
-| `enter` | none fade rise drop slide-left slide-right zoom wipe | none |  |
-| `exit` | none fade rise drop slide-left slide-right zoom wipe | none |  |
-| `enter-at` | percentage | 15% |  |
-| `duration` | time | 600ms |  |
-| `delay` | time | 0ms |  |
-| `ease` | standard in out linear | standard |  |
-| `replay` | boolean | false |  |
-| `motion` | always | none | spec §13 rule 3; emits a resolve warning |
-| `size` | hero wide column small auto | auto | how big the object is on a wide page; auto: the engine chooses |
+| `enter` | none fade rise drop slide-left slide-right zoom wipe | none | removed 2026-11-21: ignored, warning W036 |
+| `exit` | none fade rise drop slide-left slide-right zoom wipe | none | removed 2026-11-21: ignored, warning W036 |
+| `enter-at` | percentage | 15% | removed 2026-11-21: ignored, warning W036 |
+| `duration` | time | 600ms | removed 2026-11-21: ignored, warning W036 |
+| `delay` | time | 0ms | removed 2026-11-21: ignored, warning W036 |
+| `ease` | standard in out linear | standard | removed 2026-11-21: ignored, warning W036 |
+| `replay` | boolean | false | removed 2026-11-21: ignored, warning W036 |
+| `motion` | always | none | spec §13; keeps an animated picture or a video moving under reduced motion; emits a resolve warning |
+| `size` | hero wide column small auto or length | auto | how big the object is on a wide page; auto: the engine chooses; <n>em: its width on a two-page print spread, in ems of the body text, scaled to the screen |
 | `place` | float here top bottom screen | float | float: the best spot near the text; here: where it stands in the text |
 | `shape` | rect circle ellipse alpha or poly | rect |  |
 | `clip` | boolean | false |  |
@@ -291,14 +299,14 @@ rule (P044): a frame with story= takes no body
 | `width` | fit or length | none | row groups only: a fixed width, rounded to whole columns; fit: the columns its widest line needs |
 | `min-width` | fluid or length | none | row groups only: the narrowest it may be, rounded up to whole columns |
 | `max-width` | fluid or length | none | row groups only: the widest it may grow, rounded down to whole columns |
-| `enter` | none fade rise drop slide-left slide-right zoom wipe | none |  |
-| `exit` | none fade rise drop slide-left slide-right zoom wipe | none |  |
-| `enter-at` | percentage | 15% |  |
-| `duration` | time | 600ms |  |
-| `delay` | time | 0ms |  |
-| `ease` | standard in out linear | standard |  |
-| `replay` | boolean | false |  |
-| `motion` | always | none | spec §13 rule 3; emits a resolve warning |
+| `enter` | none fade rise drop slide-left slide-right zoom wipe | none | removed 2026-11-21: ignored, warning W036 |
+| `exit` | none fade rise drop slide-left slide-right zoom wipe | none | removed 2026-11-21: ignored, warning W036 |
+| `enter-at` | percentage | 15% | removed 2026-11-21: ignored, warning W036 |
+| `duration` | time | 600ms | removed 2026-11-21: ignored, warning W036 |
+| `delay` | time | 0ms | removed 2026-11-21: ignored, warning W036 |
+| `ease` | standard in out linear | standard | removed 2026-11-21: ignored, warning W036 |
+| `replay` | boolean | false | removed 2026-11-21: ignored, warning W036 |
+| `motion` | always | none | spec §13; keeps an animated picture or a video moving under reduced motion; emits a resolve warning |
 
 ### \framebreak  — spec §09.3
 
@@ -334,15 +342,15 @@ at most once: caption credit
 | `wrap` | none rect contour jump | none | default depends on placement mode: rect when anchored with side=left|right or cols, jump for side=full, none when grid-placed |
 | `wrap-side` | both left right largest | largest |  |
 | `wrap-offset` | length | 1bl |  |
-| `enter` | none fade rise drop slide-left slide-right zoom wipe | none |  |
-| `exit` | none fade rise drop slide-left slide-right zoom wipe | none |  |
-| `enter-at` | percentage | 15% |  |
-| `duration` | time | 600ms |  |
-| `delay` | time | 0ms |  |
-| `ease` | standard in out linear | standard |  |
-| `replay` | boolean | false |  |
-| `motion` | always | none | spec §13 rule 3; emits a resolve warning |
-| `size` | hero wide column small auto | auto | how big the object is on a wide page; auto: the engine chooses |
+| `enter` | none fade rise drop slide-left slide-right zoom wipe | none | removed 2026-11-21: ignored, warning W036 |
+| `exit` | none fade rise drop slide-left slide-right zoom wipe | none | removed 2026-11-21: ignored, warning W036 |
+| `enter-at` | percentage | 15% | removed 2026-11-21: ignored, warning W036 |
+| `duration` | time | 600ms | removed 2026-11-21: ignored, warning W036 |
+| `delay` | time | 0ms | removed 2026-11-21: ignored, warning W036 |
+| `ease` | standard in out linear | standard | removed 2026-11-21: ignored, warning W036 |
+| `replay` | boolean | false | removed 2026-11-21: ignored, warning W036 |
+| `motion` | always | none | spec §13; keeps an animated picture or a video moving under reduced motion; emits a resolve warning |
+| `size` | hero wide column small auto or length | auto | how big the object is on a wide page; auto: the engine chooses; <n>em: its width on a two-page print spread, in ems of the body text, scaled to the screen |
 | `place` | float here top bottom screen | float | float: the best spot near the text; here: where it stands in the text |
 | `caption-side` | below above overlay | below |  |
 | `layout` | grid strip | grid |  |
@@ -395,15 +403,15 @@ children: frame rule figure video embed lottie audio gallery pullquote sidebar g
 | `wrap` | none rect contour jump | none | default depends on placement mode: rect when anchored with side=left|right or cols, jump for side=full, none when grid-placed |
 | `wrap-side` | both left right largest | largest |  |
 | `wrap-offset` | length | 1bl |  |
-| `enter` | none fade rise drop slide-left slide-right zoom wipe | none |  |
-| `exit` | none fade rise drop slide-left slide-right zoom wipe | none |  |
-| `enter-at` | percentage | 15% |  |
-| `duration` | time | 600ms |  |
-| `delay` | time | 0ms |  |
-| `ease` | standard in out linear | standard |  |
-| `replay` | boolean | false |  |
-| `motion` | always | none | spec §13 rule 3; emits a resolve warning |
-| `stagger` | time | 80ms |  |
+| `enter` | none fade rise drop slide-left slide-right zoom wipe | none | removed 2026-11-21: ignored, warning W036 |
+| `exit` | none fade rise drop slide-left slide-right zoom wipe | none | removed 2026-11-21: ignored, warning W036 |
+| `enter-at` | percentage | 15% | removed 2026-11-21: ignored, warning W036 |
+| `duration` | time | 600ms | removed 2026-11-21: ignored, warning W036 |
+| `delay` | time | 0ms | removed 2026-11-21: ignored, warning W036 |
+| `ease` | standard in out linear | standard | removed 2026-11-21: ignored, warning W036 |
+| `replay` | boolean | false | removed 2026-11-21: ignored, warning W036 |
+| `motion` | always | none | spec §13; keeps an animated picture or a video moving under reduced motion; emits a resolve warning |
+| `stagger` | time | 80ms | removed 2026-11-21: ignored, warning W036 |
 | `layout` | stack row | stack | row: children pack into rows that wrap (design 2026-09-26) |
 | `gap` | length | 1bl | between children in a stack, between rows in a row group |
 | `valign` | top center bottom stretch text | top | row groups: how a child shorter than its row sits in it; text: the row is as tall as its text, media cropped to it |
@@ -461,15 +469,15 @@ at most once: caption credit
 | `wrap` | none rect contour jump | none | default depends on placement mode: rect when anchored with side=left|right or cols, jump for side=full, none when grid-placed |
 | `wrap-side` | both left right largest | largest |  |
 | `wrap-offset` | length | 1bl |  |
-| `enter` | none fade rise drop slide-left slide-right zoom wipe | none |  |
-| `exit` | none fade rise drop slide-left slide-right zoom wipe | none |  |
-| `enter-at` | percentage | 15% |  |
-| `duration` | time | 600ms |  |
-| `delay` | time | 0ms |  |
-| `ease` | standard in out linear | standard |  |
-| `replay` | boolean | false |  |
-| `motion` | always | none | spec §13 rule 3; emits a resolve warning |
-| `size` | hero wide column small auto | auto | how big the object is on a wide page; auto: the engine chooses |
+| `enter` | none fade rise drop slide-left slide-right zoom wipe | none | removed 2026-11-21: ignored, warning W036 |
+| `exit` | none fade rise drop slide-left slide-right zoom wipe | none | removed 2026-11-21: ignored, warning W036 |
+| `enter-at` | percentage | 15% | removed 2026-11-21: ignored, warning W036 |
+| `duration` | time | 600ms | removed 2026-11-21: ignored, warning W036 |
+| `delay` | time | 0ms | removed 2026-11-21: ignored, warning W036 |
+| `ease` | standard in out linear | standard | removed 2026-11-21: ignored, warning W036 |
+| `replay` | boolean | false | removed 2026-11-21: ignored, warning W036 |
+| `motion` | always | none | spec §13; keeps an animated picture or a video moving under reduced motion; emits a resolve warning |
+| `size` | hero wide column small auto or length | auto | how big the object is on a wide page; auto: the engine chooses; <n>em: its width on a two-page print spread, in ems of the body text, scaled to the screen |
 | `place` | float here top bottom screen | float | float: the best spot near the text; here: where it stands in the text |
 | `shape` | rect circle ellipse alpha or poly | rect |  |
 | `clip` | boolean | false |  |
@@ -529,19 +537,19 @@ at most once: folio
 | `palette` | ident | default |  |
 | `height` | flow screen page | flow |  |
 | `snap` | none soft hard | none |  |
-| `turn` | none fade slide | none | page turn, design 2026-09-22 §3 |
+| `turn` | none fade slide | none | removed 2026-11-21 (page turns): ignored, warning W036 |
 | `bg` | role or color | paper |  |
 | `linearize` | boolean | false |  |
 | `folio` | show hide | show |  |
-| `enter` | none fade rise drop slide-left slide-right zoom wipe | none |  |
-| `exit` | none fade rise drop slide-left slide-right zoom wipe | none |  |
-| `enter-at` | percentage | 15% |  |
-| `duration` | time | 600ms |  |
-| `delay` | time | 0ms |  |
-| `ease` | standard in out linear | standard |  |
-| `replay` | boolean | false |  |
-| `motion` | always | none | spec §13 rule 3; emits a resolve warning |
-| `stagger` | time | 80ms |  |
+| `enter` | none fade rise drop slide-left slide-right zoom wipe | none | removed 2026-11-21: ignored, warning W036 |
+| `exit` | none fade rise drop slide-left slide-right zoom wipe | none | removed 2026-11-21: ignored, warning W036 |
+| `enter-at` | percentage | 15% | removed 2026-11-21: ignored, warning W036 |
+| `duration` | time | 600ms | removed 2026-11-21: ignored, warning W036 |
+| `delay` | time | 0ms | removed 2026-11-21: ignored, warning W036 |
+| `ease` | standard in out linear | standard | removed 2026-11-21: ignored, warning W036 |
+| `replay` | boolean | false | removed 2026-11-21: ignored, warning W036 |
+| `motion` | always | none | spec §13; keeps an animated picture or a video moving under reduced motion; emits a resolve warning |
+| `stagger` | time | 80ms | removed 2026-11-21: ignored, warning W036 |
 
 ### \pullquote  — spec §11.10
 
@@ -569,15 +577,15 @@ at most once: cite
 | `wrap` | none rect contour jump | none | default depends on placement mode: rect when anchored with side=left|right or cols, jump for side=full, none when grid-placed |
 | `wrap-side` | both left right largest | largest |  |
 | `wrap-offset` | length | 1bl |  |
-| `enter` | none fade rise drop slide-left slide-right zoom wipe | none |  |
-| `exit` | none fade rise drop slide-left slide-right zoom wipe | none |  |
-| `enter-at` | percentage | 15% |  |
-| `duration` | time | 600ms |  |
-| `delay` | time | 0ms |  |
-| `ease` | standard in out linear | standard |  |
-| `replay` | boolean | false |  |
-| `motion` | always | none | spec §13 rule 3; emits a resolve warning |
-| `size` | hero wide column small auto | auto | how big the object is on a wide page; auto: the engine chooses |
+| `enter` | none fade rise drop slide-left slide-right zoom wipe | none | removed 2026-11-21: ignored, warning W036 |
+| `exit` | none fade rise drop slide-left slide-right zoom wipe | none | removed 2026-11-21: ignored, warning W036 |
+| `enter-at` | percentage | 15% | removed 2026-11-21: ignored, warning W036 |
+| `duration` | time | 600ms | removed 2026-11-21: ignored, warning W036 |
+| `delay` | time | 0ms | removed 2026-11-21: ignored, warning W036 |
+| `ease` | standard in out linear | standard | removed 2026-11-21: ignored, warning W036 |
+| `replay` | boolean | false | removed 2026-11-21: ignored, warning W036 |
+| `motion` | always | none | spec §13; keeps an animated picture or a video moving under reduced motion; emits a resolve warning |
+| `size` | hero wide column small auto or length | auto | how big the object is on a wide page; auto: the engine chooses; <n>em: its width on a two-page print spread, in ems of the body text, scaled to the screen |
 | `place` | float here top bottom screen | float | float: the best spot near the text; here: where it stands in the text |
 | `style` | ident | none |  |
 
@@ -613,19 +621,19 @@ children: frame group figure video embed lottie audio gallery pullquote sidebar 
 | `palette` | ident | default |  |
 | `height` | flow screen page | flow |  |
 | `snap` | none soft hard | none |  |
-| `turn` | none fade slide | none | page turn, design 2026-09-22 §3 |
+| `turn` | none fade slide | none | removed 2026-11-21 (page turns): ignored, warning W036 |
 | `bg` | role or color | paper |  |
 | `linearize` | boolean | false |  |
 | `folio` | show hide | show |  |
-| `enter` | none fade rise drop slide-left slide-right zoom wipe | none |  |
-| `exit` | none fade rise drop slide-left slide-right zoom wipe | none |  |
-| `enter-at` | percentage | 15% |  |
-| `duration` | time | 600ms |  |
-| `delay` | time | 0ms |  |
-| `ease` | standard in out linear | standard |  |
-| `replay` | boolean | false |  |
-| `motion` | always | none | spec §13 rule 3; emits a resolve warning |
-| `stagger` | time | 80ms |  |
+| `enter` | none fade rise drop slide-left slide-right zoom wipe | none | removed 2026-11-21: ignored, warning W036 |
+| `exit` | none fade rise drop slide-left slide-right zoom wipe | none | removed 2026-11-21: ignored, warning W036 |
+| `enter-at` | percentage | 15% | removed 2026-11-21: ignored, warning W036 |
+| `duration` | time | 600ms | removed 2026-11-21: ignored, warning W036 |
+| `delay` | time | 0ms | removed 2026-11-21: ignored, warning W036 |
+| `ease` | standard in out linear | standard | removed 2026-11-21: ignored, warning W036 |
+| `replay` | boolean | false | removed 2026-11-21: ignored, warning W036 |
+| `motion` | always | none | spec §13; keeps an animated picture or a video moving under reduced motion; emits a resolve warning |
+| `stagger` | time | 80ms | removed 2026-11-21: ignored, warning W036 |
 
 ### \sidebar  — spec §11.10
 
@@ -653,15 +661,15 @@ at most once: title
 | `wrap` | none rect contour jump | none | default depends on placement mode: rect when anchored with side=left|right or cols, jump for side=full, none when grid-placed |
 | `wrap-side` | both left right largest | largest |  |
 | `wrap-offset` | length | 1bl |  |
-| `enter` | none fade rise drop slide-left slide-right zoom wipe | none |  |
-| `exit` | none fade rise drop slide-left slide-right zoom wipe | none |  |
-| `enter-at` | percentage | 15% |  |
-| `duration` | time | 600ms |  |
-| `delay` | time | 0ms |  |
-| `ease` | standard in out linear | standard |  |
-| `replay` | boolean | false |  |
-| `motion` | always | none | spec §13 rule 3; emits a resolve warning |
-| `size` | hero wide column small auto | auto | how big the object is on a wide page; auto: the engine chooses |
+| `enter` | none fade rise drop slide-left slide-right zoom wipe | none | removed 2026-11-21: ignored, warning W036 |
+| `exit` | none fade rise drop slide-left slide-right zoom wipe | none | removed 2026-11-21: ignored, warning W036 |
+| `enter-at` | percentage | 15% | removed 2026-11-21: ignored, warning W036 |
+| `duration` | time | 600ms | removed 2026-11-21: ignored, warning W036 |
+| `delay` | time | 0ms | removed 2026-11-21: ignored, warning W036 |
+| `ease` | standard in out linear | standard | removed 2026-11-21: ignored, warning W036 |
+| `replay` | boolean | false | removed 2026-11-21: ignored, warning W036 |
+| `motion` | always | none | spec §13; keeps an animated picture or a video moving under reduced motion; emits a resolve warning |
+| `size` | hero wide column small auto or length | auto | how big the object is on a wide page; auto: the engine chooses; <n>em: its width on a two-page print spread, in ems of the body text, scaled to the screen |
 | `place` | float here top bottom screen | float | float: the best spot near the text; here: where it stands in the text |
 | `style` | ident | none |  |
 | `bg` | role or color | none |  |
@@ -794,15 +802,15 @@ at most once: caption credit
 | `wrap` | none rect contour jump | none | default depends on placement mode: rect when anchored with side=left|right or cols, jump for side=full, none when grid-placed |
 | `wrap-side` | both left right largest | largest |  |
 | `wrap-offset` | length | 1bl |  |
-| `enter` | none fade rise drop slide-left slide-right zoom wipe | none |  |
-| `exit` | none fade rise drop slide-left slide-right zoom wipe | none |  |
-| `enter-at` | percentage | 15% |  |
-| `duration` | time | 600ms |  |
-| `delay` | time | 0ms |  |
-| `ease` | standard in out linear | standard |  |
-| `replay` | boolean | false |  |
-| `motion` | always | none | spec §13 rule 3; emits a resolve warning |
-| `size` | hero wide column small auto | auto | how big the object is on a wide page; auto: the engine chooses |
+| `enter` | none fade rise drop slide-left slide-right zoom wipe | none | removed 2026-11-21: ignored, warning W036 |
+| `exit` | none fade rise drop slide-left slide-right zoom wipe | none | removed 2026-11-21: ignored, warning W036 |
+| `enter-at` | percentage | 15% | removed 2026-11-21: ignored, warning W036 |
+| `duration` | time | 600ms | removed 2026-11-21: ignored, warning W036 |
+| `delay` | time | 0ms | removed 2026-11-21: ignored, warning W036 |
+| `ease` | standard in out linear | standard | removed 2026-11-21: ignored, warning W036 |
+| `replay` | boolean | false | removed 2026-11-21: ignored, warning W036 |
+| `motion` | always | none | spec §13; keeps an animated picture or a video moving under reduced motion; emits a resolve warning |
+| `size` | hero wide column small auto or length | auto | how big the object is on a wide page; auto: the engine chooses; <n>em: its width on a two-page print spread, in ems of the body text, scaled to the screen |
 | `place` | float here top bottom screen | float | float: the best spot near the text; here: where it stands in the text |
 | `shape` | rect circle ellipse alpha or poly | rect |  |
 | `clip` | boolean | false |  |

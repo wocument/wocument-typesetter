@@ -100,7 +100,7 @@ The terms you'll meet in the Wocument docs, in alphabetical order.
 
 **Resolved Document.** The engine's fully worked-out description of a page, with every value settled for every breakpoint. The reader's browser lays the page out from it.
 
-**Reveal.** An enter or exit animation on a scene or object. Reveals never change the layout, and they turn off for readers who ask for reduced motion.
+**Reveal.** An enter or exit animation on a scene or object. Removed on 2026-11-21: nothing on a page animates into place, and the old attributes are ignored with warning `W036`.
 
 **Role.** One of the five colour names in a palette: `paper` (background), `ink` (text), `muted` (captions and small text), `accent` and `rule` (lines and borders). Styles name roles, not colours.
 

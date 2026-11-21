@@ -76,7 +76,7 @@ on an article (`\article[theme=./centred.woct]`).
 \grid[name=wide-margins, at=tablet, cols=8, margin-x=56px, body=2-7]
 \grid[name=wide-margins, at=phone, cols=4, gutter=16px, margin-x=24px, baseline=28px, body=all]
 
-\parent[name=interlude, height=screen, palette=night, snap=soft, enter=fade]
+\parent[name=interlude, height=screen, palette=night, snap=soft]
 ```
 
 ### Colour

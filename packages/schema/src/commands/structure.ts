@@ -20,7 +20,7 @@ const SCENE_ATTRS: Attrs = {
   palette: { types: ["ident"], default: "default" },
   height: { types: ["enum"], enum: ["flow", "screen", "page"], default: "flow" },
   snap: { types: ["enum"], enum: ["none", "soft", "hard"], default: "none" },
-  turn: { types: ["enum"], enum: ["none", "fade", "slide"], default: "none", note: "page turn, design 2026-09-22 §3" },
+  turn: { types: ["enum"], enum: ["none", "fade", "slide"], default: "none", note: "removed 2026-11-21 (page turns): ignored, warning W036" },
   bg: { types: [...COLOR_VALUE], default: "paper" },
   linearize: { types: ["boolean"], default: "false" },
   folio: { types: ["enum"], enum: ["show", "hide"], default: "show" },

@@ -78,30 +78,27 @@ export const SHAPE: Attrs = {
   "alpha-threshold": { types: ["percentage"], default: "50%", note: "only with shape=alpha" },
 };
 
-/** Reveals, spec §13. `stagger` is added separately; it is container-only. */
+/**
+ * Reveals were removed on 2026-11-21 (spec §13). Their attributes are still read, so older files
+ * keep working, and are ignored with warning W036. `motion=always` remains: it keeps an animated
+ * picture or a video moving under reduced motion.
+ */
+const GONE = "removed 2026-11-21: ignored, warning W036";
 export const REVEAL: Attrs = {
-  enter: {
-    types: ["enum"],
-    enum: ["none", "fade", "rise", "drop", "slide-left", "slide-right", "zoom", "wipe"],
-    default: "none",
-  },
-  exit: {
-    types: ["enum"],
-    enum: ["none", "fade", "rise", "drop", "slide-left", "slide-right", "zoom", "wipe"],
-    default: "none",
-  },
-  "enter-at": { types: ["percentage"], default: "15%" },
-  duration: { types: ["time"], default: "600ms" },
-  delay: { types: ["time"], default: "0ms" },
-  ease: { types: ["enum"], enum: ["standard", "in", "out", "linear"], default: "standard" },
-  replay: { types: ["boolean"], default: "false" },
-  // Spec §13: the only value is `always`. Same carriers as `enter`.
-  motion: { types: ["enum"], enum: ["always"], note: "spec §13 rule 3; emits a resolve warning" },
+  enter: { types: ["enum"], enum: ["none", "fade", "rise", "drop", "slide-left", "slide-right", "zoom", "wipe"], default: "none", note: GONE },
+  exit: { types: ["enum"], enum: ["none", "fade", "rise", "drop", "slide-left", "slide-right", "zoom", "wipe"], default: "none", note: GONE },
+  "enter-at": { types: ["percentage"], default: "15%", note: GONE },
+  duration: { types: ["time"], default: "600ms", note: GONE },
+  delay: { types: ["time"], default: "0ms", note: GONE },
+  ease: { types: ["enum"], enum: ["standard", "in", "out", "linear"], default: "standard", note: GONE },
+  replay: { types: ["boolean"], default: "false", note: GONE },
+  // Spec §13: the only value is `always`.
+  motion: { types: ["enum"], enum: ["always"], note: "spec §13; keeps an animated picture or a video moving under reduced motion; emits a resolve warning" },
 };
 
-/** Only scenes, parents and groups stagger their children. */
+/** Removed with reveals (2026-11-21); read and ignored. */
 export const STAGGER: Attrs = {
-  stagger: { types: ["time"], default: "80ms" },
+  stagger: { types: ["time"], default: "80ms", note: GONE },
 };
 
 /** Media caption placement, spec §11.4. */
@@ -112,7 +109,7 @@ export const CAPTION_SIDE: Attrs = {
 /** A colour-ish value: a palette role, a literal colour, or a token. */
 export const COLOR_VALUE: readonly ["role", "color"] = ["role", "color"];
 
-/** Everything an object accepts: placement, wrap and reveals. */
+/** Everything an object accepts: placement and wrap (and the removed reveal attributes, ignored). */
 export const OBJECT_BASE: Attrs = { ...PLACEMENT, ...WRAP, ...REVEAL };
 
 /** Text elements: spec §10.3. `span=all` works inside a multi-column frame. */

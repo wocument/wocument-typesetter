@@ -10,7 +10,7 @@
  * grows to 1760px.
  */
 
-import type { Grid, Len, Palette, Reveal, ResolvedStyle, Spot } from "../src/resolved-document.js";
+import type { Grid, Len, Palette, ResolvedStyle, Spot } from "../src/resolved-document.js";
 
 export const px = (n: number): Len => ({ u: "px", n });
 export const bl = (n: number): Len => ({ u: "bl", n });
@@ -122,18 +122,6 @@ export function defaultGrid(bp: Bp): Grid {
 }
 
 export const DEFAULT_PALETTE: Palette = { paper: "#f6f7f8ff", ink: "#16181dff", muted: "#5f6570ff", accent: "#1f5fbfff", rule: "#dde1e6ff" };
-
-/** §13 defaults: no animation. */
-export const NO_REVEAL: Reveal = {
-  enter: "none",
-  exit: "none",
-  enterAt: 0.15,
-  durationMs: 600,
-  delayMs: 0,
-  ease: "standard",
-  replay: false,
-  motion: "reduce",
-};
 
 /** The built-in breakpoints (spec §07.4, §16) as a half-open cover. */
 export const DEFAULT_BREAKPOINTS = [

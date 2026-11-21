@@ -43,7 +43,7 @@ description: An opener over a picture, a page of columns, an interlude and a clo
 %% An opener: one screen, the picture behind, the heading on the lower rows.
 \scene[name=opener, height=screen, palette=night, folio=hide]{
   \figure[src=./pictures/landscape-night.jpg, alt="", layer=background, focus="50% 70%", loading=eager]
-  \frame[cols=1-7, rows=4-6, cols@tablet=1-6, cols@phone=all, valign=bottom, enter=rise]{
+  \frame[cols=1-7, rows=4-6, cols@tablet=1-6, cols@phone=all, valign=bottom]{
     \kicker{Feature · Night}
     \headline{Night Shift}
     \deck{Eleven hours, one lamp and the weather: how a keeper's night went.}

@@ -28,7 +28,6 @@ The design target is studio-level editorial layout, written as code. That means 
 - Named **type styles**, fonts, color palettes and tokens.
 - **Responsive** behavior through named breakpoints and fluid values.
 - **Media**: high-res images, GIF, video, embeds, Lottie animation, audio, galleries.
-- **Enter/exit reveals** on scenes and objects.
 - Sensible **defaults** for everything. A file with zero design code still renders a good article.
 
 ### 01.2 Out of scope
@@ -64,7 +63,7 @@ Read this section first. Everything else is detail.
 | **Object** | A placed non-text item: figure, video, embed, Lottie, audio, gallery, pull quote, sidebar, group. Objects can exclude text (wrap). |
 | **Style** | A named set of typographic properties. Every text element has a default style of the same name. |
 | **Breakpoint** | A named viewport width range. Grids, styles and individual attributes can be overridden per breakpoint. |
-| **Reveal** | An enter or exit animation on a scene or object. Reveals never change layout. |
+| **Reveal** | Removed 2026-11-21: elements no longer animate into place (§13). |
 
 ### 02.1 The cascade
 
@@ -480,10 +479,10 @@ A scene is a full-width band. Scenes stack top to bottom in source order. One ar
 | `palette` | palette name | `default` | |
 | `height` | `flow` `screen` `page` | `flow` | §08.2 |
 | `snap` | `none` `soft` `hard` | `none` | §08.3 |
-| `turn` | `none` `fade` `slide` | `none` | §08.3 |
+| `turn` | `none` `fade` `slide` | `none` | Removed 2026-11-21: read and ignored, warning `W036` (§08.3) |
 | `bg` | color, role, token | `paper` | For image or video backgrounds use an object with `layer=background` (§11.2) |
 | `linearize` | boolean | `false` | §07.5 |
-| `enter` `exit` and reveal params | | | §13. Applied to the scene's children, staggered. |
+| `enter` `exit` and reveal params | | | Removed 2026-11-21: read and ignored, warning `W036` (§13) |
 | `folio` | `show` `hide` | `show` | §10.5 |
 
 Body: frames, objects, groups. Bare text elements or prose directly inside a scene are shorthand for one default frame (`cols` = the grid's `body` range) holding that content.
@@ -506,14 +505,14 @@ For scenes that are not page scenes, `snap` maps to scroll snapping on the scene
 - `hard`: mandatory snapping. Valid on `height=screen` and `height=page` scenes. On a flow scene it is downgraded to `soft` with a warning, because mandatory snapping on a scene taller than the viewport traps the reader.
 - On a `height=page` scene the default is `none` (2026-10-09; `soft` until then), and `hard` is kept: it stops the reader at the page's top without trapping them inside it.
 
-**`turn`**: how the page arrives when the reader reaches it. `none` (default), `fade`, or `slide` (the content moves 8% of the viewport height into place while fading in, from below when scrolling down and from above when scrolling up). It plays each time the scene enters the viewport after being fully out of it, over the scene's `duration` (default `600ms`) with its `ease`. Like every reveal, it uses opacity and transform only and never affects layout (§13 rule 1). Under reduced motion it resolves to `none` (§13 rule 3). Without JavaScript the page is simply there (§13 rule 2).
+**`turn`**: removed on 2026-11-21, with every other page animation. A scene arrives as it is: nothing fades or slides into place. `turn`, and the scene's `duration` and `ease`, are read so older files still work, and ignored with warning `W036`.
 
 ### 08.4 `\parent` (master scenes)
 
 A parent is a scene template. It takes the same attributes and body as `\scene`, plus `name` (required) and `at`.
 
 ```
-\parent[name=chapter, grid=feature, palette=night, height=screen, snap=hard, enter=fade]{
+\parent[name=chapter, grid=feature, palette=night, height=screen, snap=hard]{
   \rule[cols=1-2, rows=1]
 }
 
@@ -566,7 +565,7 @@ Body: prose paragraphs, text elements, text markers, and anchored objects (§11.
 | `z` | integer | source order | |
 | `hide` | boolean | `false` | |
 | `width` `min-width` `max-width` | length | none | Only inside a row group, which sizes its children with them (§11.11) |
-| `enter` `exit` and reveal params | | | §13 |
+| `enter` `exit` and reveal params | | | Removed 2026-11-21: read and ignored, warning `W036` (§13) |
 
 Two forms:
 
@@ -775,7 +774,7 @@ Every object accepts these.
 | `layer` | `background` `content` `overlay` | `content` | §11.2 |
 | `z` | integer | source order | Within a layer |
 | `wrap` and wrap params | | | §12 |
-| `enter` `exit` and reveal params | | | §13 |
+| `enter` `exit` and reveal params | | | Removed 2026-11-21: read and ignored, warning `W036` (§13) |
 | `hide` | boolean | `false` | |
 | `size` | `hero` `wide` `column` `small` `auto`, or a length in `em` | `auto` | `\figure` `\video` `\lottie` `\gallery` `\pullquote` `\sidebar` only, on a wide page. How big and how important the object is. `hero`: the one the screen is about, at most one per screen. `wide`: two or more columns. `column`: one column. `small`: part of a column, with text beside it: set at its anchor, half the column wide, on the side of the theme's first `small` spot (§07.7). `auto`: the engine chooses from the object's shape and surroundings: a landscape picture leans to `wide`, a portrait to `column`, a cut-out keeps its reach. `<n>em`: the picture's width on a two-page print spread in ems of the body text, scaled to the screen by §09.7 rule 16; any other unit has no effect (`W035`). §11.3 |
 | `place` | `float` `here` `top` `bottom` `screen` | `float` | Same six commands. `float`: the engine picks the spot. `here`: exactly at the anchor. `top`, `bottom`: the top or bottom of the anchor's screen. `screen`: a screen of its own. §11.3 |
@@ -897,14 +896,14 @@ Text-bearing objects. They take the common attributes and the placement modes of
 
 ### 11.11 `\group`
 
-A box on the grid that holds objects, frames and other groups, and treats them as one unit for placement, wrap, reveal and `hide`. Its children ignore their own `cols`, `rows` and `top`: the group decides where they go, inside the group's own columns. A group never defines new columns, so this is not a nested grid.
+A box on the grid that holds objects, frames and other groups, and treats them as one unit for placement, wrap and `hide`. Its children ignore their own `cols`, `rows` and `top`: the group decides where they go, inside the group's own columns. A group never defines new columns, so this is not a nested grid.
 
 | Attribute | Type | Default | Notes |
 | :---- | :---- | :---- | :---- |
 | `layout` | `stack` `row` | `stack` | `stack`: children one below another at the group's width. `row`: children pack into rows of whole grid columns that wrap. |
 | `gap` | length | `1bl` | In a stack, the space between children; in a row group, between rows. Items in a row are separated by the grid gutter. |
 | `valign` | `top` `center` `bottom` `stretch` `text` | `top` | Row groups: how a child shorter than its row sits in it. `stretch` gives every child the row's height; media fill it (cropping under `fit=cover`), and a text frame takes it as a definite height, its story continuing in the thread's next frame. `text` (2026-09-30): the row is as tall as its tallest text frame (with none, its tallest child), and every child takes that height, media cropped to it: a photograph as tall as the heading beside it. |
-| `stagger` | time | `80ms` | Between children that take the group's reveal |
+| `stagger` | time | `80ms` | Removed 2026-11-21: read and ignored, warning `W036` (§13) |
 
 **Row groups.** The row is the group's column span, `N` columns. A child is **fixed** when it has `width`, and otherwise **fills**: it is at least `min-width` wide (default one column) and grows up to `max-width` (default the whole row). Widths round to whole columns: `min-width` up, `max-width` down, `width` to the nearest, never below one column or above `N`. Packing, at every viewport width:
 
@@ -917,7 +916,7 @@ A text frame's height in a row is its last line, not its last paragraph's space 
 
 **Nesting.** A stack inside a row is one row item, and its children stack at the width the row gave it: this is how a photo and its headline stay together when a row breaks. A row inside a stack or another row packs into the width its parent gave it.
 
-**Reveal.** The group itself does not animate. The reveal it is given (its own `enter`, or its scene's, or its parent group's) passes to each child that has no `enter` of its own, `stagger` apart, in source order.
+**Reveal.** Removed on 2026-11-21 (§13): nothing in a group animates into place.
 
 **Wrap.** Siblings in a group never overlap, so children's own `wrap` does nothing inside it. To text outside, the group is one object: with `wrap=rect` its bounding box excludes text in frames placed after it.
 
@@ -975,27 +974,21 @@ Contours are resolution-independent, so the same contour works at every breakpoi
 
 ---
 
-## 13 Reveals
+## 13 Reveals (removed)
 
-The only motion in v1. A reveal animates an element from a start state to its laid-out state (enter) or away from it (exit).
+Removed on 2026-11-21 by the owner, together with page turns (§08.3): nothing on a page animates into place. Every element is where layout put it from the first frame, and scrolling shows the page as it is.
+
+The attributes that drove them are still read, so files written before the change resolve as before, and each one is ignored with resolve warning `W036`: `enter`, `exit`, `enter-at`, `duration`, `delay`, `ease`, `replay`, `stagger` (on scenes, parents, frames, objects and groups) and `turn` (on scenes and parents). `enter-at` on `\music` is not a reveal and keeps its meaning (§10.6).
 
 | Attribute | Type | Default | Notes |
 | :---- | :---- | :---- | :---- |
-| `enter` | `none` `fade` `rise` `drop` `slide-left` `slide-right` `zoom` `wipe` | `none` | |
-| `exit` | same set | `none` | Plays when the element leaves through the top of the viewport |
-| `enter-at` | percentage | `15%` | How far the element must be inside the viewport before enter fires |
-| `duration` | time | `600ms` | |
-| `delay` | time | `0ms` | |
-| `ease` | `standard` `in` `out` `linear` | `standard` | |
-| `replay` | boolean | `false` | Replay enter each time the element comes back into view |
-| `stagger` | time | `80ms` | On scenes, parents and groups: delay step between children that have no `enter` of their own |
-| `motion` | `always` | none | Only value is `always`: keep this element's motion under reduced motion (rule 3). Emits a warning. Same carriers as `enter`. |
+| `motion` | `always` | none | Only value is `always`: keep an animated picture moving and a video playing on its own under reduced motion (rule 3). Emits warning `W034`. |
 
-Hard rules:
+Rules (numbered as before the removal, so references to them stay valid):
 
-1. Reveals use opacity, transform and clip only. They MUST NOT affect layout. Text is always laid out in its final position first.
-2. Content MUST be present and readable without JavaScript and before any reveal fires for elements in the first viewport.
-3. Under the user's reduced-motion setting every reveal resolves to `none`, animated media shows a still, and `play=visible|auto` becomes `manual`, and a page `turn` resolves to `none`. An author can force motion on one element with `motion=always`, which emits a warning.
+1. (Removed with reveals: how they moved.)
+2. Content MUST be present and readable without JavaScript.
+3. Under the user's reduced-motion setting animated media shows a still and `play=visible|auto` becomes `manual`. An author can keep one object's motion with `motion=always`, which emits a warning.
 
 ---
 
@@ -1096,9 +1089,9 @@ type Variant = {                   // one complete value set per breakpoint
   name: string
   styles: Record<StyleKey, ResolvedStyle>
   stories: Record<StoryId, Story>
-  scenes: Scene[]                  // grid, palette, height, turn, snap, reveals, children
+  scenes: Scene[]                  // grid, palette, height, snap, children
   frames: Record<FrameId, Frame>   // placement, columns, story ref
-  objects: Record<ObjectId, ObjectElement>   // placement, media, wrap shape, reveal
+  objects: Record<ObjectId, ObjectElement>   // placement, media, wrap shape, motion
   threads: Record<StoryId, FrameId[]>
   spots: Spot[]                    // where floating objects may go (§07.7)
 }
@@ -1348,7 +1341,7 @@ lang: en
 \style[name=headline-xl, extends=headline, family="Tiempos Headline, serif",
        size=fluid(44px, 104px), tracking=-0.02em]
 
-\parent[name=interlude, grid=feature, height=screen, palette=night, snap=hard, enter=fade]
+\parent[name=interlude, grid=feature, height=screen, palette=night, snap=hard]
 
 \folio[position=top-left, progress]{Architecture Today · Heritage}
 
@@ -1362,7 +1355,7 @@ lang: en
 
   The history of European fortification is a history of problem and response.
 
-  \pullquote[side=right, width=50%, wrap=rect, wrap-offset=1bl, enter=rise]{
+  \pullquote[side=right, width=50%, wrap=rect, wrap-offset=1bl]{
     Stone remembers even when the stone-cutter does not.
   }
 
@@ -1376,7 +1369,7 @@ lang: en
 
   \figure[src=/img/keep-cutout.png, alt="The keep at Carcassonne, cut out against white",
           cols=7-12, cols@tablet=5-8, shape=alpha, wrap=contour, wrap-side=left,
-          wrap-offset=16px, enter=fade]{
+          wrap-offset=16px]{
     \caption{The keep at Carcassonne, restored in 1853 by Viollet-le-Duc.}
     \credit{Jean-Pierre Dalbéra / CC BY 2.0}
   }
@@ -1386,11 +1379,11 @@ lang: en
 }
 
 %% ---------- scenes ----------
-\scene[name=opener, grid=feature, height=screen, palette=night, snap=hard, stagger=120ms]{
+\scene[name=opener, grid=feature, height=screen, palette=night, snap=hard]{
   \video[src=/video/ramparts.mp4, poster=/img/ramparts.jpg, alt="", layer=background,
          fit=cover, focus="50% 70%", play=visible, loop, muted]
 
-  \frame[cols=1-8, rows=4-6, cols@tablet=1-7, cols@phone=all, valign=bottom, enter=rise]{
+  \frame[cols=1-8, rows=4-6, cols@tablet=1-7, cols@phone=all, valign=bottom]{
     \kicker{Essay · Heritage}
     \headline[style=headline-xl]{Stone \br & Strategy}
     \deck{How the great fortifications of medieval Europe shaped a continent.}
@@ -1402,7 +1395,7 @@ lang: en
 \scene[name=part-one, grid=feature]{
   \frame[story=main, cols=1-8, columns=2, cols@tablet=all, cols@phone=all, columns@phone=1]
 
-  \sidebar[cols=9-12, top=0, bg=rule, inset=1bl, hide@tablet, hide@phone, enter=fade]{
+  \sidebar[cols=9-12, top=0, bg=rule, inset=1bl, hide@tablet, hide@phone]{
     \title{By the numbers}
     1,200+ surviving castles in France alone.
 
@@ -1455,7 +1448,7 @@ This is the entire article.
 **Linearize**: the fallback that stacks a scene into one column when its placements do not fit a breakpoint's grid.
 **Overset**: text that does not fit in the frames of its thread.
 **Parent**: a scene template (print's master page).
-**Reveal**: an enter or exit animation that does not affect layout.
+**Reveal**: an enter or exit animation; removed 2026-11-21 (§13).
 **Scene**: a full-width band of the article with its own grid and palette.
 **Slot**: a free horizontal interval in one line band after exclusions.
 **Story**: a named run of content with no position of its own.

@@ -10,7 +10,7 @@
  *
  * It runs `woc check` (diagnostics and copyfitting advice), then starts `woc dev` on the
  * document's folder and opens `page.html?doc=<name>&inspect` at each width with reduced motion
- * (reveals off, so nothing is hidden), scrolls through so lazy pictures load, and reads the
+ * (animated pictures show a still), scrolls through so lazy pictures load, and reads the
  * page's own report (holes in columns, text moved by widow and orphan control, pictures that
  * found no good spot, loose lines) with errors, failed loads and sideways overflow.
  * Writes <out>/<name>/report.json, <out>/<name>/report.md and <out>/<name>/w<width>-s<NN>.png.

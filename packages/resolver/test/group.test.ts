@@ -31,7 +31,7 @@ title: Groups
 
 describe("\\group", () => {
   const parsed = parse(SRC);
-  const { doc } = resolve(parsed.ast as Document);
+  const { doc, diagnostics } = resolve(parsed.ast as Document);
 
   it("parses and resolves with every invariant held", () => {
     expect(parsed.diagnostics).toEqual([]);
@@ -57,14 +57,10 @@ describe("\\group", () => {
     expect(doc.variants.base!.threads.main).toEqual(["frame-1", "frame-3"]);
   });
 
-  it("staggers the group's enter over children without their own, and keeps the group itself still", () => {
+  it("keeps no reveal: a group's enter is read, ignored and warned about (W036, 2026-11-21)", () => {
     const v = doc.variants.base!;
-    expect(v.objects["group-1"]!.reveal.enter).toBe("none");
-    expect(v.objects["group-2"]!.reveal.enter).toBe("none");
-    // group-2 took group-1's fade at delay 0 and passes it on, staggered by the default 80ms.
-    expect([v.objects["pullquote-1"]!.reveal.enter, v.objects["pullquote-1"]!.reveal.delayMs]).toEqual(["fade", 0]);
-    expect([v.frames["frame-1"]!.reveal.enter, v.frames["frame-1"]!.reveal.delayMs]).toEqual(["fade", 80]);
-    expect(v.objects["pullquote-2"]!.reveal.enter).toBe("rise");
-    expect([v.frames["frame-2"]!.reveal.enter, v.frames["frame-2"]!.reveal.delayMs]).toEqual(["fade", 100]);
+    expect("reveal" in v.objects["group-1"]!).toBe(false);
+    expect("reveal" in v.frames["frame-1"]!).toBe(false);
+    expect(diagnostics.some((d) => d.code === "W036")).toBe(true);
   });
 });

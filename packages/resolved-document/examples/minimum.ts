@@ -18,7 +18,7 @@
  */
 
 import type { Frame, ResolvedDocument, Variant } from "../src/resolved-document.js";
-import { type Bp, DEFAULT_BREAKPOINTS, DEFAULT_SPOTS, DEFAULT_PALETTE, NO_REVEAL, defaultGrid, pick, px, themeStyles, VANILLA_SERIF_FONTS } from "./default-theme.js";
+import { type Bp, DEFAULT_BREAKPOINTS, DEFAULT_SPOTS, DEFAULT_PALETTE, defaultGrid, pick, px, themeStyles, VANILLA_SERIF_FONTS } from "./default-theme.js";
 
 const SCENE = "scene-1";
 const HEADING = "frame-1";
@@ -44,7 +44,6 @@ function variant(bp: Bp): Variant {
     z, // source order (§09.2)
     hidden: false,
     wrap: null,
-    reveal: NO_REVEAL,
   });
   const para = (element: "headline" | "prose", style: string, s: number) => ({
     kind: "paragraph" as const,
@@ -74,7 +73,6 @@ function variant(bp: Bp): Variant {
         palette: DEFAULT_PALETTE,
         height: "page",
         snap: "none", // a page scene's default since 2026-10-09 (§08.3)
-        turn: null,
         bg: { role: "paper" },
         linearized: false,
         folio: null,

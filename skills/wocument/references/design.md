@@ -25,7 +25,7 @@ what the phone sees.
 
 - **Opener**: a `height=screen` scene: a background picture or video (`layer=background`,
   `fit=cover`, `focus=`), a palette that keeps the text readable on it (usually `night`), a
-  heading frame on the lower rows (`rows=4-6`, `valign=bottom`), `enter=rise` on the heading.
+  heading frame on the lower rows (`rows=4-6`, `valign=bottom`).
   On phones keep the heading short; check the picture's focus at 390px.
 - **Feature**: the implicit form, or a `page` scene with a heading frame and a threaded story
   in columns. A lede `span=all` above the columns, a drop cap, two or three anchored pictures of

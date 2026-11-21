@@ -20,7 +20,7 @@ lang: en
 \style[name=headline-xl, extends=headline, family="Tiempos Headline, serif",
        size=fluid(44px, 104px), tracking=-0.02em]
 
-\parent[name=interlude, grid=feature, height=screen, palette=night, snap=hard, enter=fade]
+\parent[name=interlude, grid=feature, height=screen, palette=night, snap=hard]
 
 \folio[position=top-left, progress]{Architecture Today · Heritage}
 
@@ -34,7 +34,7 @@ lang: en
 
   The history of European fortification is a history of problem and response.
 
-  \pullquote[side=right, width=50%, wrap=rect, wrap-offset=1bl, enter=rise]{
+  \pullquote[side=right, width=50%, wrap=rect, wrap-offset=1bl]{
     Stone remembers even when the stone-cutter does not.
   }
 
@@ -48,7 +48,7 @@ lang: en
 
   \figure[src=/img/keep-cutout.png, alt="The keep at Carcassonne, cut out against white",
           cols=7-12, cols@tablet=5-8, shape=alpha, wrap=contour, wrap-side=left,
-          wrap-offset=16px, enter=fade]{
+          wrap-offset=16px]{
     \caption{The keep at Carcassonne, restored in 1853 by Viollet-le-Duc.}
     \credit{Jean-Pierre Dalbéra / CC BY 2.0}
   }
@@ -58,11 +58,11 @@ lang: en
 }
 
 %% ---------- scenes ----------
-\scene[name=opener, grid=feature, height=screen, palette=night, snap=hard, stagger=120ms]{
+\scene[name=opener, grid=feature, height=screen, palette=night, snap=hard]{
   \video[src=/video/ramparts.mp4, poster=/img/ramparts.jpg, alt="", layer=background,
          fit=cover, focus="50% 70%", play=visible, loop, muted]
 
-  \frame[cols=1-8, rows=4-6, cols@tablet=1-7, cols@phone=all, valign=bottom, enter=rise]{
+  \frame[cols=1-8, rows=4-6, cols@tablet=1-7, cols@phone=all, valign=bottom]{
     \kicker{Essay · Heritage}
     \headline[style=headline-xl]{Stone \br & Strategy}
     \deck{How the great fortifications of medieval Europe shaped a continent.}
@@ -74,7 +74,7 @@ lang: en
 \scene[name=part-one, grid=feature]{
   \frame[story=main, cols=1-8, columns=2, cols@tablet=all, cols@phone=all, columns@phone=1]
 
-  \sidebar[cols=9-12, top=0, bg=rule, inset=1bl, hide@tablet, hide@phone, enter=fade]{
+  \sidebar[cols=9-12, top=0, bg=rule, inset=1bl, hide@tablet, hide@phone]{
     \title{By the numbers}
     1,200+ surviving castles in France alone.
 

@@ -304,7 +304,6 @@
           },
           "height": "page",
           "snap": "none",
-          "turn": null,
           "bg": {
             "role": "paper"
           },
@@ -352,17 +351,7 @@
           "bg": null,
           "z": 0,
           "hidden": false,
-          "wrap": null,
-          "reveal": {
-            "enter": "none",
-            "exit": "none",
-            "enterAt": 0.15,
-            "durationMs": 600,
-            "delayMs": 0,
-            "ease": "standard",
-            "replay": false,
-            "motion": "reduce"
-          }
+          "wrap": null
         },
         "frame-2": {
           "id": "frame-2",
@@ -396,17 +385,7 @@
           "bg": null,
           "z": 1,
           "hidden": false,
-          "wrap": null,
-          "reveal": {
-            "enter": "none",
-            "exit": "none",
-            "enterAt": 0.15,
-            "durationMs": 600,
-            "delayMs": 0,
-            "ease": "standard",
-            "replay": false,
-            "motion": "reduce"
-          }
+          "wrap": null
         }
       },
       "objects": {},
@@ -755,7 +734,6 @@
           },
           "height": "page",
           "snap": "none",
-          "turn": null,
           "bg": {
             "role": "paper"
           },
@@ -803,17 +781,7 @@
           "bg": null,
           "z": 0,
           "hidden": false,
-          "wrap": null,
-          "reveal": {
-            "enter": "none",
-            "exit": "none",
-            "enterAt": 0.15,
-            "durationMs": 600,
-            "delayMs": 0,
-            "ease": "standard",
-            "replay": false,
-            "motion": "reduce"
-          }
+          "wrap": null
         },
         "frame-2": {
           "id": "frame-2",
@@ -847,17 +815,7 @@
           "bg": null,
           "z": 1,
           "hidden": false,
-          "wrap": null,
-          "reveal": {
-            "enter": "none",
-            "exit": "none",
-            "enterAt": 0.15,
-            "durationMs": 600,
-            "delayMs": 0,
-            "ease": "standard",
-            "replay": false,
-            "motion": "reduce"
-          }
+          "wrap": null
         }
       },
       "objects": {},
@@ -1206,7 +1164,6 @@
           },
           "height": "page",
           "snap": "none",
-          "turn": null,
           "bg": {
             "role": "paper"
           },
@@ -1254,17 +1211,7 @@
           "bg": null,
           "z": 0,
           "hidden": false,
-          "wrap": null,
-          "reveal": {
-            "enter": "none",
-            "exit": "none",
-            "enterAt": 0.15,
-            "durationMs": 600,
-            "delayMs": 0,
-            "ease": "standard",
-            "replay": false,
-            "motion": "reduce"
-          }
+          "wrap": null
         },
         "frame-2": {
           "id": "frame-2",
@@ -1298,17 +1245,7 @@
           "bg": null,
           "z": 1,
           "hidden": false,
-          "wrap": null,
-          "reveal": {
-            "enter": "none",
-            "exit": "none",
-            "enterAt": 0.15,
-            "durationMs": 600,
-            "delayMs": 0,
-            "ease": "standard",
-            "replay": false,
-            "motion": "reduce"
-          }
+          "wrap": null
         }
       },
       "objects": {},
@@ -1657,7 +1594,6 @@
           },
           "height": "page",
           "snap": "none",
-          "turn": null,
           "bg": {
             "role": "paper"
           },
@@ -1705,17 +1641,7 @@
           "bg": null,
           "z": 0,
           "hidden": false,
-          "wrap": null,
-          "reveal": {
-            "enter": "none",
-            "exit": "none",
-            "enterAt": 0.15,
-            "durationMs": 600,
-            "delayMs": 0,
-            "ease": "standard",
-            "replay": false,
-            "motion": "reduce"
-          }
+          "wrap": null
         },
         "frame-2": {
           "id": "frame-2",
@@ -1749,17 +1675,7 @@
           "bg": null,
           "z": 1,
           "hidden": false,
-          "wrap": null,
-          "reveal": {
-            "enter": "none",
-            "exit": "none",
-            "enterAt": 0.15,
-            "durationMs": 600,
-            "delayMs": 0,
-            "ease": "standard",
-            "replay": false,
-            "motion": "reduce"
-          }
+          "wrap": null
         }
       },
       "objects": {},
@@ -2108,7 +2024,6 @@
           },
           "height": "page",
           "snap": "none",
-          "turn": null,
           "bg": {
             "role": "paper"
           },
@@ -2156,17 +2071,7 @@
           "bg": null,
           "z": 0,
           "hidden": false,
-          "wrap": null,
-          "reveal": {
-            "enter": "none",
-            "exit": "none",
-            "enterAt": 0.15,
-            "durationMs": 600,
-            "delayMs": 0,
-            "ease": "standard",
-            "replay": false,
-            "motion": "reduce"
-          }
+          "wrap": null
         },
         "frame-2": {
           "id": "frame-2",
@@ -2200,17 +2105,7 @@
           "bg": null,
           "z": 1,
           "hidden": false,
-          "wrap": null,
-          "reveal": {
-            "enter": "none",
-            "exit": "none",
-            "enterAt": 0.15,
-            "durationMs": 600,
-            "delayMs": 0,
-            "ease": "standard",
-            "replay": false,
-            "motion": "reduce"
-          }
+          "wrap": null
         }
       },
       "objects": {},
