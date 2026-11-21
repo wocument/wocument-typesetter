@@ -128,6 +128,7 @@ export function render(root: HTMLElement, pd: PositionedDocument, rd: ResolvedDo
 
   /** Videos with play=visible: they play while in the viewport and pause outside it (§11.5). */
   const videos: HTMLVideoElement[] = [];
+  const lead = leadPicture(pd, v);
   let anySnap: "none" | "soft" | "hard" = "none";
 
   for (const ps of pd.scenes) {
@@ -169,7 +170,7 @@ export function render(root: HTMLElement, pd: PositionedDocument, rd: ResolvedDo
         el.dataset.frame = id;
         const box = boxes.get(id);
         if (box) {
-          const b = el.appendChild(objectBox(doc, obj!, box, ps.y, rd, reduce, videos));
+          const b = el.appendChild(objectBox(doc, obj!, box, ps.y, rd, reduce, videos, id === lead));
           if (obj!.kind === "gallery") {
             // Items keep scene coordinates: this layer undoes the gallery box's offset.
             const inner = b.appendChild(doc.createElement("div"));
@@ -461,6 +462,21 @@ function fragmentNode(
  * and focused (§11.4, §11.5) and clipped to its shape when `clip` is set.
  * Text (captions included) is set as lines.
  */
+/**
+ * The largest figure whose picture shows on the first screen, or null: the page's likely Largest
+ * Contentful Paint. It loads at once and first; every other picture keeps its `loading`.
+ */
+export function leadPicture(pd: PositionedDocument, v: ResolvedDocument["variants"][string]): string | null {
+  let best: { name: string; area: number } | null = null;
+  for (const ps of pd.scenes)
+    for (const o of ps.objects) {
+      if (!o.media || o.media.y >= pd.viewport.height || v.objects[o.name]?.kind !== "figure") continue;
+      const area = o.media.width * Math.max(0, Math.min(o.media.height, pd.viewport.height - o.media.y));
+      if (!best || area > best.area) best = { name: o.name, area };
+    }
+  return best?.name ?? null;
+}
+
 function objectBox(
   doc: Document,
   o: ObjectElement,
@@ -469,6 +485,8 @@ function objectBox(
   rd: ResolvedDocument,
   reduce: boolean,
   videos: HTMLVideoElement[],
+  /** The largest picture on the first screen, the page's likely Largest Contentful Paint: fetched first, never lazily. */
+  lead = false,
 ): HTMLElement {
   const r = placed.media ?? placed.box;
   const place = (el: HTMLElement): HTMLElement => {
@@ -533,10 +551,11 @@ function objectBox(
     const m = o.media;
     const el =
       o.kind === "figure"
-        ? Object.assign(doc.createElement("img"), { loading: o.loading, decoding: "async" })
+        ? Object.assign(doc.createElement("img"), { loading: lead ? "eager" : o.loading, decoding: "async" })
         : doc.createElement("video");
     const asset = rd.assets[o.kind === "figure" ? o.image : o.video];
     if (el instanceof HTMLImageElement && asset?.kind === "image") {
+      if (lead) el.setAttribute("fetchpriority", "high");
       el.src = asset.fallback;
       // §13 rule 3 (and §11.4): under reduced motion an animated GIF shows a still.
       if (asset.animated && reduce && o.motion !== "always") el.addEventListener("load", () => el.replaceWith(still(doc, el)), { once: true });
