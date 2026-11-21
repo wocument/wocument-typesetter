@@ -154,7 +154,7 @@ class Formatter {
       const i = this.breakpoints.indexOf(a.at);
       return i === -1 ? this.breakpoints.length : i;
     };
-    const sorted = [...cmd.attrs].sort((a, b) => keys.indexOf(a.key) - keys.indexOf(b.key) || rank(a) - rank(b));
+    const sorted = cmd.attrs.toSorted((a, b) => keys.indexOf(a.key) - keys.indexOf(b.key) || rank(a) - rank(b));
     return sorted.map((a) => {
       const key = a.at === null ? a.key : `${a.key}@${a.at}`;
       const decl = schema?.attrs[a.key] ?? { types: [] };

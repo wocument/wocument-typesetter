@@ -552,8 +552,6 @@ export type Scene = {
   height: "flow" | "screen" | "page";
   /** Scroll snapping on the scene's top edge. `hard` on a flow scene is already downgraded to `soft` (spec §08.3). */
   snap: "none" | "soft" | "hard";
-  /** How the page arrives when the reader reaches it, or `null` for none (spec §08.3). */
-  turn: SceneTurn | null;
   /** Scene background color (spec §08.1). */
   bg: Color;
   /** True when this scene linearized at this breakpoint. Placements below are already rewritten: stacked in source order at full width, one internal column, wrap `jump` (spec §07.5). */
@@ -564,16 +562,6 @@ export type Scene = {
   body?: StyleKey;
   /** Top-level children in paint order: the parent's children first, beneath, then the scene's own, each in source order (spec §08.4, §11.3). Anchored objects are not listed here; they belong to their story. */
   children: ElementRef[];
-};
-
-/** A page turn (spec §08.3): plays each time the scene enters the viewport after being fully out of it. */
-export type SceneTurn = {
-  /** `fade`, or `slide`: 8% of the viewport height into place while fading, from the scroll direction. */
-  effect: "fade" | "slide";
-  /** The scene's `duration`. */
-  durationMs: number;
-  /** The scene's `ease`. */
-  ease: Reveal["ease"];
 };
 
 /** A reference to a frame or an object (groups are objects). */
@@ -664,33 +652,6 @@ export type VerticalRows = {
   rows: TrackRange;
 };
 
-/** Reveal animation parameters, with any scene, parent or group stagger already baked into `delayMs` (spec §13). */
-export type Reveal = {
-  /** Animation as the element enters the viewport. */
-  enter: RevealKind;
-  /** Animation as the element leaves through the top of the viewport. */
-  exit: RevealKind;
-  /**
-   * Fraction of the element that must be inside the viewport before `enter` fires: 0.15 is `15%`.
-   * @minimum 0
-   * @maximum 1
-   */
-  enterAt: number;
-  /** Duration in milliseconds. */
-  durationMs: number;
-  /** Delay in milliseconds, including this element's stagger step. */
-  delayMs: number;
-  /** Easing curve. */
-  ease: "standard" | "in" | "out" | "linear";
-  /** Replay `enter` every time the element comes back into view. */
-  replay: boolean;
-  /** `reduce`: every reveal becomes `none` under reduced motion. `always`: this element keeps its motion (spec §13 rule 3). */
-  motion: "reduce" | "always";
-};
-
-/** The reveal animations (spec §13). */
-export type RevealKind = "none" | "fade" | "rise" | "drop" | "slide-left" | "slide-right" | "zoom" | "wipe";
-
 // ===========================================================================
 // Frames (spec §09.2)
 // ===========================================================================
@@ -737,8 +698,6 @@ export type Frame = {
    * as an object's rectangle does, with `offset` below it (not at its sides, which are on grid lines). `null` for `wrap=none`.
    */
   wrap: { offset: Len } | null;
-  /** The frame's reveal (spec §13). */
-  reveal: Reveal;
 };
 
 // ===========================================================================
@@ -782,8 +741,8 @@ export type ObjectCommon = {
   offsetY: Len;
   /** How text flows around the object. Always `none` off the content layer (spec §12). */
   wrap: Wrap;
-  /** The object's reveal (spec §13). */
-  reveal: Reveal;
+  /** `reduce`: under reduced motion an animated picture shows a still and a video waits for the reader to press play. `always`: this object keeps its motion (spec §13). */
+  motion: "reduce" | "always";
   /** True when hidden at this breakpoint. An anchored hidden object is stepped over by layout (spec §09.3, §11.1). */
   hidden: boolean;
 };
@@ -1108,7 +1067,7 @@ export type SidebarObject = ObjectCommon & {
   portrait: boolean;
 };
 
-/** `\group`: several objects or frames placed, wrapped, revealed and hidden as one unit (spec §11.11). */
+/** `\group`: several objects or frames placed, wrapped and hidden as one unit (spec §11.11). */
 export type GroupObject = ObjectCommon & {
   /** Object kind. */
   kind: "group";

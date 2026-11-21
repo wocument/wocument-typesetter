@@ -26,4 +26,4 @@
 %% ---------- scene templates ----------
 %% A full-screen interlude in the night palette: a picture behind, a line of text over it.
 %% Used by opener.woc and photo-essay.woc; leave it out of a theme whose pages do not use it.
-\parent[name=interlude, height=screen, palette=night, enter=fade, folio=hide]
+\parent[name=interlude, height=screen, palette=night, folio=hide]

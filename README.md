@@ -20,7 +20,7 @@
 
 <p align="center">
   <img alt="Licence: Apache-2.0" src="https://img.shields.io/badge/licence-Apache--2.0-1f5fbf?style=flat-square">
-  <img alt="Node.js 20 or later" src="https://img.shields.io/badge/node-%E2%89%A520-16181d?style=flat-square&logo=node.js&logoColor=white">
+  <img alt="Node.js 22 or later" src="https://img.shields.io/badge/node-%E2%89%A522-16181d?style=flat-square&logo=node.js&logoColor=white">
   <img alt="Written in TypeScript" src="https://img.shields.io/badge/written%20in-TypeScript-1f5fbf?style=flat-square&logo=typescript&logoColor=white">
   <img alt="Language version 0.2, draft" src="https://img.shields.io/badge/language-0.2%20draft-5f6570?style=flat-square">
 </p>
@@ -173,7 +173,7 @@ npm run typecheck    # TypeScript over sources, tests and scripts
 npm run playground   # the local editor at http://localhost:5190
 ```
 
-Every push is checked on Node 20 and 22. The engine computes geometry only: it never calls an AI model, and the same file on the same screen, in the same browser, always gives the same page.
+Every push is checked on Node 22 and 24. The engine computes geometry only: it never calls an AI model, and the same file on the same screen, in the same browser, always gives the same page.
 
 When you change the docs, run `node docs/_meta/check-examples.mjs`: it checks every example in them against the engine. When you change the schema, run `npm run docs:refs` to regenerate the command reference.
 

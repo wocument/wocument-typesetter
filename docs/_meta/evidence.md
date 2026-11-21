@@ -8,7 +8,7 @@ One line per claim a reader would act on: what the docs say, where it comes from
 | :---- | :---- | :---- |
 | The minimum file (frontmatter, headline, one paragraph) is a valid page | spec §18 "Minimum valid file"; `woc check` | Ran (gives W064 for a single short line) |
 | `woc` subcommands: parse, resolve, format, check, build, dev; also installed as `wocument` | `packages/cli/src/cli.ts` USAGE; `packages/cli/package.json` bin | Verified |
-| Node 20 or later | root `package.json` engines `>=20` | Verified |
+| Node 22 or later | root `package.json` engines `>=22` | Verified |
 | `npm install --global @wocument/cli` | none: packages are private | Assumed (flagged) |
 | From the repository: clone, `npm install`, `npm run build`, run `packages/cli/dist/cli.js` | ran | Ran |
 | `npx woc` fails with "Permission denied" after a build | ran: `dist/cli.js` mode 644 | Ran (flagged) |

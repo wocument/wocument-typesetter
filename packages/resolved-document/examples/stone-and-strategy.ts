@@ -20,7 +20,7 @@
  */
 
 import type { Block, FigureObject, Frame, ObjectElement, ResolvedDocument, ResolvedStyle, Scene, Story, Variant } from "../src/resolved-document.js";
-import { type Bp, DEFAULT_BREAKPOINTS, DEFAULT_SPOTS, DEFAULT_PALETTE, NO_REVEAL, bl, fluid, pct, pick, px, themeStyles, VANILLA_SERIF_FONTS, VANILLA_SANS_FONTS } from "./default-theme.js";
+import { type Bp, DEFAULT_BREAKPOINTS, DEFAULT_SPOTS, DEFAULT_PALETTE, bl, fluid, pct, pick, px, themeStyles, VANILLA_SERIF_FONTS, VANILLA_SANS_FONTS } from "./default-theme.js";
 
 // ---------------------------------------------------------------------------
 // strings: every piece of text once
@@ -227,7 +227,6 @@ function feature(bp: Bp): Scene["grid"] {
 // \token[name=ember, value=#e0563a] resolved into the palette.
 const NIGHT = { paper: "#0d0d0fff", ink: "#f2efe9ff", muted: "#9a968eff", accent: "#e0563aff", rule: "#2a2a2eff" };
 
-const reveal = (enter: "fade" | "rise", delayMs = 0) => ({ ...NO_REVEAL, enter, delayMs });
 
 // ---------------------------------------------------------------------------
 // One variant
@@ -258,29 +257,26 @@ function variant(bp: Bp): Variant {
     z,
     hidden: false,
     wrap: null,
-    reveal: NO_REVEAL,
     ...over,
   });
 
   const frames: Record<string, Frame> = {
-    // opener: \frame[cols=1-8, rows=4-6, cols@tablet=1-7, cols@phone=all, valign=bottom, enter=rise]
+    // opener: \frame[cols=1-8, rows=4-6, cols@tablet=1-7, cols@phone=all, valign=bottom]
     "frame-1": frame("frame-1", "opener", "frame-1#text", 1, {
       cols: { base: { from: 1, to: 8 }, wide: { from: 1, to: 8 }, compact: { from: 1, to: 8 }, tablet: { from: 1, to: 7 }, phone: all }[bp],
       vertical: { mode: "rows", rows: { from: 4, to: 6 } },
       valign: "bottom",
-      reveal: reveal("rise"), // has its own enter, so the scene's stagger does not apply
     }),
     // part-one: \frame[story=main, cols=1-8, columns=2, cols@tablet=all, cols@phone=all, columns@phone=1]
     "frame-2": frame("frame-2", "part-one", "main", 0, {
       cols: wideOrBase ? { from: 1, to: 8 } : all,
       columns: bp === "phone" ? 1 : 2,
     }),
-    // breath: \frame[cols=3-10, rows=3-4, cols@phone=all]; the parent's enter=fade, stagger 80ms default
+    // breath: \frame[cols=3-10, rows=3-4, cols@phone=all]
     "frame-3": frame("frame-3", "breath", "frame-3#text", 1, {
       cols: wideOrBase ? { from: 3, to: 10 } : all,
       // a linearized screen scene stacks its elements as flow.
       vertical: breathLinearized ? flowAuto : { mode: "rows", rows: { from: 3, to: 4 } },
-      reveal: reveal("fade", 80),
     }),
     // part-two: \frame[story=main, cols=1-10, cols@tablet=all, cols@phone=all]
     "frame-4": frame("frame-4", "part-two", "main", 0, { cols: wideOrBase ? { from: 1, to: 10 } : all }),
@@ -295,7 +291,7 @@ function variant(bp: Bp): Variant {
     offsetX: px(0),
     offsetY: px(0),
     wrap: { mode: "none" },
-    reveal: NO_REVEAL,
+    motion: "reduce",
     hidden: false,
     layer: "content",
   } as const;
@@ -315,7 +311,6 @@ function variant(bp: Bp): Variant {
       place: "here",
     },
     wrap: figureLinearized ? { mode: "jump", offset: px(16) } : { mode: "contour", side: "left", offset: px(16) },
-    reveal: reveal("fade"),
     image: "img:keep-cutout",
     motionVideo: null,
     alt: "The keep at Carcassonne, cut out against white",
@@ -331,14 +326,13 @@ function variant(bp: Bp): Variant {
   };
 
   const objects: Record<string, ObjectElement> = {
-    // \pullquote[side=right, width=50%, wrap=rect, wrap-offset=1bl, enter=rise]
+    // \pullquote[side=right, width=50%, wrap=rect, wrap-offset=1bl]
     "pullquote-1": {
       ...common,
       id: "pullquote-1",
       kind: "pullquote",
       placement: { mode: "anchored", story: "main", block: 2, horizontal: { mode: "side", side: "right", width: pct(50) }, height: "auto", size: "small", printWidth: null, place: "here" },
       wrap: { mode: "rect", side: "largest", offset: bl(1) },
-      reveal: reveal("rise"),
       story: "pullquote-1#text",
     },
     "figure-1": figure1,
@@ -360,7 +354,7 @@ function variant(bp: Bp): Variant {
       media: { ratio: { w: 16, h: 9 }, fit: "cover", focus: { x: 0.5, y: 0.7 }, shape: { kind: "rect" }, clip: false },
       caption: null,
     },
-    // part-one: \sidebar[cols=9-12, top=0, bg=rule, inset=1bl, hide@tablet, hide@phone, enter=fade]
+    // part-one: \sidebar[cols=9-12, top=0, bg=rule, inset=1bl, hide@tablet, hide@phone]
     "sidebar-1": {
       ...common,
       id: "sidebar-1",
@@ -368,7 +362,6 @@ function variant(bp: Bp): Variant {
       z: 1,
       // Hidden on tablet and phone, so written as authored even though 9-12 does not fit there.
       placement: { mode: "grid", scene: "part-one", cols: { from: 9, to: 12 }, vertical: { mode: "flow", top: px(0), height: "auto" } },
-      reveal: reveal("fade"),
       hidden: !wideOrBase,
       story: "sidebar-1#text",
       bg: { role: "rule" },
@@ -383,7 +376,6 @@ function variant(bp: Bp): Variant {
       kind: "figure",
       layer: "background",
       placement: { mode: "background", scene: "breath" },
-      reveal: reveal("fade", 0),
       image: bp === "phone" ? "img:valley-portrait" : "img:valley",
       motionVideo: null,
       alt: "Fog over the Aude valley at dawn",
@@ -415,7 +407,6 @@ function variant(bp: Bp): Variant {
     palette: DEFAULT_PALETTE,
     height: "flow",
     snap: "none",
-    turn: null,
     bg: { role: "paper" },
     linearized: false,
     folio: { story: "folio#text", position: "top-left", progress: true },
@@ -428,7 +419,6 @@ function variant(bp: Bp): Variant {
       palette: NIGHT,
       height: "screen",
       snap: "hard",
-      turn: null,
       children: [
         { kind: "object", id: "video-1" },
         { kind: "frame", id: "frame-1" },
@@ -445,7 +435,6 @@ function variant(bp: Bp): Variant {
       palette: NIGHT,
       height: "screen",
       snap: "hard",
-      turn: null,
       linearized: breathLinearized,
       children: [
         { kind: "object", id: "figure-2" },

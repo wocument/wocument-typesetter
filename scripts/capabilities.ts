@@ -90,6 +90,8 @@ const HOSTS: Record<string, Host[]> = {
   scene: [{ label: "", doc: (a) => `${FRONT}${DEFS}\n\\folio{A Folio}\n\\story[name=s]{\n${TEXT.slice(0, 4).join("\n\n")}\n}\n\\scene[${a || "name=one"}]{\n\\frame[story=s, cols=1-6]\n\\frame[cols=7-12]{${P(2, "x")}}\n}\n\\scene[name=two]{\\frame{${TEXT[4]}}}\n` }],
   parent: [{ label: "", base: { name: "pq" }, doc: (a) => explicit({ defs: `\\parent[${a}]{\\folio{Parent folio}}`, scene: ", parent=pq", frame: ", cols=1-6", sceneBody: `\\frame[cols=7-12]{${P(2, "x")}}\n` }) }],
   story: [{ label: "", doc: (a) => explicit({ story: after(a) }) }],
+  // An article marker (2026-11-15) before the document's stories and scenes.
+  article: [{ label: "", doc: (a) => explicit({}).replace("\\story[name=s", `\\article${a ? `[${a}]` : ""}\n\\story[name=s`) }],
   frame: [
     { label: "in a flow scene", doc: (a) => explicit({ frame: after(a) }) },
     { label: "in a screen scene", doc: (a) => explicit({ frame: after(a), scene: ", height=screen" }) },
@@ -125,7 +127,6 @@ for (const t of ["kicker", "headline", "deck", "byline", "meta", "lede", "bio", 
 
 /** Attributes that only act with another set: tried with it, and compared with a document that has it too. */
 const NEEDS: Record<string, Record<string, string>> = {
-  ...Object.fromEntries(["exit", "enter-at", "duration", "delay", "ease", "replay", "stagger", "motion"].map((k) => [k, { enter: "fade" }])),
   "wrap-side": { wrap: "rect" },
   "wrap-offset": { wrap: "rect" },
   "alpha-threshold": { shape: "alpha" },
@@ -257,6 +258,8 @@ function probe(c: CommandSchema): { command: string; base: string; attrs: Record
   const out: Record<string, Result[]> = {};
   for (const [key, s] of Object.entries(c.attrs)) {
     if (SKIP.has(`${c.name}.${key}`)) continue;
+    // Reveals and page turns were removed (2026-11-21): read, ignored, warned about. Nothing to probe.
+    if (s.note?.startsWith("removed")) continue;
     const needs = Object.fromEntries(Object.entries(NEEDS[key] ?? {}).filter(([k]) => k in c.attrs && k !== key));
     const values = samples(key, s, hosts[0]!.base?.[key]);
     const strongest = (value: string, at?: "phone"): Result => {
@@ -283,7 +286,8 @@ const LIMITS = [
   "**span=all in the middle of a page scene's column bands** is set in its column (W035): it crosses the columns only at a frame's start.",
   "**Responsive picture sets** are not generated: each picture is served once, as WebP at its own size. Give pictures at about 2400px on their long side, not larger.",
   "**Deferred** (§01.3), so not available: lists, tables, footnotes, image zoom or lightbox, scrims or tints over pictures, parallax, pinned scenes, scroll-scrubbed media, text on a path, nested grids, cross-references, a generic styled paragraph (`\\p`).",
-  "**No logic**: no variables beyond tokens, no macros, no includes, no user-defined commands. One theme file per document.",
+  "**No reveal animations or page turns** (removed 2026-11-21, §13): `enter`, `exit`, `enter-at`, `duration`, `delay`, `ease`, `replay`, `stagger` and `turn` are read and ignored, with warning W036.",
+  "**No logic**: no variables beyond tokens, no macros, no includes, no user-defined commands. One theme file per document, and one per `\\article`.",
   "**Fonts** must be system fonts, generic families, or files registered with `\\font`; a missing file falls back (W050).",
   "**Layout warnings** W040, W041, W042 and W043 are in the spec but not reported yet; the render check shows their effects.",
 ];

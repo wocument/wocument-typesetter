@@ -150,7 +150,7 @@ grid-placed objects. Only the content layer wraps. Gaps narrower than the style'
 
 ## Groups
 
-`\group[layout=stack|row, cols=, gap=, valign=top|center|bottom|stretch|text, stagger=]{...}`
+`\group[layout=stack|row, cols=, gap=, valign=top|center|bottom|stretch|text]{...}`
 holds objects, frames and groups as one unit.
 - `stack`: children one below another at the group's width (a photo with its headline).
 - `row`: children pack into rows of whole columns that wrap at every width: each child at least
@@ -172,12 +172,12 @@ holds objects, frames and groups as one unit.
 
 ## Motion
 
-- `enter=fade|rise|drop|slide-left|slide-right|zoom|wipe` (and `exit`, `enter-at`, `duration`,
-  `delay`, `ease`, `replay`) on scenes, frames and objects. A scene's or group's `enter` passes
-  to its children, `stagger` apart. Reveals never move layout.
-- `turn=fade|slide` on a scene: how it arrives. `snap=soft|hard` on non-page scenes.
-- Reduced motion turns all of it off; `motion=always` forces it and warns. Use motion
-  sparingly: an opener's heading, a picture arriving, not every paragraph.
+- Nothing on a page animates into place: reveals (`enter=`, `exit=`, `stagger=` and the rest)
+  and page turns (`turn=`) were removed on 2026-11-21. They are ignored with warning W036;
+  do not write them.
+- `snap=soft|hard` on non-page scenes stops the reader on a scene's top.
+- What still moves: animated pictures, and videos with `play=visible|auto`. Reduced motion
+  shows a still and waits for the reader; `motion=always` keeps them moving and warns.
 - `\music[src=...]` cues a soundtrack from that point; readers start sound with a tap.
 
 ## Responsive behaviour

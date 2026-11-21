@@ -626,20 +626,6 @@ exports[`fixtures > forty-questions.woc has a snapshot-stable AST 1`] = `
             "t": "enum",
           },
         },
-        {
-          "at": null,
-          "key": "enter",
-          "source": {
-            "column": 58,
-            "length": 10,
-            "line": 14,
-          },
-          "value": {
-            "id": "zoom",
-            "raw": "zoom",
-            "t": "enum",
-          },
-        },
       ],
       "body": null,
       "id": 6,
@@ -647,7 +633,7 @@ exports[`fixtures > forty-questions.woc has a snapshot-stable AST 1`] = `
       "name": "parent",
       "source": {
         "column": 1,
-        "length": 68,
+        "length": 56,
         "line": 14,
       },
     },
@@ -1285,20 +1271,6 @@ exports[`fixtures > forty-questions.woc has a snapshot-stable AST 1`] = `
                 "t": "enum",
               },
             },
-            {
-              "at": null,
-              "key": "enter",
-              "source": {
-                "column": 62,
-                "length": 10,
-                "line": 22,
-              },
-              "value": {
-                "id": "fade",
-                "raw": "fade",
-                "t": "enum",
-              },
-            },
           ],
           "body": null,
           "id": 9,
@@ -1306,7 +1278,7 @@ exports[`fixtures > forty-questions.woc has a snapshot-stable AST 1`] = `
           "name": "figure",
           "source": {
             "column": 3,
-            "length": 238,
+            "length": 226,
             "line": 20,
           },
         },
@@ -2059,7 +2031,7 @@ exports[`fixtures > forty-questions.woc has a snapshot-stable AST 1`] = `
       "name": "story",
       "source": {
         "column": 1,
-        "length": 2047,
+        "length": 2035,
         "line": 16,
       },
     },
@@ -2152,7 +2124,7 @@ exports[`fixtures > forty-questions.woc has a snapshot-stable AST 1`] = `
       "attachTo": 11,
       "placement": "before",
       "source": {
-        "column": 73,
+        "column": 61,
         "length": 334,
         "line": 22,
       },
@@ -2312,7 +2284,7 @@ exports[`fixtures > forty-questions.woc has a snapshot-stable AST 1`] = `
       "attachTo": 7,
       "placement": "before",
       "source": {
-        "column": 69,
+        "column": 57,
         "length": 2,
         "line": 14,
       },
@@ -3417,20 +3389,6 @@ exports[`fixtures > stone-and-strategy.woc has a snapshot-stable AST 1`] = `
             "t": "enum",
           },
         },
-        {
-          "at": null,
-          "key": "enter",
-          "source": {
-            "column": 80,
-            "length": 10,
-            "line": 23,
-          },
-          "value": {
-            "id": "fade",
-            "raw": "fade",
-            "t": "enum",
-          },
-        },
       ],
       "body": null,
       "id": 11,
@@ -3438,7 +3396,7 @@ exports[`fixtures > stone-and-strategy.woc has a snapshot-stable AST 1`] = `
       "name": "parent",
       "source": {
         "column": 1,
-        "length": 90,
+        "length": 78,
         "line": 23,
       },
     },
@@ -3567,20 +3525,6 @@ exports[`fixtures > stone-and-strategy.woc has a snapshot-stable AST 1`] = `
             "id": "hard",
             "raw": "hard",
             "t": "enum",
-          },
-        },
-        {
-          "at": null,
-          "key": "stagger",
-          "source": {
-            "column": 76,
-            "length": 13,
-            "line": 61,
-          },
-          "value": {
-            "ms": 120,
-            "raw": "120ms",
-            "t": "time",
           },
         },
       ],
@@ -3809,20 +3753,6 @@ exports[`fixtures > stone-and-strategy.woc has a snapshot-stable AST 1`] = `
                 "t": "enum",
               },
             },
-            {
-              "at": null,
-              "key": "enter",
-              "source": {
-                "column": 78,
-                "length": 10,
-                "line": 65,
-              },
-              "value": {
-                "id": "rise",
-                "raw": "rise",
-                "t": "enum",
-              },
-            },
           ],
           "body": [
             {
@@ -3950,7 +3880,7 @@ exports[`fixtures > stone-and-strategy.woc has a snapshot-stable AST 1`] = `
           "name": "frame",
           "source": {
             "column": 3,
-            "length": 321,
+            "length": 309,
             "line": 65,
           },
         },
@@ -3961,7 +3891,7 @@ exports[`fixtures > stone-and-strategy.woc has a snapshot-stable AST 1`] = `
       "sceneForm": "explicit",
       "source": {
         "column": 1,
-        "length": 567,
+        "length": 540,
         "line": 61,
       },
     },
@@ -4186,20 +4116,6 @@ exports[`fixtures > stone-and-strategy.woc has a snapshot-stable AST 1`] = `
                 "t": "boolean",
               },
             },
-            {
-              "at": null,
-              "key": "enter",
-              "source": {
-                "column": 75,
-                "length": 10,
-                "line": 77,
-              },
-              "value": {
-                "id": "fade",
-                "raw": "fade",
-                "t": "enum",
-              },
-            },
           ],
           "body": [
             {
@@ -4255,7 +4171,7 @@ exports[`fixtures > stone-and-strategy.woc has a snapshot-stable AST 1`] = `
           "name": "sidebar",
           "source": {
             "column": 3,
-            "length": 204,
+            "length": 192,
             "line": 77,
           },
         },
@@ -4266,7 +4182,7 @@ exports[`fixtures > stone-and-strategy.woc has a snapshot-stable AST 1`] = `
       "sceneForm": "explicit",
       "source": {
         "column": 1,
-        "length": 338,
+        "length": 326,
         "line": 74,
       },
     },
@@ -4817,20 +4733,6 @@ exports[`fixtures > stone-and-strategy.woc has a snapshot-stable AST 1`] = `
                 "unit": "bl",
               },
             },
-            {
-              "at": null,
-              "key": "enter",
-              "source": {
-                "column": 65,
-                "length": 10,
-                "line": 37,
-              },
-              "value": {
-                "id": "rise",
-                "raw": "rise",
-                "t": "enum",
-              },
-            },
           ],
           "body": [
             {
@@ -4843,7 +4745,7 @@ exports[`fixtures > stone-and-strategy.woc has a snapshot-stable AST 1`] = `
                 },
               ],
               "source": {
-                "column": 77,
+                "column": 65,
                 "length": 60,
                 "line": 37,
               },
@@ -4854,7 +4756,7 @@ exports[`fixtures > stone-and-strategy.woc has a snapshot-stable AST 1`] = `
           "name": "pullquote",
           "source": {
             "column": 3,
-            "length": 135,
+            "length": 123,
             "line": 37,
           },
         },
@@ -5019,20 +4921,6 @@ exports[`fixtures > stone-and-strategy.woc has a snapshot-stable AST 1`] = `
                 "unit": "px",
               },
             },
-            {
-              "at": null,
-              "key": "enter",
-              "source": {
-                "column": 29,
-                "length": 10,
-                "line": 51,
-              },
-              "value": {
-                "id": "fade",
-                "raw": "fade",
-                "t": "enum",
-              },
-            },
           ],
           "body": [
             {
@@ -5075,7 +4963,7 @@ exports[`fixtures > stone-and-strategy.woc has a snapshot-stable AST 1`] = `
           "name": "figure",
           "source": {
             "column": 3,
-            "length": 333,
+            "length": 321,
             "line": 49,
           },
         },
@@ -5115,7 +5003,7 @@ exports[`fixtures > stone-and-strategy.woc has a snapshot-stable AST 1`] = `
       "name": "story",
       "source": {
         "column": 1,
-        "length": 1210,
+        "length": 1186,
         "line": 28,
       },
     },
@@ -5188,7 +5076,7 @@ exports[`fixtures > stone-and-strategy.woc has a snapshot-stable AST 1`] = `
       "attachTo": 12,
       "placement": "before",
       "source": {
-        "column": 91,
+        "column": 79,
         "length": 2,
         "line": 23,
       },
@@ -6479,34 +6367,6 @@ exports[`fixtures > the-last-signalman.woc has a snapshot-stable AST 1`] = `
             "t": "enum",
           },
         },
-        {
-          "at": null,
-          "key": "enter",
-          "source": {
-            "column": 73,
-            "length": 10,
-            "line": 31,
-          },
-          "value": {
-            "id": "fade",
-            "raw": "fade",
-            "t": "enum",
-          },
-        },
-        {
-          "at": null,
-          "key": "stagger",
-          "source": {
-            "column": 85,
-            "length": 13,
-            "line": 31,
-          },
-          "value": {
-            "ms": 150,
-            "raw": "150ms",
-            "t": "time",
-          },
-        },
       ],
       "body": null,
       "id": 13,
@@ -6514,7 +6374,7 @@ exports[`fixtures > the-last-signalman.woc has a snapshot-stable AST 1`] = `
       "name": "parent",
       "source": {
         "column": 1,
-        "length": 98,
+        "length": 71,
         "line": 31,
       },
     },
@@ -6861,20 +6721,6 @@ exports[`fixtures > the-last-signalman.woc has a snapshot-stable AST 1`] = `
                 "t": "enum",
               },
             },
-            {
-              "at": null,
-              "key": "enter",
-              "source": {
-                "column": 77,
-                "length": 10,
-                "line": 96,
-              },
-              "value": {
-                "id": "rise",
-                "raw": "rise",
-                "t": "enum",
-              },
-            },
           ],
           "body": [
             {
@@ -6992,7 +6838,7 @@ exports[`fixtures > the-last-signalman.woc has a snapshot-stable AST 1`] = `
           "name": "frame",
           "source": {
             "column": 3,
-            "length": 329,
+            "length": 317,
             "line": 96,
           },
         },
@@ -7003,7 +6849,7 @@ exports[`fixtures > the-last-signalman.woc has a snapshot-stable AST 1`] = `
       "sceneForm": "explicit",
       "source": {
         "column": 1,
-        "length": 764,
+        "length": 752,
         "line": 89,
       },
     },
@@ -7821,20 +7667,6 @@ exports[`fixtures > the-last-signalman.woc has a snapshot-stable AST 1`] = `
                 "to": "end",
               },
             },
-            {
-              "at": null,
-              "key": "enter",
-              "source": {
-                "column": 44,
-                "length": 10,
-                "line": 44,
-              },
-              "value": {
-                "id": "fade",
-                "raw": "fade",
-                "t": "enum",
-              },
-            },
           ],
           "body": [
             {
@@ -7860,7 +7692,7 @@ exports[`fixtures > the-last-signalman.woc has a snapshot-stable AST 1`] = `
           "name": "figure",
           "source": {
             "column": 3,
-            "length": 208,
+            "length": 196,
             "line": 43,
           },
         },
@@ -8473,7 +8305,7 @@ exports[`fixtures > the-last-signalman.woc has a snapshot-stable AST 1`] = `
       "name": "story",
       "source": {
         "column": 1,
-        "length": 1903,
+        "length": 1891,
         "line": 35,
       },
     },
@@ -8632,7 +8464,7 @@ exports[`fixtures > the-last-signalman.woc has a snapshot-stable AST 1`] = `
       "attachTo": 14,
       "placement": "before",
       "source": {
-        "column": 99,
+        "column": 72,
         "length": 2,
         "line": 31,
       },
@@ -10078,20 +9910,6 @@ exports[`fixtures > white-desert.woc has a snapshot-stable AST 1`] = `
             "t": "enum",
           },
         },
-        {
-          "at": null,
-          "key": "enter",
-          "source": {
-            "column": 73,
-            "length": 10,
-            "line": 21,
-          },
-          "value": {
-            "id": "fade",
-            "raw": "fade",
-            "t": "enum",
-          },
-        },
       ],
       "body": null,
       "id": 9,
@@ -10099,7 +9917,7 @@ exports[`fixtures > white-desert.woc has a snapshot-stable AST 1`] = `
       "name": "parent",
       "source": {
         "column": 1,
-        "length": 83,
+        "length": 71,
         "line": 21,
       },
     },
@@ -10357,20 +10175,6 @@ exports[`fixtures > white-desert.woc has a snapshot-stable AST 1`] = `
                 "t": "enum",
               },
             },
-            {
-              "at": null,
-              "key": "enter",
-              "source": {
-                "column": 61,
-                "length": 10,
-                "line": 31,
-              },
-              "value": {
-                "id": "rise",
-                "raw": "rise",
-                "t": "enum",
-              },
-            },
           ],
           "body": [
             {
@@ -10481,7 +10285,7 @@ exports[`fixtures > white-desert.woc has a snapshot-stable AST 1`] = `
           "name": "frame",
           "source": {
             "column": 3,
-            "length": 291,
+            "length": 279,
             "line": 31,
           },
         },
@@ -10492,7 +10296,7 @@ exports[`fixtures > white-desert.woc has a snapshot-stable AST 1`] = `
       "sceneForm": "explicit",
       "source": {
         "column": 1,
-        "length": 682,
+        "length": 670,
         "line": 25,
       },
     },
@@ -11916,7 +11720,7 @@ exports[`fixtures > white-desert.woc has a snapshot-stable AST 1`] = `
       "attachTo": 10,
       "placement": "before",
       "source": {
-        "column": 84,
+        "column": 72,
         "length": 2,
         "line": 21,
       },

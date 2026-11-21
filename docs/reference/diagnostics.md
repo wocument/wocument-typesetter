@@ -119,6 +119,7 @@ Warnings never stop a build. Fix each one, or know why you're leaving it. A reso
 | `W033` | A missing `alt` on a `\figure` or `\video`, or a missing `title` on an `\embed` or `\audio`. | Describe it. Use `alt=""` only for decoration. Background pictures don't need one. |
 | `W034` | `motion=always` keeps an element's motion for readers who asked for reduced motion. | Remove it unless the motion carries meaning. |
 | `W035` | A value has no effect where it's written: a subhead level other than 1 or 2, or `span=all` in the middle of a page scene's columns. | Change the value; start a frame with the spanning block, or put a `\framebreak` before it. |
+| `W036` | An attribute of the removed reveals or page turns: `enter`, `exit`, `enter-at`, `duration`, `delay`, `ease`, `replay`, `stagger` or `turn`. It has no effect. | Delete it. |
 | `W050` | A file is missing: a picture, video, font, caption track, music or `social-image`. A missing font falls back to the style's next family. | Fix the path, or add the file (see [Paths](cli.md#paths)). |
 | `W060` | Body text under 16px. | Raise the body size. |
 | `W061` | Body leading under 1.4 times the size. | A larger baseline step, or a smaller size. |

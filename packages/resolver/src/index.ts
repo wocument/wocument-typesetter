@@ -6,8 +6,8 @@
  *
  * Covered: both document forms, stories, scenes (explicit and shorthand),
  * parents, frames (inline and threaded), tokens, the design-head cascade,
- * text elements, drop caps, frame breaks, rules, linearize, reveals with
- * stagger, threads and folios. Objects and inline formatting come next and
+ * text elements, drop caps, frame breaks, rules, linearize, threads and
+ * folios. Objects and inline formatting come next and
  * throw "not resolved yet" rather than resolving to something half-right.
  */
 
@@ -29,12 +29,10 @@ import type {
   Frame,
   GroupObject,
   Meta,
-  Reveal,
   ResolvedDocument,
   ResolvedStyle,
   RuleSpec,
   Scene,
-  SceneTurn,
   Story,
   Variant,
   Variants,
@@ -484,7 +482,7 @@ export function resolve(source: Document, options: ResolveOptions = {}): Resolve
       return null;
     };
     /** An object at `bp` (spec §11). `where` is its scene (grid-placed) or its anchor (anchored). */
-    const objectOf = (cmd: Command, id: string, where: ObjectWhere, reveal: Reveal, z: number): ObjectElement => {
+    const objectOf = (cmd: Command, id: string, where: ObjectWhere, z: number): ObjectElement => {
       const oa: Attrs = new Map([...schemaDefaults(cmd.name), ...elementAttrs(cmd, bp, cmd.name, deref)]);
       // A \rule has no layer, bleed or wrap of its own: it is on the content layer, and text does not wrap it.
       // §11.2, §11.11: a group's children are on its layer. (A gallery's items are built before their
@@ -559,7 +557,7 @@ export function resolve(source: Document, options: ResolveOptions = {}): Resolve
         offsetX: where.mode === "contained" ? ({ u: "px", n: 0 } as const) : len(oa.get("offset-x")!),
         offsetY: where.mode === "contained" ? ({ u: "px", n: 0 } as const) : len(oa.get("offset-y")!),
         wrap,
-        reveal,
+        motion: (oa.get("motion") ? "always" : "reduce") as ObjectElement["motion"],
         hidden: bool(oa.get("hide")),
       };
       // §08.4, §10.4: a rule written in a scene or a group, placed like an object.
@@ -638,7 +636,7 @@ export function resolve(source: Document, options: ResolveOptions = {}): Resolve
         const kids = body.filter((n): n is Command => n.kind === "command" && (n.name === "figure" || n.name === "video"));
         const items = kids.map((c, index) => {
           const cid = ids.of(c);
-          const child = objectOf(c, cid, { mode: "contained", container: id, index }, revealOf(new Map(), 0), index);
+          const child = objectOf(c, cid, { mode: "contained", container: id, index }, index);
           // §11.9: the gallery's ratio is forced on every child.
           if (ratio && "media" in child) child.media = { ...child.media, ratio };
           objects[cid] = child;
@@ -689,9 +687,6 @@ export function resolve(source: Document, options: ResolveOptions = {}): Resolve
         snap = "soft";
         if (bp === BASE) warn("W030", `snap=hard on flow scene "${src.id}" becomes soft`, src.cmd, null, "Use height=screen, or snap=soft.");
       }
-      const effect = enumId(a.get("turn")) as "none" | SceneTurn["effect"];
-      const turn: SceneTurn | null =
-        effect === "none" ? null : { effect, durationMs: (a.get("duration") as { ms: number }).ms, ease: enumId(a.get("ease")) as SceneTurn["ease"] };
 
       // Children: the parent's beneath the scene's own (§08.4). Parent frames only when the scene declares none.
       const shorthand = src.cmd === null || src.cmd.sceneForm === "shorthand";
@@ -707,18 +702,10 @@ export function resolve(source: Document, options: ResolveOptions = {}): Resolve
         ...(shorthand ? [{ cmd: null, id: `${src.id}/frame` }] : ownNodes.map((c) => ({ cmd: c, id: ids.of(c) }))),
       ];
 
-      // Reveals: a child without its own enter takes the scene's, staggered (§13).
-      const stagger = (a.get("stagger") as { ms: number } | undefined)?.ms ?? 80;
-      let staggered = 0;
-      const revealFor = (cmd: Command | null, own: Attrs): Reveal =>
-        cmd?.attrs.some((x) => x.key === "enter")
-          ? revealOf(own, 0)
-          : revealOf(a, enumId(a.get("enter")) === "none" ? 0 : stagger * staggered++);
-
       const sceneFrames: Frame[] = [];
       const sceneObjects: ObjectElement[] = [];
       /** A frame at `bp` (spec §09.2). One inside a group keeps its record, but the group decides where it goes. */
-      const frameOf = (cmd: Command | null, id: string, z: number, reveal: Reveal, fa: Attrs): Frame => {
+      const frameOf = (cmd: Command | null, id: string, z: number, fa: Attrs): Frame => {
         const storyId = cmd && fa.has("story") ? ident(fa.get("story")) : `${id}#text`;
         if (!(cmd && fa.has("story"))) story(storyId, "frame", id, cmd ? ((cmd.body as Node[] | null) ?? []) : src.content, null);
         else if (!stories.has(storyId)) throw new Error(`frame "${id}" shows unknown story "${storyId}"`);
@@ -742,24 +729,12 @@ export function resolve(source: Document, options: ResolveOptions = {}): Resolve
           z: fa.has("z") ? num(fa.get("z")) : z,
           hidden: bool(fa.get("hide")),
           wrap: enumId(fa.get("wrap")) === "rect" ? { offset: len(fa.get("wrap-offset")!) } : null,
-          reveal,
         };
       };
       /**
-       * A group's children (§11.11, design 2026-09-26), recursively. The reveal
-       * the group was given, its own or its scene's or its container's, passes
-       * to each child without its own `enter`, staggered by the group's
-       * `stagger`. The group's own record does not animate, so nothing reveals
-       * twice.
+       * A group's children (§11.11, design 2026-09-26), recursively.
        */
       const groupChildren = (g: GroupObject, cmd: Command, prefix: string): void => {
-        const ga: Attrs = new Map([...schemaDefaults("group"), ...elementAttrs(cmd, bp, "group", deref)]);
-        const step = (ga.get("stagger") as { ms: number } | undefined)?.ms ?? 80;
-        const given = g.reveal;
-        let k = 0;
-        const revealIn = (c: Command, ca: Attrs): Reveal =>
-          c.attrs.some((x) => x.key === "enter") ? revealOf(ca, 0) : given.enter === "none" ? given : { ...given, delayMs: given.delayMs + step * k++ };
-        g.reveal = { ...given, enter: "none", exit: "none" };
         const kids = ((cmd.body as Node[] | null) ?? []).filter((n): n is Command => n.kind === "command");
         g.children = kids.map((c, index) => {
           const cid = `${prefix}${ids.of(c)}`;
@@ -770,10 +745,10 @@ export function resolve(source: Document, options: ResolveOptions = {}): Resolve
             maxWidth: ca.has("max-width") ? len(ca.get("max-width")!) : null,
           };
           if (c.name === "frame") {
-            frames[cid] = frameOf(c, cid, index, revealIn(c, ca), ca);
+            frames[cid] = frameOf(c, cid, index, ca);
             return { kind: "frame" as const, id: cid, ...sizing };
           }
-          const child = objectOf(c, cid, { mode: "contained", container: g.id, index }, revealIn(c, ca), index);
+          const child = objectOf(c, cid, { mode: "contained", container: g.id, index }, index);
           objects[cid] = child;
           if (child.kind === "group") groupChildren(child, c, prefix);
           return { kind: "object" as const, id: cid, ...sizing };
@@ -782,8 +757,7 @@ export function resolve(source: Document, options: ResolveOptions = {}): Resolve
       children.forEach(({ cmd, id }, z) => {
         // Groups are placed in scenes only; one anchored in a story is not resolved yet.
         if (cmd && (OBJECTS.has(cmd.name) || cmd.name === "group" || cmd.name === "rule")) {
-          const oa: Attrs = new Map([...schemaDefaults(cmd.name), ...elementAttrs(cmd, bp, cmd.name, deref)]);
-          const o = objectOf(cmd, id, { mode: "grid", scene: src.id, grid, height }, revealFor(cmd, oa), z);
+          const o = objectOf(cmd, id, { mode: "grid", scene: src.id, grid, height }, z);
           objects[id] = o;
           sceneObjects.push(o);
           if (o.kind === "group") groupChildren(o, cmd, id.includes("/") ? id.slice(0, id.lastIndexOf("/") + 1) : "");
@@ -791,7 +765,7 @@ export function resolve(source: Document, options: ResolveOptions = {}): Resolve
         }
         if (cmd && cmd.name !== "frame") notYet(cmd, `\\${cmd.name} in a scene`);
         const fa: Attrs = new Map([...schemaDefaults("frame"), ...(cmd ? elementAttrs(cmd, bp, "frame", deref) : [])]);
-        const frame = frameOf(cmd, id, z, revealFor(cmd, fa), fa);
+        const frame = frameOf(cmd, id, z, fa);
         frames[id] = frame;
         sceneFrames.push(frame);
       });
@@ -830,7 +804,6 @@ export function resolve(source: Document, options: ResolveOptions = {}): Resolve
         palette: design.palette(ident(a.get("palette")), bp),
         height,
         snap,
-        turn,
         bg: colorOf(a.get("bg")) ?? { role: "paper" },
         linearized,
         folio: enumId(a.get("folio")) === "hide" ? null : folioFor(parentName, bp, article),
@@ -850,8 +823,7 @@ export function resolve(source: Document, options: ResolveOptions = {}): Resolve
       const narrowest = lastColOf(sid);
       const id = ids.of(cmd);
       const oa: Attrs = new Map([...schemaDefaults(cmd.name), ...elementAttrs(cmd, bp, cmd.name, deref)]);
-      const reveal = cmd.attrs.some((x) => x.key === "enter") ? revealOf(oa, 0) : revealOf(schemaDefaults("scene"), 0);
-      const o = objectOf(cmd, id, { mode: "anchored", story: sid, block, lastCol: narrowest }, reveal, 0);
+      const o = objectOf(cmd, id, { mode: "anchored", story: sid, block, lastCol: narrowest }, 0);
       if (!o.hidden && o.placement.mode === "anchored" && o.placement.horizontal.mode === "cols" && o.placement.horizontal.cols.to > narrowest) {
         warn("W031", `Anchored ${id} will linearize on ${bp}: its columns do not fit the grid.`, cmd, bp, `Add cols@${bp}=... to it.`);
         o.placement = { ...o.placement, horizontal: { mode: "full" } };
@@ -928,11 +900,15 @@ export function resolve(source: Document, options: ResolveOptions = {}): Resolve
     warn("W035", `A block with span=all in story "${id}" is set in its column: in a page scene's column bands it crosses the columns only at a frame's start.`, null, null, "Start a frame with it, or put a \\framebreak before it.");
 
   // §13: `motion=always` overrides the reader's reduced-motion setting, so it is always a warning.
+  // 2026-11-21: reveals and page turns were removed; their attributes are read and ignored (W036).
   const walk = (nodes: readonly Node[]): void => {
     for (const n of nodes) {
       if (n.kind !== "command") continue;
       if (n.attrs.some((x) => x.key === "motion"))
         warn("W034", `\\${n.name} keeps its motion under reduced motion (motion=always).`, n, null, "Remove motion=always unless the motion carries meaning.");
+      const gone = [...new Set(n.attrs.map((x) => x.key).filter((k) => REMOVED_MOTION.has(k) && !(n.name === "music" && k === "enter-at")))];
+      if (gone.length)
+        warn("W036", `\\${n.name} ${gone.map((k) => `${k}=`).join(", ")} has no effect: reveals and page turns were removed.`, n, null, "Delete the attribute.");
       if (Array.isArray(n.body)) walk(n.body as Node[]);
     }
   };
@@ -1045,20 +1021,8 @@ function styleTable(stories: Story[], style: (k: string) => ResolvedStyle): Reco
   return out;
 }
 
-function revealOf(a: Attrs, delay: number): Reveal {
-  const ms = (v: Value | undefined): number => (v?.t === "time" ? v.ms : 0);
-  const enterAt = a.get("enter-at");
-  return {
-    enter: enumId(a.get("enter")) as Reveal["enter"],
-    exit: enumId(a.get("exit")) as Reveal["exit"],
-    enterAt: enterAt?.t === "percentage" ? enterAt.n / 100 : 0.15,
-    durationMs: ms(a.get("duration")),
-    delayMs: ms(a.get("delay")) + delay,
-    ease: enumId(a.get("ease")) as Reveal["ease"],
-    replay: bool(a.get("replay")),
-    motion: a.get("motion") ? "always" : "reduce",
-  };
-}
+/** 2026-11-21: the attributes of the removed reveals (§13) and page turns (§08.3). */
+const REMOVED_MOTION = new Set(["enter", "exit", "enter-at", "duration", "delay", "ease", "replay", "stagger", "turn"]);
 
 const lenCtx = { em: null, baseline: null, fluidTo: 0 };
 const len = (v: Value) => toLen(v, lenCtx);

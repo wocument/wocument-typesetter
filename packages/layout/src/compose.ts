@@ -245,7 +245,7 @@ export function choose(
   previous: string | null,
   budget = 40,
 ): { combo: Candidate[]; cost: number; parts: PenaltyParts; ranked: { combo: Candidate[]; cost: number }[] } | null {
-  const fs = [...floats].sort((a, b) => a.order - b.order);
+  const fs = floats.toSorted((a, b) => a.order - b.order);
   const lists = fs.map((f) =>
     candidates(f, spots, g)
       .map((c) => ({ c, d: distance(c, f, g) }))

@@ -5,13 +5,13 @@ This page gets the `woc` command onto your computer, so you can write, preview a
 ## What you need
 
 - **A Mac, Linux or Windows computer** with a terminal. On a Mac that's the Terminal app; on Windows, PowerShell.
-- **Node.js 20 or later.** Node runs the `woc` command. Check whether you have it:
+- **Node.js 22 or later.** Node runs the `woc` command. Check whether you have it:
 
   ```bash
   node --version
   ```
 
-  If the answer is `v20` or higher, you're set. If the command isn't found, or the number is lower, install the current version from [nodejs.org](https://nodejs.org).
+  If the answer is `v22` or higher, you're set. If the command isn't found, or the number is lower, install the current version from [nodejs.org](https://nodejs.org).
 - **A text editor** you like. Any editor works. For colours and snippets in `.woc` files, see "Editor support" below.
 - **A recent browser** to see your pages: Chrome, Edge, Safari or Firefox.
 

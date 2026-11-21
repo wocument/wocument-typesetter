@@ -1532,17 +1532,6 @@
           ],
           "description": "Scroll snapping on the scene's top edge. `hard` on a flow scene is already downgraded to `soft` (spec §08.3)."
         },
-        "turn": {
-          "anyOf": [
-            {
-              "$ref": "#/definitions/SceneTurn"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "How the page arrives when the reader reaches it, or `null` for none (spec §08.3)."
-        },
         "bg": {
           "$ref": "#/definitions/Color",
           "description": "Scene background color (spec §08.1)."
@@ -1581,7 +1570,6 @@
         "palette",
         "height",
         "snap",
-        "turn",
         "bg",
         "linearized",
         "folio",
@@ -1717,40 +1705,6 @@
       ],
       "additionalProperties": false,
       "description": "The five palette roles as hex colors (spec §07.3)."
-    },
-    "SceneTurn": {
-      "type": "object",
-      "properties": {
-        "effect": {
-          "type": "string",
-          "enum": [
-            "fade",
-            "slide"
-          ],
-          "description": "`fade`, or `slide`: 8% of the viewport height into place while fading, from the scroll direction."
-        },
-        "durationMs": {
-          "type": "number",
-          "description": "The scene's `duration`."
-        },
-        "ease": {
-          "type": "string",
-          "enum": [
-            "standard",
-            "in",
-            "out",
-            "linear"
-          ],
-          "description": "The scene's `ease`."
-        }
-      },
-      "required": [
-        "effect",
-        "durationMs",
-        "ease"
-      ],
-      "additionalProperties": false,
-      "description": "A page turn (spec §08.3): plays each time the scene enters the viewport after being fully out of it."
     },
     "Folio": {
       "type": "object",
@@ -1920,10 +1874,6 @@
             }
           ],
           "description": "`wrap=rect` (spec §09.2): the frame's box, to its last line, cuts into the frames set after it, as an object's rectangle does, with `offset` below it (not at its sides, which are on grid lines). `null` for `wrap=none`."
-        },
-        "reveal": {
-          "$ref": "#/definitions/Reveal",
-          "description": "The frame's reveal (spec §13)."
         }
       },
       "required": [
@@ -1942,8 +1892,7 @@
         "bg",
         "z",
         "hidden",
-        "wrap",
-        "reveal"
+        "wrap"
       ],
       "additionalProperties": false,
       "description": "A rectangle on a scene's grid that shows a slice of a story (spec §09.2)."
@@ -2019,81 +1968,6 @@
       ],
       "additionalProperties": false,
       "description": "Vertical placement in a screen scene: a range of the grid's rows (spec §08.2)."
-    },
-    "Reveal": {
-      "type": "object",
-      "properties": {
-        "enter": {
-          "$ref": "#/definitions/RevealKind",
-          "description": "Animation as the element enters the viewport."
-        },
-        "exit": {
-          "$ref": "#/definitions/RevealKind",
-          "description": "Animation as the element leaves through the top of the viewport."
-        },
-        "enterAt": {
-          "type": "number",
-          "description": "Fraction of the element that must be inside the viewport before `enter` fires: 0.15 is `15%`.",
-          "minimum": 0,
-          "maximum": 1
-        },
-        "durationMs": {
-          "type": "number",
-          "description": "Duration in milliseconds."
-        },
-        "delayMs": {
-          "type": "number",
-          "description": "Delay in milliseconds, including this element's stagger step."
-        },
-        "ease": {
-          "type": "string",
-          "enum": [
-            "standard",
-            "in",
-            "out",
-            "linear"
-          ],
-          "description": "Easing curve."
-        },
-        "replay": {
-          "type": "boolean",
-          "description": "Replay `enter` every time the element comes back into view."
-        },
-        "motion": {
-          "type": "string",
-          "enum": [
-            "reduce",
-            "always"
-          ],
-          "description": "`reduce`: every reveal becomes `none` under reduced motion. `always`: this element keeps its motion (spec §13 rule 3)."
-        }
-      },
-      "required": [
-        "enter",
-        "exit",
-        "enterAt",
-        "durationMs",
-        "delayMs",
-        "ease",
-        "replay",
-        "motion"
-      ],
-      "additionalProperties": false,
-      "description": "Reveal animation parameters, with any scene, parent or group stagger already baked into `delayMs` (spec §13)."
-    },
-    "RevealKind": {
-      "type": "string",
-      "enum": [
-        "none",
-        "fade",
-        "rise",
-        "drop",
-        "slide-left",
-        "slide-right",
-        "zoom",
-        "wipe"
-      ],
-      "description": "The reveal animations (spec §13)."
     },
     "ObjectElement": {
       "anyOf": [
@@ -2238,9 +2112,13 @@
           "$ref": "#/definitions/Wrap",
           "description": "How text flows around the object. Always `none` off the content layer (spec §12)."
         },
-        "reveal": {
-          "$ref": "#/definitions/Reveal",
-          "description": "The object's reveal (spec §13)."
+        "motion": {
+          "type": "string",
+          "enum": [
+            "reduce",
+            "always"
+          ],
+          "description": "`reduce`: under reduced motion an animated picture shows a still and a video waits for the reader to press play. `always`: this object keeps its motion (spec §13)."
         },
         "hidden": {
           "type": "boolean",
@@ -2259,11 +2137,11 @@
         "loading",
         "maxWidth",
         "media",
+        "motion",
         "motionVideo",
         "offsetX",
         "offsetY",
         "placement",
-        "reveal",
         "wrap",
         "z"
       ],
@@ -2923,9 +2801,13 @@
           "$ref": "#/definitions/Wrap",
           "description": "How text flows around the object. Always `none` off the content layer (spec §12)."
         },
-        "reveal": {
-          "$ref": "#/definitions/Reveal",
-          "description": "The object's reveal (spec §13)."
+        "motion": {
+          "type": "string",
+          "enum": [
+            "reduce",
+            "always"
+          ],
+          "description": "`reduce`: under reduced motion an animated picture shows a still and a video waits for the reader to press play. `always`: this object keeps its motion (spec §13)."
         },
         "hidden": {
           "type": "boolean",
@@ -2945,13 +2827,13 @@
         "loop",
         "maxWidth",
         "media",
+        "motion",
         "muted",
         "offsetX",
         "offsetY",
         "placement",
         "play",
         "poster",
-        "reveal",
         "video",
         "wrap",
         "z"
@@ -3072,9 +2954,13 @@
           "$ref": "#/definitions/Wrap",
           "description": "How text flows around the object. Always `none` off the content layer (spec §12)."
         },
-        "reveal": {
-          "$ref": "#/definitions/Reveal",
-          "description": "The object's reveal (spec §13)."
+        "motion": {
+          "type": "string",
+          "enum": [
+            "reduce",
+            "always"
+          ],
+          "description": "`reduce`: under reduced motion an animated picture shows a still and a video waits for the reader to press play. `always`: this object keeps its motion (spec §13)."
         },
         "hidden": {
           "type": "boolean",
@@ -3090,12 +2976,12 @@
         "kind",
         "layer",
         "maxWidth",
+        "motion",
         "offsetX",
         "offsetY",
         "placement",
         "poster",
         "ratio",
-        "reveal",
         "source",
         "title",
         "wrap",
@@ -3276,9 +3162,13 @@
           "$ref": "#/definitions/Wrap",
           "description": "How text flows around the object. Always `none` off the content layer (spec §12)."
         },
-        "reveal": {
-          "$ref": "#/definitions/Reveal",
-          "description": "The object's reveal (spec §13)."
+        "motion": {
+          "type": "string",
+          "enum": [
+            "reduce",
+            "always"
+          ],
+          "description": "`reduce`: under reduced motion an animated picture shows a still and a video waits for the reader to press play. `always`: this object keeps its motion (spec §13)."
         },
         "hidden": {
           "type": "boolean",
@@ -3297,11 +3187,11 @@
         "lottie",
         "maxWidth",
         "media",
+        "motion",
         "offsetX",
         "offsetY",
         "placement",
         "play",
-        "reveal",
         "wrap",
         "z"
       ],
@@ -3414,9 +3304,13 @@
           "$ref": "#/definitions/Wrap",
           "description": "How text flows around the object. Always `none` off the content layer (spec §12)."
         },
-        "reveal": {
-          "$ref": "#/definitions/Reveal",
-          "description": "The object's reveal (spec §13)."
+        "motion": {
+          "type": "string",
+          "enum": [
+            "reduce",
+            "always"
+          ],
+          "description": "`reduce`: under reduced motion an animated picture shows a still and a video waits for the reader to press play. `always`: this object keeps its motion (spec §13)."
         },
         "hidden": {
           "type": "boolean",
@@ -3433,10 +3327,10 @@
         "kind",
         "layer",
         "maxWidth",
+        "motion",
         "offsetX",
         "offsetY",
         "placement",
-        "reveal",
         "title",
         "transcript",
         "wrap",
@@ -3552,9 +3446,13 @@
           "$ref": "#/definitions/Wrap",
           "description": "How text flows around the object. Always `none` off the content layer (spec §12)."
         },
-        "reveal": {
-          "$ref": "#/definitions/Reveal",
-          "description": "The object's reveal (spec §13)."
+        "motion": {
+          "type": "string",
+          "enum": [
+            "reduce",
+            "always"
+          ],
+          "description": "`reduce`: under reduced motion an animated picture shows a still and a video waits for the reader to press play. `always`: this object keeps its motion (spec §13)."
         },
         "hidden": {
           "type": "boolean",
@@ -3572,12 +3470,12 @@
         "layer",
         "layout",
         "maxWidth",
+        "motion",
         "offsetX",
         "offsetY",
         "perRow",
         "placement",
         "ratio",
-        "reveal",
         "wrap",
         "z"
       ],
@@ -3650,9 +3548,13 @@
           "$ref": "#/definitions/Wrap",
           "description": "How text flows around the object. Always `none` off the content layer (spec §12)."
         },
-        "reveal": {
-          "$ref": "#/definitions/Reveal",
-          "description": "The object's reveal (spec §13)."
+        "motion": {
+          "type": "string",
+          "enum": [
+            "reduce",
+            "always"
+          ],
+          "description": "`reduce`: under reduced motion an animated picture shows a still and a video waits for the reader to press play. `always`: this object keeps its motion (spec §13)."
         },
         "hidden": {
           "type": "boolean",
@@ -3666,10 +3568,10 @@
         "kind",
         "layer",
         "maxWidth",
+        "motion",
         "offsetX",
         "offsetY",
         "placement",
-        "reveal",
         "story",
         "wrap",
         "z"
@@ -3770,9 +3672,13 @@
           "$ref": "#/definitions/Wrap",
           "description": "How text flows around the object. Always `none` off the content layer (spec §12)."
         },
-        "reveal": {
-          "$ref": "#/definitions/Reveal",
-          "description": "The object's reveal (spec §13)."
+        "motion": {
+          "type": "string",
+          "enum": [
+            "reduce",
+            "always"
+          ],
+          "description": "`reduce`: under reduced motion an animated picture shows a still and a video waits for the reader to press play. `always`: this object keeps its motion (spec §13)."
         },
         "hidden": {
           "type": "boolean",
@@ -3789,11 +3695,11 @@
         "kind",
         "layer",
         "maxWidth",
+        "motion",
         "offsetX",
         "offsetY",
         "placement",
         "portrait",
-        "reveal",
         "story",
         "wrap",
         "z"
@@ -3893,9 +3799,13 @@
           "$ref": "#/definitions/Wrap",
           "description": "How text flows around the object. Always `none` off the content layer (spec §12)."
         },
-        "reveal": {
-          "$ref": "#/definitions/Reveal",
-          "description": "The object's reveal (spec §13)."
+        "motion": {
+          "type": "string",
+          "enum": [
+            "reduce",
+            "always"
+          ],
+          "description": "`reduce`: under reduced motion an animated picture shows a still and a video waits for the reader to press play. `always`: this object keeps its motion (spec §13)."
         },
         "hidden": {
           "type": "boolean",
@@ -3912,15 +3822,15 @@
         "layer",
         "layout",
         "maxWidth",
+        "motion",
         "offsetX",
         "offsetY",
         "placement",
-        "reveal",
         "valign",
         "wrap",
         "z"
       ],
-      "description": "`\\group`: several objects or frames placed, wrapped, revealed and hidden as one unit (spec §11.11)."
+      "description": "`\\group`: several objects or frames placed, wrapped and hidden as one unit (spec §11.11)."
     },
     "GroupChild": {
       "type": "object",
@@ -4052,9 +3962,13 @@
           "$ref": "#/definitions/Wrap",
           "description": "How text flows around the object. Always `none` off the content layer (spec §12)."
         },
-        "reveal": {
-          "$ref": "#/definitions/Reveal",
-          "description": "The object's reveal (spec §13)."
+        "motion": {
+          "type": "string",
+          "enum": [
+            "reduce",
+            "always"
+          ],
+          "description": "`reduce`: under reduced motion an animated picture shows a still and a video waits for the reader to press play. `always`: this object keeps its motion (spec §13)."
         },
         "hidden": {
           "type": "boolean",
@@ -4068,10 +3982,10 @@
         "kind",
         "layer",
         "maxWidth",
+        "motion",
         "offsetX",
         "offsetY",
         "placement",
-        "reveal",
         "rule",
         "wrap",
         "z"

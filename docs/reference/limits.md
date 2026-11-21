@@ -36,7 +36,8 @@ The specification lists these as planned but not in this version. Writing them t
 | A generic styled paragraph (`\p`) and `\question` | A text element with `style=`, such as `\subhead[style=question]{How did you start?}`, with the style defined in your theme. |
 | Image zoom and lightbox | Make the picture large: `size=hero` or `size=wide`. |
 | A scrim or tint over a picture | Pick a palette that reads on the picture, or a darker picture. |
-| Pinned scenes, step triggers, scroll-scrubbed media, parallax | Scene `turn=`, and `enter=` reveals on scenes and objects. |
+| Pinned scenes, step triggers, scroll-scrubbed media, parallax | A `height=screen` scene with a strong picture, and `snap=hard` so the reader stops on it. |
+| Reveal animations and page turns (`enter=`, `turn=` and the like; removed 2026-11-21) | Nothing; the page shows as it is laid out. The attributes are ignored, with warning `W036`. |
 | Text on a path | A picture of the lettering. |
 | Nested grids | A `\group`, or a second scene with its own `grid=`. |
 | Vertical bleed | `bleed=` works left and right; for full height, a `layer=background` object in a screen scene. |

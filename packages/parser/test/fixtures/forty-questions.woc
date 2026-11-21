@@ -11,7 +11,7 @@ lang: en
 \style[name=question, family="sans-serif", weight=700, size=18px, space-before=1bl, keep-with-next]
 \style[name=speaker, family="sans-serif", weight=700, case=small-caps, tracking=0.05em, color=accent]
 
-\parent[name=quote, grid=talk, height=screen, snap=hard, enter=zoom]
+\parent[name=quote, grid=talk, height=screen, snap=hard]
 
 \story[name=talk]{
   \lede{Mairi Beaton kept the light on Eilean Glas for nineteen years. She was the last
@@ -19,7 +19,7 @@ lang: en
 
   \figure[src=/keeper/mairi-cutout.png, alt="Mairi Beaton, arms folded, looking left",
           cols=7-12, cols@tablet=5-8, cols@phone=all, shape=alpha, wrap=contour,
-          wrap-side=left, wrap-offset=20px, wrap@phone=jump, enter=fade]
+          wrap-side=left, wrap-offset=20px, wrap@phone=jump]
 
   %% GAP 2 again, and this time it is the whole format. A question is a paragraph with a
   %% different style. There is no styled paragraph, so every question is a bare paragraph

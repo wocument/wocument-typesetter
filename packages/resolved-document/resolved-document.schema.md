@@ -525,7 +525,6 @@ A full-width band of the article (spec §08.1).
 | `palette` | [`Palette`](#palette) | The scene's palette at this breakpoint, all five roles concrete (spec §07.3). |
 | `height` | `"flow"` \| `"screen"` \| `"page"` | `flow`: as tall as its content plus `margin-y`. `screen`: one small-viewport height, divided into rows. `page`: at least one small-viewport height, taller when its content needs it; multi-column frames fill column bands (spec §08.2, §09.7). |
 | `snap` | `"none"` \| `"soft"` \| `"hard"` | Scroll snapping on the scene's top edge. `hard` on a flow scene is already downgraded to `soft` (spec §08.3). |
-| `turn` | [`SceneTurn`](#sceneturn) \| `null` | How the page arrives when the reader reaches it, or `null` for none (spec §08.3). |
 | `bg` | [`Color`](#color) | Scene background color (spec §08.1). |
 | `linearized` | `boolean` | True when this scene linearized at this breakpoint. Placements below are already rewritten: stacked in source order at full width, one internal column, wrap `jump` (spec §07.5). |
 | `folio` | [`Folio`](#folio) \| `null` | The folio shown while this scene is under it: the scene's parent's folio if it declares one, else the document's; `null` when there is none or the scene sets `folio=hide` (spec §10.5). |
@@ -554,7 +553,6 @@ A rectangle on a scene's grid that shows a slice of a story (spec §09.2).
 | `z` | `number` | Stacking order within the content layer, source order written in (spec §09.2). |
 | `hidden` | `boolean` | True when hidden at this breakpoint. A hidden frame is absent from `threads` (spec §09.3). |
 | `wrap` | `object` \| `null` | `wrap=rect` (spec §09.2): the frame's box, to its last line, cuts into the frames set after it, as an object's rectangle does, with `offset` below it (not at its sides, which are on grid lines). `null` for `wrap=none`. |
-| `reveal` | [`Reveal`](#reveal) | The frame's reveal (spec §13). |
 
 ### ObjectElement
 
@@ -651,16 +649,6 @@ The five palette roles as hex colors (spec §07.3).
 | `accent` | `string` | Kickers, links, drop caps, pull quote marks. |
 | `rule` | `string` | Rules and borders. |
 
-### SceneTurn
-
-A page turn (spec §08.3): plays each time the scene enters the viewport after being fully out of it.
-
-| Field | Type | Meaning |
-| :---- | :---- | :---- |
-| `effect` | `"fade"` \| `"slide"` | `fade`, or `slide`: 8% of the viewport height into place while fading, from the scroll direction. |
-| `durationMs` | `number` | The scene's `duration`. |
-| `ease` | `"standard"` \| `"in"` \| `"out"` \| `"linear"` | The scene's `ease`. |
-
 ### Folio
 
 The persistent label fixed to the viewport (spec §10.5).
@@ -701,21 +689,6 @@ Vertical placement on the grid. Which shape applies depends on the scene's heigh
 
 Type: [`VerticalFlow`](#verticalflow) \| [`VerticalRows`](#verticalrows)
 
-### Reveal
-
-Reveal animation parameters, with any scene, parent or group stagger already baked into `delayMs` (spec §13).
-
-| Field | Type | Meaning |
-| :---- | :---- | :---- |
-| `enter` | [`RevealKind`](#revealkind) | Animation as the element enters the viewport. |
-| `exit` | [`RevealKind`](#revealkind) | Animation as the element leaves through the top of the viewport. |
-| `enterAt` | `number` | Fraction of the element that must be inside the viewport before `enter` fires: 0.15 is `15%`. |
-| `durationMs` | `number` | Duration in milliseconds. |
-| `delayMs` | `number` | Delay in milliseconds, including this element's stagger step. |
-| `ease` | `"standard"` \| `"in"` \| `"out"` \| `"linear"` | Easing curve. |
-| `replay` | `boolean` | Replay `enter` every time the element comes back into view. |
-| `motion` | `"reduce"` \| `"always"` | `reduce`: every reveal becomes `none` under reduced motion. `always`: this element keeps its motion (spec §13 rule 3). |
-
 ### FigureObject
 
 `\figure`: an image, GIF included (spec §11.4).
@@ -738,7 +711,7 @@ Reveal animation parameters, with any scene, parent or group stagger already bak
 | `offsetX` | [`Len`](#len) | Horizontal fine adjustment of the box (spec §11.1). |
 | `offsetY` | [`Len`](#len) | Vertical fine adjustment of the box (spec §11.1). |
 | `wrap` | [`Wrap`](#wrap) | How text flows around the object. Always `none` off the content layer (spec §12). |
-| `reveal` | [`Reveal`](#reveal) | The object's reveal (spec §13). |
+| `motion` | `"reduce"` \| `"always"` | `reduce`: under reduced motion an animated picture shows a still and a video waits for the reader to press play. `always`: this object keeps its motion (spec §13). |
 | `hidden` | `boolean` | True when hidden at this breakpoint. An anchored hidden object is stepped over by layout (spec §09.3, §11.1). |
 
 ### VideoObject
@@ -767,7 +740,7 @@ Reveal animation parameters, with any scene, parent or group stagger already bak
 | `offsetX` | [`Len`](#len) | Horizontal fine adjustment of the box (spec §11.1). |
 | `offsetY` | [`Len`](#len) | Vertical fine adjustment of the box (spec §11.1). |
 | `wrap` | [`Wrap`](#wrap) | How text flows around the object. Always `none` off the content layer (spec §12). |
-| `reveal` | [`Reveal`](#reveal) | The object's reveal (spec §13). |
+| `motion` | `"reduce"` \| `"always"` | `reduce`: under reduced motion an animated picture shows a still and a video waits for the reader to press play. `always`: this object keeps its motion (spec §13). |
 | `hidden` | `boolean` | True when hidden at this breakpoint. An anchored hidden object is stepped over by layout (spec §09.3, §11.1). |
 
 ### EmbedObject
@@ -792,7 +765,7 @@ Reveal animation parameters, with any scene, parent or group stagger already bak
 | `offsetX` | [`Len`](#len) | Horizontal fine adjustment of the box (spec §11.1). |
 | `offsetY` | [`Len`](#len) | Vertical fine adjustment of the box (spec §11.1). |
 | `wrap` | [`Wrap`](#wrap) | How text flows around the object. Always `none` off the content layer (spec §12). |
-| `reveal` | [`Reveal`](#reveal) | The object's reveal (spec §13). |
+| `motion` | `"reduce"` \| `"always"` | `reduce`: under reduced motion an animated picture shows a still and a video waits for the reader to press play. `always`: this object keeps its motion (spec §13). |
 | `hidden` | `boolean` | True when hidden at this breakpoint. An anchored hidden object is stepped over by layout (spec §09.3, §11.1). |
 
 ### LottieObject
@@ -817,7 +790,7 @@ Reveal animation parameters, with any scene, parent or group stagger already bak
 | `offsetX` | [`Len`](#len) | Horizontal fine adjustment of the box (spec §11.1). |
 | `offsetY` | [`Len`](#len) | Vertical fine adjustment of the box (spec §11.1). |
 | `wrap` | [`Wrap`](#wrap) | How text flows around the object. Always `none` off the content layer (spec §12). |
-| `reveal` | [`Reveal`](#reveal) | The object's reveal (spec §13). |
+| `motion` | `"reduce"` \| `"always"` | `reduce`: under reduced motion an animated picture shows a still and a video waits for the reader to press play. `always`: this object keeps its motion (spec §13). |
 | `hidden` | `boolean` | True when hidden at this breakpoint. An anchored hidden object is stepped over by layout (spec §09.3, §11.1). |
 
 ### AudioObject
@@ -841,7 +814,7 @@ Reveal animation parameters, with any scene, parent or group stagger already bak
 | `offsetX` | [`Len`](#len) | Horizontal fine adjustment of the box (spec §11.1). |
 | `offsetY` | [`Len`](#len) | Vertical fine adjustment of the box (spec §11.1). |
 | `wrap` | [`Wrap`](#wrap) | How text flows around the object. Always `none` off the content layer (spec §12). |
-| `reveal` | [`Reveal`](#reveal) | The object's reveal (spec §13). |
+| `motion` | `"reduce"` \| `"always"` | `reduce`: under reduced motion an animated picture shows a still and a video waits for the reader to press play. `always`: this object keeps its motion (spec §13). |
 | `hidden` | `boolean` | True when hidden at this breakpoint. An anchored hidden object is stepped over by layout (spec §09.3, §11.1). |
 
 ### GalleryObject
@@ -866,7 +839,7 @@ Reveal animation parameters, with any scene, parent or group stagger already bak
 | `offsetX` | [`Len`](#len) | Horizontal fine adjustment of the box (spec §11.1). |
 | `offsetY` | [`Len`](#len) | Vertical fine adjustment of the box (spec §11.1). |
 | `wrap` | [`Wrap`](#wrap) | How text flows around the object. Always `none` off the content layer (spec §12). |
-| `reveal` | [`Reveal`](#reveal) | The object's reveal (spec §13). |
+| `motion` | `"reduce"` \| `"always"` | `reduce`: under reduced motion an animated picture shows a still and a video waits for the reader to press play. `always`: this object keeps its motion (spec §13). |
 | `hidden` | `boolean` | True when hidden at this breakpoint. An anchored hidden object is stepped over by layout (spec §09.3, §11.1). |
 
 ### PullquoteObject
@@ -886,7 +859,7 @@ Reveal animation parameters, with any scene, parent or group stagger already bak
 | `offsetX` | [`Len`](#len) | Horizontal fine adjustment of the box (spec §11.1). |
 | `offsetY` | [`Len`](#len) | Vertical fine adjustment of the box (spec §11.1). |
 | `wrap` | [`Wrap`](#wrap) | How text flows around the object. Always `none` off the content layer (spec §12). |
-| `reveal` | [`Reveal`](#reveal) | The object's reveal (spec §13). |
+| `motion` | `"reduce"` \| `"always"` | `reduce`: under reduced motion an animated picture shows a still and a video waits for the reader to press play. `always`: this object keeps its motion (spec §13). |
 | `hidden` | `boolean` | True when hidden at this breakpoint. An anchored hidden object is stepped over by layout (spec §09.3, §11.1). |
 
 ### SidebarObject
@@ -910,12 +883,12 @@ Reveal animation parameters, with any scene, parent or group stagger already bak
 | `offsetX` | [`Len`](#len) | Horizontal fine adjustment of the box (spec §11.1). |
 | `offsetY` | [`Len`](#len) | Vertical fine adjustment of the box (spec §11.1). |
 | `wrap` | [`Wrap`](#wrap) | How text flows around the object. Always `none` off the content layer (spec §12). |
-| `reveal` | [`Reveal`](#reveal) | The object's reveal (spec §13). |
+| `motion` | `"reduce"` \| `"always"` | `reduce`: under reduced motion an animated picture shows a still and a video waits for the reader to press play. `always`: this object keeps its motion (spec §13). |
 | `hidden` | `boolean` | True when hidden at this breakpoint. An anchored hidden object is stepped over by layout (spec §09.3, §11.1). |
 
 ### GroupObject
 
-`\group`: several objects or frames placed, wrapped, revealed and hidden as one unit (spec §11.11).
+`\group`: several objects or frames placed, wrapped and hidden as one unit (spec §11.11).
 
 | Field | Type | Meaning |
 | :---- | :---- | :---- |
@@ -933,7 +906,7 @@ Reveal animation parameters, with any scene, parent or group stagger already bak
 | `offsetX` | [`Len`](#len) | Horizontal fine adjustment of the box (spec §11.1). |
 | `offsetY` | [`Len`](#len) | Vertical fine adjustment of the box (spec §11.1). |
 | `wrap` | [`Wrap`](#wrap) | How text flows around the object. Always `none` off the content layer (spec §12). |
-| `reveal` | [`Reveal`](#reveal) | The object's reveal (spec §13). |
+| `motion` | `"reduce"` \| `"always"` | `reduce`: under reduced motion an animated picture shows a still and a video waits for the reader to press play. `always`: this object keeps its motion (spec §13). |
 | `hidden` | `boolean` | True when hidden at this breakpoint. An anchored hidden object is stepped over by layout (spec §09.3, §11.1). |
 
 ### RuleObject
@@ -953,7 +926,7 @@ A `\rule` written directly in a scene, placed like an object (spec §10.4).
 | `offsetX` | [`Len`](#len) | Horizontal fine adjustment of the box (spec §11.1). |
 | `offsetY` | [`Len`](#len) | Vertical fine adjustment of the box (spec §11.1). |
 | `wrap` | [`Wrap`](#wrap) | How text flows around the object. Always `none` off the content layer (spec §12). |
-| `reveal` | [`Reveal`](#reveal) | The object's reveal (spec §13). |
+| `motion` | `"reduce"` \| `"always"` | `reduce`: under reduced motion an animated picture shows a still and a video waits for the reader to press play. `always`: this object keeps its motion (spec §13). |
 | `hidden` | `boolean` | True when hidden at this breakpoint. An anchored hidden object is stepped over by layout (spec §09.3, §11.1). |
 
 ### FloatSize
@@ -1094,12 +1067,6 @@ Vertical placement in a screen scene: a range of the grid's rows (spec §08.2).
 | :---- | :---- | :---- |
 | `mode` | `"rows"` | Placement tag. |
 | `rows` | [`TrackRange`](#trackrange) | Rows occupied, with `all` resolved. |
-
-### RevealKind
-
-The reveal animations (spec §13).
-
-Type: `"none"` \| `"fade"` \| `"rise"` \| `"drop"` \| `"slide-left"` \| `"slide-right"` \| `"zoom"` \| `"wipe"`
 
 ### MediaFit
 

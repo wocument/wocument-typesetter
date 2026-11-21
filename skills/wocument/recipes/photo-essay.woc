@@ -15,7 +15,7 @@ description: "A photo essay: full-screen pictures, a row of pictures, short text
 %% The cover picture, with the title on its lower rows.
 \scene[name=cover, height=screen, palette=night, folio=hide]{
   \figure[src=./pictures/landscape-dusk.jpg, alt="The coast at dusk", layer=background, focus="50% 65%", loading=eager]
-  \frame[cols=1-8, rows=5-6, cols@phone=all, valign=bottom, enter=rise]{
+  \frame[cols=1-8, rows=5-6, cols@phone=all, valign=bottom]{
     \kicker{Photo essay}
     \headline{Coastline}
     \deck{Six pictures from a winter on the edge of the land.}

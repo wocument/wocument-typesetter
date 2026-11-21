@@ -48,7 +48,7 @@ node skills/wocument/scripts/render-check.mjs page.woc --public public
 ```
 
 It runs `woc check`, then lays the page out in Chromium at 390, 1280 and 1920 pixels with reduced
-motion (so reveals hide nothing), scrolls through it, and writes `.woc-check/<name>/`:
+motion (so animated pictures show a still), scrolls through it, and writes `.woc-check/<name>/`:
 `report.md`, `report.json`, and a screenshot of each screen (`w1280-s03.png`). `--widths` and
 `--screens` change what it covers.
 

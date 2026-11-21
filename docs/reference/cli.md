@@ -90,7 +90,7 @@ Starts a server on your computer, prints `woc dev: the editor is at` and its add
 - **A new file** that doesn't exist yet is made from a short template: an "Untitled" headline and "Start writing here."
 - **The editor.** The source on the left; on the right the tabs **Preview** (the page, laid out as you type), **Problems** (every error and warning, at its line; select one to go there) and **Resolved** (the Resolved Document). On a narrow window the source becomes a tab of its own.
 - **Saving.** **Save**, or Cmd-S (Ctrl-S on Windows and Linux), writes the file. Edits you haven't saved are kept in this browser until you save or press **Revert**. **Format** rewrites the source in canonical form.
-- **Width** sets the preview to a phone (390px), a tablet (768px), 1280px or 1920px, or fits it to the pane. **Motion** turns reveals on in the preview.
+- **Width** sets the preview to a phone (390px), a tablet (768px), 1280px or 1920px, or fits it to the pane. **Motion** shows animated pictures and self-playing video as a reader who allows motion sees them; off, the preview shows what a reader with reduced motion sees.
 - **Page** opens the page alone, for another window or a phone.
 - **Your own editor.** Save the file in any editor and the open pages show the new version. Saving a `.woct` theme in the folder updates every open page.
 - **The visor.** Press **V** on the page to show the grid, the bands and the lines, and to see why each column ended and each picture went where it did. Press V again to hide it.

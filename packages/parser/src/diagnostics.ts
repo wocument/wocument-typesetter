@@ -48,7 +48,7 @@ export class Diagnostics {
 
   /** Sorted by position, then by code, so output is deterministic. */
   sorted(): Diagnostic[] {
-    return [...this.items].sort(
+    return this.items.toSorted(
       (a, b) =>
         a.pos.line - b.pos.line ||
         a.pos.column - b.pos.column ||

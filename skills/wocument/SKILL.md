@@ -6,7 +6,7 @@ description: Create, design, edit and review Wocument pages - editorial articles
 # Wocument pages
 
 Wocument is a language for screen-native editorial layout: one `.woc` file holds an article's
-content and design (scenes, grids, frames, threaded stories, wrap, type, reveals), and a `.woct`
+content and design (scenes, grids, frames, threaded stories, wrap, type), and a `.woct`
 theme holds shared design. A layout engine sets it in the reader's browser, for their screen.
 
 Your job is a page a magazine art director would sign off: clear hierarchy, set type, pictures
@@ -84,7 +84,7 @@ from the document's folder.
 
 - `references/syntax.md`: how a file is written (shape, values, units, inline marks, escapes).
 - `references/composition.md`: how the engine sets a page (scenes, grids, frames, threading,
-  columns and bands, floating pictures, wrap, groups, layers, reveals) and how to steer it.
+  columns and bands, floating pictures, wrap, groups, layers) and how to steer it.
 - `references/themes.md`: the cascade, Vanilla's defaults, writing a `.woct` theme.
 - `references/design.md`: editorial design as Wocument features; page types; references.
 - `references/checking.md`: the check and render workflow, every warning, the visual checklist.

@@ -101,12 +101,11 @@ describe("story content", () => {
     expect(b.dropcap!.lines).toBe(2);
   });
 
-  it("stagger: children without their own enter take the scene's, one step apart", () => {
-    const { doc } = run("\\scene[enter=fade, stagger=100ms]{\\frame{a}\n\\frame[enter=rise]{b}\n\\frame{c}}");
-    const r = (id: string) => base(doc).frames[id]!.reveal;
-    expect([r("frame-1").enter, r("frame-1").delayMs]).toEqual(["fade", 0]);
-    expect([r("frame-2").enter, r("frame-2").delayMs]).toEqual(["rise", 0]);
-    expect([r("frame-3").enter, r("frame-3").delayMs]).toEqual(["fade", 100]);
+  it("reveals were removed (2026-11-21): enter, stagger and the rest are ignored, with one W036 each", () => {
+    const { doc, diagnostics } = run("\\scene[enter=fade, stagger=100ms]{\\frame{a}\n\\frame[enter=rise, duration=1s]{b}\n\\frame{c}}");
+    expect("reveal" in base(doc).frames["frame-2"]!).toBe(false);
+    const w = diagnostics.filter((d) => d.code === "W036").map((d) => d.message);
+    expect(w).toEqual([expect.stringContaining("enter=, stagger="), expect.stringContaining("enter=, duration=")]);
   });
 });
 
@@ -125,7 +124,7 @@ describe("page scenes (design 2026-09-22 §1, §3)", () => {
   it("height=page resolves, does not snap by default (2026-10-09), and keeps flow placements", () => {
     const { doc } = scene("height=page");
     const s = doc.variants.base!.scenes[0]!;
-    expect([s.height, s.snap, s.turn]).toEqual(["page", "none", null]);
+    expect([s.height, s.snap]).toEqual(["page", "none"]);
     expect(doc.variants.base!.frames["frame-1"]!.vertical.mode).toBe("flow");
   });
 
@@ -137,9 +136,10 @@ describe("page scenes (design 2026-09-22 §1, §3)", () => {
     expect(hard.diagnostics.filter((d) => d.code === "W030")).toEqual([]);
   });
 
-  it("turn takes the scene's duration and ease", () => {
-    const { doc } = scene("height=page, turn=slide, duration=450ms, ease=out");
-    expect(doc.variants.base!.scenes[0]!.turn).toEqual({ effect: "slide", durationMs: 450, ease: "out" });
+  it("turn was removed (2026-11-21): it is ignored, with warning W036", () => {
+    const { doc, diagnostics } = scene("height=page, turn=slide, duration=450ms, ease=out");
+    expect("turn" in doc.variants.base!.scenes[0]!).toBe(false);
+    expect(diagnostics.filter((d) => d.code === "W036").map((d) => d.message)).toEqual([expect.stringContaining("turn=, duration=, ease=")]);
   });
 
   it("a snap@wide override applies at wide only; base keeps no snap", () => {
