@@ -524,7 +524,7 @@ function fragmentNode(
   inner.textContent = text;
   if (run.kind === "endmark") return inner;
   let node: HTMLElement = inner;
-  for (const m of [...run.marks].reverse()) {
+  for (const m of run.marks.toReversed()) {
     const wrap = doc.createElement(m);
     wrap.appendChild(node);
     node = wrap;

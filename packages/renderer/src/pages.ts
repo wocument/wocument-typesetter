@@ -53,7 +53,7 @@ const CSS = `
 /** Where Space (dir 1) or Shift + Space (dir -1) goes from `y`: the next page's top, or a screen on. */
 export function pageStep(y: number, dir: 1 | -1, stops: readonly number[], viewportHeight: number, max: number): number {
   const near = 4;
-  const next = dir > 0 ? stops.find((s) => s > y + near) : [...stops].reverse().find((s) => s < y - near);
+  const next = dir > 0 ? stops.find((s) => s > y + near) : stops.findLast((s) => s < y - near);
   return Math.min(max, Math.max(0, next ?? y + dir * viewportHeight * 0.9));
 }
 

@@ -1184,7 +1184,7 @@ function noteEnds(env: Env, set: Columns, over: Over): void {
   }
   // Space: strips under min-slot, one a run of bands down an object's side (a line apart at most).
   const strips: Narrow[] = [];
-  for (const n of [...(set.placed.narrow ?? [])].sort((a, b) => a.frame.localeCompare(b.frame) || a.column - b.column || a.x - b.x || a.y - b.y)) {
+  for (const n of (set.placed.narrow ?? []).toSorted((a, b) => a.frame.localeCompare(b.frame) || a.column - b.column || a.x - b.x || a.y - b.y)) {
     const prev = strips.at(-1);
     const joins = prev && prev.frame === n.frame && prev.column === n.column && prev.object === n.object && Math.abs(prev.x - n.x) < 1 && n.y <= prev.y + prev.height + n.height + EPS;
     if (joins) (prev.height = Math.max(prev.height, n.y + n.height - prev.y)), (prev.width = Math.max(prev.width, n.width));
@@ -1583,7 +1583,7 @@ function screenReports(env: Env, frameId: string, story: Story, start: Resume, c
       const right = columns.at(-1)!;
       space(env, "early-end", { x: columns[0]!.x, y: low, width: right.x + right.width - columns[0]!.x, height: foot - low }, frameId, null, { lines: short });
     }
-    const para = [...on].reverse().map((l) => story.blocks[l.block]).find((b) => b?.kind === "paragraph");
+    const para = on.toReversed().map((l) => story.blocks[l.block]).find((b) => b?.kind === "paragraph");
     const words = para?.kind === "paragraph" ? para.runs.map((r) => (r.kind === "text" ? rd.strings[r.s]! : " ")).join("").replace(SHY, "").split(/\s+/).filter(Boolean).slice(0, 5).join(" ") : "";
     const photo = here.find((o) => {
       const r = v.objects[o.name];
@@ -2362,7 +2362,7 @@ function slotsFor(col: Col, exclusions: readonly Exclusion[], top: number, botto
   }
   free = free.filter((f) => f.hi - f.lo > EPS);
   const wide = free.filter((f) => f.hi - f.lo >= minSlot);
-  const widest = [...free].sort((a, b) => b.hi - b.lo - (a.hi - a.lo))[0];
+  const widest = free.toSorted((a, b) => b.hi - b.lo - (a.hi - a.lo))[0];
   // `strict` (banded frames, rule 4): never a gap under minSlot, not even the widest.
   const usable = wide.length > 0 || strict ? wide : widest ? [widest] : [];
   // The visor: the strips under minSlot that stay empty.
