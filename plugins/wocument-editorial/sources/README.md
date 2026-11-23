@@ -10,10 +10,11 @@ the PDFs and snapshots never leave this computer.
 | `technology-innovation/` | Technology & Innovation |
 | `culture-society/` | Culture & Society |
 | `business-finance/` | Business & Finance |
+| `fashion-lifestyle/` | Fashion & Lifestyle |
 
 Who does what:
 
-1. **Snapshot agent** (follows `PROCESSING.md`): removes ads, cuts out components, marks where each sat. Observation only.
+1. **Snapshot agent** (follows `PROCESSING.md`): removes the front cover so spreads line up in two-page view (ads stay), cuts out components, marks where each sat. Observation only.
 2. **Owner**: writes `notes.md` in each issue folder: specifics to look at, your take, and what not to learn from.
 3. **Claude**: reads each issue, its snapshots and your notes, and writes the context (article type, position, what is used and what is absent) and the insight log for the edition. Your notes outrank Claude's reading, and each insight says whether it comes from them.
 4. **Owner**: marks each insight keep, change or drop. Only kept principles, in our own words, go into `skills/editorial-foundations/`.
