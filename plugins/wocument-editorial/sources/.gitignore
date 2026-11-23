@@ -1,0 +1,5 @@
+# Third-party magazines stay on this computer. Only these three files are tracked.
+*
+!.gitignore
+!README.md
+!PROCESSING.md
