@@ -123,7 +123,7 @@ Rotated (vertical) text is not in the engine. Where a source used it, set the te
 ### Elemental glamour — expressiveness: middle to high
 - **Structure:** a themed series with one opener formula per item; photography coloured by the theme.
 - **Display:** a giant masthead over the opening photo; caps pull quotes between bullets.
-- **Voice (measured):** 18 words per sentence on average; quotes people rarely, a lot of "I" (first person, personal), plain vocabulary, casual contractions ("it's", "don't"); British spelling.
+- **Voice (measured):** 18 words per sentence on average; a lot of "I" (first person, personal), plain vocabulary, casual contractions ("it's", "don't"), a narrower, repeated vocabulary; British spelling.
 - **Fits:** celebrity cover packages, themed fashion stories. **Avoid:** text-led pieces.
 
 ## High

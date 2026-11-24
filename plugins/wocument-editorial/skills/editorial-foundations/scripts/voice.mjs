@@ -114,7 +114,8 @@ export function measure(raw) {
     you_rate: r(per1k(/\b(you|your|yours|yourself)\b/gi)),
     questions: r(100 * sents.filter(s => /\?["”’)]*$/.test(s)).length / ns),
     exclamations: r(100 * sents.filter(s => /![”"’)]*$/.test(s)).length / ns),
-    quotes: r((((body.match(/“/g) || []).length + (body.match(/"/g) || []).length / 2) / n) * 1000),
+    // opening double marks, opening single marks (British style; not apostrophes, which are ’), straight pairs
+    quotes: r((((body.match(/“/g) || []).length + (body.match(/(^|[\s(—–-])‘(?=\w)/g) || []).length + (body.match(/"/g) || []).length / 2) / n) * 1000),
     numbers: r(per1k(/\b\d[\d,.]*%?/g)),
     contractions: r(per1k(/\b\w+['’](s|t|re|ve|ll|d|m)\b/gi)),
     dashes: r(per1k(/—|–| - /g)),
