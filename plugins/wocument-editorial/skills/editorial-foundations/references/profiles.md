@@ -24,7 +24,7 @@ Rotated (vertical) text is not in the engine. Where a source used it, set the te
 - **Density:** the densest; 2–3 column text, few pictures, small house-style charts in one colour.
 - **Frame:** coloured section tabs; drawn header illustrations for named columns.
 - **Emphasis:** short coloured quotes in the column alley instead of large pull quotes.
-- **Voice (measured):** 23 words per sentence on average; many difficult words, rarely says "we", few contractions (formal), a wide vocabulary; British spelling.
+- **Voice (measured):** 23 words per sentence on average; many difficult words, rarely says "we", a wide vocabulary, few contractions (formal); British spelling.
 - **Fits:** analysis, briefings, weekly round-ups. **Avoid:** visual storytelling.
 
 ### Quiet luxury — expressiveness: low
@@ -59,7 +59,7 @@ Rotated (vertical) text is not in the engine. Where a source used it, set the te
 ### Couture classic — expressiveness: low to middle
 - **Type:** serif text, light high-contrast headlines, very large serif drop caps.
 - **Pictures:** staged, theatrical photo stories over many spreads; small captions in the margin; text spreads alternate with picture spreads.
-- **Voice (measured):** 18 words per sentence on average; many dashes, a lot of "I" (first person, personal), many short, punchy sentences; American spelling.
+- **Voice (measured):** 18 words per sentence on average; many dashes, a lot of "I" (first person, personal), many short, punchy sentences, many semicolons (literary); American spelling.
 - **Fits:** fashion stories, portraits, culture profiles meant to feel timeless. **Avoid:** service, data.
 
 ## Middle
@@ -78,7 +78,7 @@ Rotated (vertical) text is not in the engine. Where a source used it, set the te
 - **Display:** stacked bold serif caps title, light high-contrast caps deck, a short coloured rule, a coloured serif drop cap.
 - **Pictures:** full-page commissioned illustration on feature openers.
 - **Lists:** alternating cell tints instead of rules to separate entries.
-- **Voice (measured):** 21 words per sentence on average; many very long sentences, many difficult words; American spelling.
+- **Voice (measured):** 21 words per sentence on average; many difficult words, many very long sentences; American spelling.
 - **Fits:** corporate stories, unhurried long reads. **Avoid:** dense analysis.
 
 ### Business glossy — expressiveness: middle
@@ -117,7 +117,7 @@ Rotated (vertical) text is not in the engine. Where a source used it, set the te
 - **Second voice:** smaller accent-coloured sans for captions and asides, in its own narrow column.
 - **Grid (measured):** 12 units, margins about 7% of the page width; body on 4 units, intros on 6, captions on 2. Large picture on one page, large picture at the top of the facing page, small one diagonally opposite, text in the remaining corner. Lead pictures near the page's own proportion; pairs repeat one proportion turned on its side.
 - **Pictures:** drawn illustration for light or community content, in rows with text under each; photos for houses; data panels over pictures.
-- **Voice (measured):** 21 words per sentence on average; few short sentences, often says "we", rarely asks questions, almost no exclamations; American spelling.
+- **Voice (measured):** 21 words per sentence on average; few short sentences, rarely asks questions, often says "we", almost no exclamations; American spelling.
 - **Fits:** community, renovation diaries, how-to, budget stories, makers. **Avoid:** luxury, grief.
 
 ### Elemental glamour — expressiveness: middle to high
@@ -135,7 +135,7 @@ Rotated (vertical) text is not in the engine. Where a source used it, set the te
 - **Display:** block drop caps or oversized drop caps cropped by the edge; underlined heads; pull quotes with highlighted words; titles repeated and cropped at the page edges.
 - **Per story:** each feature changes colour and motif on the same grid.
 - **Products:** ruled catalogue cells, a coloured marker after each name, cut-outs that break their tile.
-- **Voice (measured):** Not measured: the study issues were scanned with no text layer. Judge from subject, reader and tone.
+- **Voice (measured):** 19 words per sentence on average; close to the average on most measures; American spelling. (Measured from machine-read text, which turns many dashes into hyphens, so its dash count is too low and the other measures are rougher than for the other profiles.)
 - **Fits:** technology features, internet culture, product roundups, interviews, investigations. **Avoid:** calm, luxury, grief, very short pieces.
 
 ### Loud glossy — expressiveness: high

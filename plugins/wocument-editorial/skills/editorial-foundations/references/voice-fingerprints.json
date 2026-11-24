@@ -1,23 +1,23 @@
 {
- "about": "How each profile writes, measured with scripts/voice.mjs on the body text of the study material (two issues per profile where available). Numbers only. The engineered-magazine profile has no measures: its study issues were scanned with no text layer.",
+ "about": "How each profile writes, measured with scripts/voice.mjs on the body text of the study material (two to four issues per profile where available). Numbers only. The engineered-magazine measures come from machine-read (OCR) text, where columns can interleave, so treat them as rougher than the others.",
  "measured": "2026-11-24",
  "spread": {
-  "sentence_words": 1.882,
-  "long_sentences": 3.583,
-  "short_sentences": 6.255,
-  "word_letters": 0.191,
-  "hard_words": 1.832,
-  "i_rate": 10.236,
-  "we_rate": 1.66,
-  "you_rate": 3.764,
-  "questions": 1.727,
-  "exclamations": 0.409,
-  "quotes": 4.786,
-  "numbers": 10.402,
-  "contractions": 4.358,
-  "dashes": 1.594,
-  "semicolons": 2.32,
-  "diversity": 0.016
+  "sentence_words": 1.829,
+  "long_sentences": 3.519,
+  "short_sentences": 6.203,
+  "word_letters": 0.185,
+  "hard_words": 1.781,
+  "i_rate": 9.961,
+  "we_rate": 1.622,
+  "you_rate": 3.675,
+  "questions": 1.687,
+  "exclamations": 0.397,
+  "quotes": 4.666,
+  "numbers": 10.11,
+  "contractions": 4.236,
+  "dashes": 1.721,
+  "semicolons": 2.293,
+  "diversity": 0.015
  },
  "profiles": [
   {
@@ -391,6 +391,28 @@
     "dashes": 6.4,
     "semicolons": 1.9,
     "diversity": 0.597,
+    "spelling": "American"
+   }
+  },
+  {
+   "profile": "Engineered magazine",
+   "voice": {
+    "sentence_words": 19.2,
+    "long_sentences": 19.7,
+    "short_sentences": 23.8,
+    "word_letters": 4.7,
+    "hard_words": 13.3,
+    "i_rate": 12.1,
+    "we_rate": 6.4,
+    "you_rate": 7.7,
+    "questions": 4.4,
+    "exclamations": 0.6,
+    "quotes": 9.8,
+    "numbers": 16.5,
+    "contractions": 22.2,
+    "dashes": 2.2,
+    "semicolons": 0.8,
+    "diversity": 0.601,
     "spelling": "American"
    }
   }

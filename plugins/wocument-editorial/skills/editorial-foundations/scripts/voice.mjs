@@ -87,7 +87,7 @@ function mattr(tokens, win = 500) {
 }
 
 const UK = /\b(colour|favour|honour|labour|neighbour|behaviour|centre|theatre|metre|organis\w*|realis\w*|recognis\w*|programme|travell\w*|defence|licence|grey|whilst|amongst)\b/gi;
-const US = /\b(color|favor|honor|labor|neighbor|behavior|center|theater|meter|organiz\w*|realiz\w*|recogniz\w*|program|travel(ed|ing)|defense|license|gray)\b/gi;
+const US = /\b(color|favor|honor|labor|neighbor|behavior|center|theater|meter|organiz\w*|realiz\w*|recogniz\w*|travel(ed|ing)|defense|gray)\b/gi;
 
 export function measure(raw) {
   const text = clean(raw);

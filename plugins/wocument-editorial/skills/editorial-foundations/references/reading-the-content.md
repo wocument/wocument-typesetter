@@ -90,15 +90,16 @@ writing is to the piece, and names the measures that differ most.
 
 What the ranking is good for, and its limits:
 
-- **It is a real signal.** In a check on 25 issues, each measured against fingerprints built
-  without it, the issue's own profile came first 16 times and in the top three 19 times (by chance
-  it would be about 1 in 17).
+- **It is a real signal.** In a check on 29 issues, each measured against fingerprints built
+  without it, the issue's own profile came first 20 times and in the top three 23 times (by chance
+  it would be about 1 in 18).
 - **It is not enough alone.** Writing varies between articles of one publication, and a profile is
   more than its writing. Use it as a check on the dial and the profile, never as the decision.
 - **The order matters more than the numbers.** A single short piece is far from every profile;
   look at which profiles come first and which measures make the difference.
-- **The engineered-magazine profile has no measures** (its study issues were scanned with no text
-  layer). Judge it from subject, reader and tone only.
+- **The engineered-magazine measures are rougher.** Its study issues were read by machine (OCR),
+  where columns can interleave and dashes become hyphens. Its dash count is too low; weigh its
+  other measures a little less.
 
 ## Never
 
