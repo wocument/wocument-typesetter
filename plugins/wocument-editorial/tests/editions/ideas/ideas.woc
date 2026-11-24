@@ -1,0 +1,434 @@
+---
+wocument: 1
+title: The Ideas Issue
+lang: en-GB
+theme: ./ideas.woct
+description: "An expressive test edition about where ideas come from: an essay, a photo essay, a feature, an interview, a roundup and a closing page."
+---
+%% A test edition for the editorial skills. The text is original and every person in it is
+%% invented. Photographs: Unsplash (credits at the end and in pictures/credits.csv).
+%% Illustrations: the owner's collage set (local only).
+
+\folio[position=top-right, progress]{The Ideas Issue}
+
+%% ======================================================================================
+%% Stories
+%% ======================================================================================
+
+\story[name=noisy]{
+  \lede[span=all]{Nobody has a good idea in silence. They have it in a room full of half-finished thoughts, old songs, a remark from a bus stop and the smell of someone else's toast. The trick is learning to listen to the room.}
+
+  \dropcap[lines=4]
+  For most of my twenties I believed that ideas arrived like post. You waited, and if you were the right sort of person, something landed on the mat. I sat at desks in the early morning and waited. I bought notebooks that were too nice to write in. I read interviews with people I admired and underlined the parts where they described the moment it came to them, as if the moment were the point.
+
+  It took me an embarrassingly long time to notice that the moment was never the point. The people I admired were not describing a delivery. They were describing the last step of a long walk, and leaving out the walk because it was boring to tell. Nobody wants to hear about the three hundred evenings of reading that came before the one evening of clarity. But the evenings were the work.
+
+  So this is an essay about the walk. It is about the noisy room inside your head, the one you never quite tidy, and why the mess in it is not a failure of discipline but the raw material of everything you will ever think that is worth thinking.
+
+  \subhead{The collector}
+
+  Start with the obvious thing: you cannot connect what you have not collected. Every idea anyone has ever had is a new arrangement of old pieces, and the pieces have to come from somewhere. They come from what you read, what you overhear, what you notice and what you remember noticing. A person who collects nothing has nothing to arrange.
+
+  \figure[src=./illustrations/brain.png, alt="A collage of a human brain made from torn paper: scraps of printed text, maps, stripes and patches of tomato, sky blue, mustard and green", shape=alpha, wrap=contour, side=right, width=55%, size=column]
+
+  The best collectors I know are not tidy. One friend keeps a shoebox of cuttings that she has not sorted in fifteen years. Another writes single words on the backs of receipts and leaves them in his coat pockets until they go through the wash. A third, a furniture maker, keeps offcuts of wood that are too small to use because, she says, she likes to see the shapes that the big pieces left behind. None of them could tell you what any one scrap is for. That is the point. A collection made for a purpose only ever answers that purpose. A collection made from curiosity answers questions you have not asked yet.
+
+  This is the first discipline, and it does not feel like one: pay attention to what catches your attention. Not what ought to interest you, not what is useful this week, but the small snag in the day that makes you look twice. Write it down before you decide whether it matters. You are not the best judge, in the moment, of what will matter later.
+
+  \subhead{The noise}
+
+  Here is the part that took me longest to accept. The inside of a mind that is collecting well is loud. It is full of things that do not fit together yet. A line from a song sits next to a fact about bees, which sits next to an argument you lost in 2019, which sits next to the colour of a door you walked past this morning. It feels like clutter. Most advice about thinking treats it as clutter, and tells you to clear it out.
+
+  \pullquote[place=here]{The mess is not a failure of discipline. It is the raw material.}
+
+  I think that advice is half right and wholly misleading. It is right that you cannot work in a constant roar. You need hours when the room is quieter, when you are doing one thing and the other voices drop to a murmur. But the murmur is not the enemy. The murmur is where the next idea is being assembled, out of your sight, by the part of you that never stops sorting.
+
+  You can feel this happen if you watch for it. You are washing up, or walking to the shop, or lying awake, and two things that have been sitting in different corners of the room suddenly turn and look at each other. The song and the bees. The argument and the door. It is not a bolt of lightning. It is more like two people at a party realising they went to the same school. Neither of them is new. What is new is the meeting, and the meeting only happens because you let them both stay in the room long enough to bump into each other.
+
+  \figure[src=./pictures/library-lamps.jpg, alt="People reading at long tables under green-shaded lamps in a large library", size=wide, ratio=3:2, focus="50% 55%"]{
+    \caption{A reading room: one of the few places built for a quieter kind of noise.}
+    \credit{Photograph: The New York Public Library / Unsplash}
+  }
+
+  \subhead{The quiet hours}
+
+  If the noise is the raw material, the quiet hours are the workshop. This is where most writing advice is useful, and where most of us fail, because the workshop is boring. It is the same desk, the same chair, the same unfinished page, every day, whether or not anything interesting happened in the noisy room overnight.
+
+  I used to think of these hours as the time when I produced ideas. Now I think of them as the time when I make room for ideas to be noticed. Sitting with a problem for an hour, even an hour that produces nothing, tells the rest of your mind that this is the problem you care about. The sorting goes on in the background, but it seems to know where to send what it finds.
+
+  The writer I worked for when I was young had a rule that I thought was superstition: never stop at the end of a section. Stop in the middle of a sentence you know how to finish. I thought it was a trick to make the next morning easier, and it is. But it is also a way of leaving a door open. A finished section closes the question. A half-finished sentence keeps it alive overnight, and things walk in.
+
+  \subhead{The walk}
+
+  Which brings me back to the walk. Not the metaphor this time, but the actual walk, the one with shoes. A surprising number of people I have asked about where their ideas come from mention walking, and almost none of them mention it as a technique. They mention it apologetically, as if they ought to have been at their desks.
+
+  I have stopped apologising. A walk is the best tool I know for turning the volume of the noisy room down without switching it off. Your feet take care of themselves. Your eyes have enough to do to stop them fixing on one thing. And the part of your mind that sorts, freed from the effort of looking busy, gets on with it.
+
+  None of this is a method. If it were a method, it would be on a poster, and it would not work, because the point of a method is that it can be done without paying attention. This is the opposite. It is a description of what paying attention looks like when you stop trying to force it: collect without judging, let the room be loud, give it quiet hours, and go for a walk when it gets stuck.
+
+  The ideas will still feel like post when they come. Something will land on the mat and you will think, where did that come from? Now you will know. It came from the room. You have been furnishing it for years. \endmark
+
+  \rule
+  \bio{**Jonah Feld** is a writer and teacher. He keeps his notebooks in a biscuit tin and has never once found the page he was looking for.}
+}
+
+\story[name=spark]{
+  \lede[span=all]{We love the story of the sudden idea: the bath, the apple, the dream. The truth is slower, stranger and much more hopeful, because a slow spark is one anyone can learn to strike.}
+
+  \dropcap[lines=3]
+  The workshop where Ada Lenz builds lamps is cold until about eleven in the morning, when the sun finally clears the roof across the yard. She says this is the most important fact about her working life. In the cold hours she sands, files and solders, the jobs that only need her hands. In the warm hours she draws. She has tried doing it the other way round and it does not work.
+
+  Lenz has been making lamps for nineteen years, and she has kept every drawing. They fill eleven flat drawers, and she let me look through them on the condition that I did not try to find the good ones. The good ones, she said, are not the point. The point is the sequence.
+
+  \figure[src=./illustrations/lightbulb.png, alt="A collage lightbulb: a yellow dotted glass, a page of technical drawings inside it, a striped blue base, and paper arrows bursting outward", shape=alpha, wrap=contour, side=left, width=50%, size=column]
+
+  The sequence is what anyone who tells the sudden-idea story leaves out. In the drawers, a single lamp design takes shape across dozens of sheets, sometimes across years. A curve appears in one drawing, disappears for twenty, comes back attached to a different base. A joint that fails on paper in spring is solved, without comment, in a drawing from the following winter. You can watch an idea happen, and it does not look like a flash. It looks like a slow tide coming in.
+
+  \subhead{The myth and the method}
+
+  "People ask me when I had the idea for a lamp," Lenz said, holding a drawing up to the window. "I never know what to tell them. I had it over three years. I had it every Tuesday."
+
+  It is worth asking why the sudden-idea story is so popular, if it is so rarely true. Part of the answer is that it is a better story. A flash has a before and an after; a tide does not. Part of it is that the people who have ideas often experience them as sudden, because the long build happens out of sight, and only the last step reaches the surface. And part of it, I suspect, is that the flash story lets the rest of us off the hook. If ideas are lightning, there is nothing to do but wait for weather.
+
+  \pullquote[place=here]{I never know what to tell them. I had it over three years. I had it every Tuesday. \cite{Ada Lenz}}
+
+  The slow-spark story is less romantic and far more useful, because it comes with things you can actually do. Keep the drawings. Look at them again. Put the half-solved problem where you will see it on an ordinary morning. Change one thing at a time and notice what the change does. None of this guarantees a good idea. All of it makes one more likely, and it makes you more likely to recognise one when it arrives.
+
+  \subhead{Tuesday}
+
+  Lenz's Tuesdays are her drawing days. She does not answer the phone, and she does not start anything she has to finish. She takes out the drawers from the last few months and lays the sheets on the floor in rows, oldest to newest, and walks along them. "Like a gallery where all the paintings are by someone who is slowly getting less stupid," she said.
+
+  Most Tuesdays, she says, nothing happens. She redraws something she has drawn before, a little differently, and puts it at the end of a row. But every few months a Tuesday turns. Two drawings from different rows rhyme in a way she had not noticed. A shape she gave up on suddenly fits a problem she had not yet had when she drew it. Then the day disappears, and she looks up and the light has gone.
+
+  "That's the bit people call the spark," she said. "But I only see it because I've been walking up and down those rows every week. If I didn't, the two drawings would just be two drawings in two drawers."
+
+  \subhead{Striking it}
+
+  I left the workshop with a habit I have kept since. Once a week I take out the notes I have made in the last month and lay them in order, on the floor if I have the room, on the table if I do not. I read them as if someone else had written them. Mostly they are dull. Sometimes they rhyme.
+
+  It is not lightning. It will never make a good story at a party. But it works, slowly and reliably, which is more than I can say for waiting for weather. The spark, it turns out, is something you strike, over and over, on the same rough patch of the box, until one day it catches. \endmark
+
+  \rule
+  \bio{**Tamsin Roe** writes about craft and the people who practise it. Ada Lenz is a character invented for this test edition.}
+}
+
+\story[name=qa]{
+  \lede[span=all]{Ines Aldana has spent twenty-six years in a city archive, most of them reading other people's handwriting. She talked to us about attention, pencils, and the joy of the second look.}
+
+  \subhead[style=question]{What does an archivist actually do all day?}
+
+  Mostly I read things nobody else wants to read yet. Letters, ledgers, minutes of meetings about drains. People imagine an archive as a treasure room, and it is, but the treasure is buried in a great deal of ordinary paper. My job is to know the ordinary paper well enough that I can find the treasure when someone comes asking for it.
+
+  \subhead[style=question]{You are known for underlining. Why?}
+
+  Because reading without a pencil is like listening without nodding. The underline is my way of saying to the page: I heard that. Not that it is important, necessarily. Just that it made me stop. Of course in the archive I never mark the originals. I work from copies, and I have used, I think, a few thousand pencils on those copies.
+
+  \figure[src=./illustrations/magnifier.png, alt="A collage magnifying glass with a tomato and mustard handle; inside the lens, sky and a scrap of printed text, with a smaller lens magnifying the words", shape=alpha, wrap=contour, side=right, width=50%, size=column]
+
+  \subhead[style=question]{What do you underline?}
+
+  The thing that surprises me. Somebody writing a dull letter about a delivery of coal suddenly mentions that it has been a hard winter for the birds. That line. It tells me there was a person there, looking out of a window, and that is what I want to remember when I come back to the letter in ten years.
+
+  \subhead[style=question]{Do you come back?}
+
+  All the time. That is the whole secret of the job. The first reading is for finding out what a document is. The second reading, sometimes years later, is for finding out what it means. And the second reading is almost always better, because by then I have read a thousand other documents and I know what is unusual. Some of my best finds were in papers I had already catalogued twice. The paper had not changed in all those years. I had, and so I could finally see what was there.
+
+  \pullquote[place=here]{The first reading tells you what a thing is. The second tells you what it means.}
+
+  \subhead[style=question]{Is attention something you can learn?}
+
+  I think it is mostly something you can stop unlearning. Children pay attention beautifully, to the wrong things, according to adults. We train them to pay attention to the right things and in the process a lot of them forget how to notice at all. I had a teacher who let us stare out of the window as long as we told her afterwards what we had seen. That was the best lesson I ever had.
+
+  \figure[src=./pictures/cabinets.jpg, alt="Rows of old wooden filing cabinets with small brass label holders", size=wide, ratio=3:2]{
+    \caption{Drawers like these hold most of what any archive knows.}
+    \credit{Photograph: MIKE STOLL / Unsplash}
+  }
+
+  \subhead[style=question]{What has the archive taught you about ideas?}
+
+  That they are older than we think. Almost every idea someone brings to me as new, I can find a version of in a drawer, written by someone who did not get to finish it. That used to depress me. Now I find it comforting. It means the thought was worth having twice.
+
+  \subhead[style=question]{And the best thing you ever found?}
+
+  A recipe for a cake, written on the back of a council notice about a burst water main. Whoever wrote it had clearly been waiting for the meeting to end. It is not historically important at all. But I made the cake, and it was very good, and I think about that person every time I bake it. Nobody has ever written in to claim it, so I like to think it is partly mine.
+
+  \rule
+  \bio{Interview by **Mira Okafor**. Ines Aldana and her archive are invented for this test edition.}
+}
+
+%% ======================================================================================
+%% 1. Cover
+%% ======================================================================================
+
+\scene[name=cover, height=screen, folio=hide]{
+  \figure[src=./illustrations/brain.png, alt="A large collage brain made of torn paper scraps in tomato, sky blue, mustard and green, with printed text showing through", cols=6-12, rows=1-6, cols@tablet=1-8, rows@tablet=1-3, cols@phone=all, rows@phone=1-3, fit=contain, loading=eager]
+  \frame[cols=1-6, rows=2-6, cols@tablet=1-8, rows@tablet=4-6, cols@phone=all, rows@phone=4-6, valign=bottom]{
+    \kicker{Issue 01 · Winter}
+    \headline[style=headline-poster]{Ideas}
+    \deck{Where they come from, how they grow, and what it takes to write one down.}
+    \meta{The noisy room · Where ideas live · The slow spark · The underliner · Tools of the trade · Ink}
+  }
+}
+
+%% ======================================================================================
+%% 2. Contents and the editor's letter
+%% ======================================================================================
+
+\scene[name=front, palette=tomato]{
+  \frame[cols=1-5, cols@tablet=1-8, cols@phone=all, top=2bl, top@tablet=auto, top@phone=auto, measure=620px]{
+    \kicker{Contents}
+
+    \meta[style=bignum]{01}
+    \meta[style=entry]{The noisy room}
+    \meta[style=toc-line]{Why the mess in your head is the raw material of every good thought. *Jonah Feld*}
+
+    \meta[style=bignum]{02}
+    \meta[style=entry]{Where ideas live}
+    \meta[style=toc-line]{Desks, workshops, libraries and long walks: a photo essay. *Picture editor: Sami Hale*}
+
+    \meta[style=bignum]{03}
+    \meta[style=entry]{The slow spark}
+    \meta[style=toc-line]{A lamp maker's drawers, and the myth of the sudden idea. *Tamsin Roe*}
+
+    \meta[style=bignum]{04}
+    \meta[style=entry]{The underliner}
+    \meta[style=toc-line]{An archivist on pencils, second readings and paying attention. *Interview by Mira Okafor*}
+
+    \meta[style=bignum]{05}
+    \meta[style=entry]{Tools of the trade}
+    \meta[style=toc-line]{Five humble things that help ideas along. *The editors*}
+
+    \meta[style=bignum]{06}
+    \meta[style=entry]{Ink}
+    \meta[style=toc-line]{A last page on putting it down on paper. *Mira Okafor*}
+  }
+  \frame[cols=7-12, cols@tablet=1-8, cols@phone=all, top=2bl, top@tablet=auto, top@phone=auto, measure=620px]{
+    \kicker{From the editor}
+    \headline[style=headline-mid]{We are all collectors}
+
+    Every issue of a magazine begins with a pile. Ours began with a shoebox on my desk: cuttings, receipts with words on the back, a postcard of a lamp, a photograph of a library I have never visited. None of it was a plan. All of it, it turned out, was this issue.
+
+    We set out to make an issue about ideas without pretending to know where they come from. Nobody does, not really. But we found that the people who have them seem to share a few habits: they collect without knowing why, they come back to things, and they go for a lot of walks.
+
+    So that is what you will find here. Jonah Feld on the noisy room inside your head. A lamp maker who has kept every drawing for nineteen years. An archivist who has worn down a few thousand pencils. A small, practical list of tools. And a last page, about ink.
+
+    Read it slowly, if you can. Underline things. Come back to it in a month and see what you notice the second time.
+
+    \byline{Mira Okafor, Editor}
+  }
+}
+
+%% ======================================================================================
+%% 3. The noisy room
+%% ======================================================================================
+
+\scene[name=noisy-open, height=screen, palette=sky, folio=hide]{
+  \frame[cols=1-11, rows=2-6, cols@tablet=all, cols@phone=all, valign=bottom]{
+    \kicker{Essay · 01}
+    \headline[style=headline-poster]{The noisy room}
+    \deck{Good ideas are not delivered. They are assembled, slowly and out of sight, from the clutter you were told to clear out.}
+    \byline{Words by Jonah Feld}
+  }
+}
+
+\scene[name=noisy-pages, height=page]{
+  \frame[story=noisy, cols=all, columns=auto, measure=600px, columns@tablet=1, columns@phone=1]
+}
+
+%% ======================================================================================
+%% 4. Interlude
+%% ======================================================================================
+
+\scene[name=walk, parent=interlude]{
+  \figure[src=./pictures/walk-clouds.jpg, alt="A walker in silhouette on a ridge above a sea of clouds at dusk, under a lilac sky", layer=background, focus="65% 70%"]
+  \frame[cols=1-8, rows=1-2, cols@tablet=1-7, cols@phone=all, valign=top]{
+    \pullquote{Go for a walk when it gets stuck.}
+  }
+}
+
+%% ======================================================================================
+%% 5. Photo essay: Where ideas live
+%% ======================================================================================
+
+\scene[name=places-open, height=screen, palette=night, folio=hide]{
+  \figure[src=./pictures/studio-desk.jpg, alt="A cluttered wooden desk with a desk lamp, jars of brushes and papers, in front of a large window that looks onto green woods", cols=5-12, rows=1-6, cols@tablet=all, rows@tablet=1-4, cols@phone=all, rows@phone=1-3, bleed=right, fit=cover, focus="45% 55%"]
+  \frame[cols=1-4, rows=3-6, cols@tablet=all, rows@tablet=5-6, cols@phone=all, rows@phone=4-6, valign=bottom]{
+    \kicker{Photo essay · 02}
+    \headline[style=headline-mid]{Where ideas live}
+    \deck{A desk by the woods, a reading room, a workbench, a window in the rain.}
+  }
+}
+
+\scene[name=places-a, palette=night]{
+  \frame[cols=4-9, cols@tablet=2-7, cols@phone=all, measure=620px]{
+    \lede{Ask people where they do their best thinking and they rarely name a room built for it. They name a corner. A bench. The table nearest the window. These are some of those corners.}
+
+    A good place to think seems to share a few things, whatever it looks like. It is a little untidy, so nothing is too precious to touch. It has light that changes through the day. And it holds evidence of earlier work, so that you never quite start from nothing.
+  }
+  \group[layout=row, cols=all, valign=stretch, gap=24px]{
+    \figure[src=./pictures/library-grand.jpg, alt="A tall curved wall of bookshelves in a grand library, with arched windows above", min-width=4col, ratio=3:4]{
+      \caption{The reading room: shelves to the ceiling and the light from above.}
+      \credit{T / Unsplash}
+    }
+    \figure[src=./pictures/workbench.jpg, alt="A workbench hung with hand tools, clamps and offcuts of wood", min-width=4col, ratio=3:4]{
+      \caption{The workbench: every tool within reach, nothing put away.}
+      \credit{Yasamine June / Unsplash}
+    }
+    \figure[src=./pictures/studio-easel.jpg, alt="An artist's studio with a painting on an easel and tables of paints and brushes", min-width=4col, ratio=3:4, focus="50% 50%"]{
+      \caption{The studio: the half-finished work stays out where it can be seen.}
+      \credit{Clay Banks / Unsplash}
+    }
+  }
+}
+
+\scene[name=places-light, parent=interlude]{
+  \figure[src=./pictures/dusty-light.jpg, alt="Sunlight falling through a window across the dusty floor of a dark, crowded workroom", layer=background, focus="50% 70%"]
+  \frame[cols=7-12, rows=2-3, cols@tablet=2-8, cols@phone=all, valign=center]{
+    \pullquote{Light that changes through the day.}
+  }
+}
+
+\scene[name=places-b, palette=night]{
+  \group[layout=row, cols=all, valign=text, gap=24px]{
+    \figure[src=./pictures/woodworker.jpg, alt="A woodworker leaning over a bench, shaping a piece of wood with a hand tool", min-width=6col, ratio=4:3]{
+      \caption{Hands busy, mind free: the cold-morning jobs.}
+      \credit{Bailey Alexander / Unsplash}
+    }
+    \frame[min-width=4col]{
+      \subhead{The second desk}
+
+      Many of the people we asked keep two places to work: one for making and one for thinking. The making place is noisy, practical and often shared. The thinking place is small, a little out of the way, and nobody else is allowed to tidy it.
+
+      The two need each other. Ideas found at the quiet desk get tested at the noisy one, and the noisy one sends back problems that only the quiet desk can solve.
+    }
+  }
+  \group[layout=row, cols=all, valign=stretch, gap=24px]{
+    \figure[src=./pictures/rainy-window.jpg, alt="The corner of a laptop on a wooden sill, in front of a window streaked with rain, a town blurred beyond", min-width=6col, ratio=3:2]{
+      \caption{Rain on the window: a good day for staying in and finishing something.}
+      \credit{arcticworks / Unsplash}
+    }
+    \figure[src=./pictures/notebook-desk.jpg, alt="A person wearing headphones writing in a notebook at a desk", min-width=6col, ratio=3:2, focus="50% 45%"]{
+      \caption{Headphones on: a room of one's own, carried anywhere.}
+      \credit{Marina Marcato / Unsplash}
+    }
+  }
+}
+
+%% ======================================================================================
+%% 6. The slow spark
+%% ======================================================================================
+
+\scene[name=spark-open, height=screen, palette=mustard, folio=hide]{
+  \figure[src=./pictures/hand-lamp.jpg, alt="A hand reaching for a small switch beside a glowing white table lamp against a warm yellow wall", cols=1-7, rows=1-6, cols@tablet=all, rows@tablet=1-3, cols@phone=all, rows@phone=1-3, bleed=left, fit=cover, focus="40% 50%"]
+  \frame[cols=8-12, rows=2-6, cols@tablet=all, rows@tablet=4-6, cols@phone=all, rows@phone=4-6, valign=bottom]{
+    \kicker{Feature · 03}
+    \headline[style=headline-mid]{The slow spark}
+    \deck{The sudden idea is a myth. The lamp maker who has kept every drawing for nineteen years knows what happens instead.}
+    \byline{Words by Tamsin Roe}
+  }
+}
+
+\scene[name=spark-pages, height=page, palette=mustard]{
+  \frame[story=spark, cols=all, columns=auto, measure=600px, columns@tablet=1, columns@phone=1]
+}
+
+%% ======================================================================================
+%% 7. The underliner (Q&A)
+%% ======================================================================================
+
+\scene[name=qa-open, palette=default]{
+  \frame[cols=1-12, cols@tablet=all, cols@phone=all, top=2bl]{
+    \kicker{Interview · 04}
+    \headline[style=headline-poster]{The underliner}
+    \deck{Twenty-six years, a few thousand pencils and one excellent cake: an archivist on the art of the second look.}
+  }
+}
+
+\scene[name=qa-pages, height=page]{
+  \frame[story=qa, cols=all, columns=auto, measure=600px, columns@tablet=1, columns@phone=1]
+}
+
+%% ======================================================================================
+%% 8. Tools of the trade
+%% ======================================================================================
+
+\scene[name=tools, palette=sage]{
+  \figure[src=./illustrations/keyboard.png, alt="A collage keyboard whose keys are scraps of paper in pink, blue, orange and printed text", cols=7-12, cols@tablet=3-8, cols@phone=all, top=0, max-width=640px]
+  \frame[cols=1-6, cols@tablet=1-8, cols@phone=all, top=2bl]{
+    \kicker{Roundup · 05}
+    \headline[style=headline-mid]{Tools of the trade}
+    \deck{Five humble things that help ideas along. None of them is new, and none of them needs charging.}
+  }
+  \group[layout=row, cols=all, valign=top, gap=24px]{
+    \group[layout=stack, min-width=4col, gap=12px]{
+      \figure[src=./pictures/pencils.jpg, alt="Coloured pencils standing in a white ceramic jar", ratio=4:3]{\credit{Debby Hudson / Unsplash}}
+      \frame{
+        \subhead[style=island]{\span[style=island-num]{01} A jar of pencils}
+        Pencils forgive. You can write in the margin of anything, you can rub it out, and you never have to wonder whether one is going to run dry in the middle of a thought. Keep a jar on every surface you work at.
+      }
+    }
+    \group[layout=stack, min-width=4col, gap=12px]{
+      \figure[src=./pictures/pen-notebook.jpg, alt="A black and gold pen resting on an open notebook", ratio=4:3, focus="50% 50%"]{\credit{Tony Litvyak / Unsplash}}
+      \frame{
+        \subhead[style=island]{\span[style=island-num]{02} The cheap notebook}
+        A notebook that is too beautiful stays empty. Buy the plain one, buy several, and give yourself permission to fill them with nonsense. The good lines are hiding among the bad ones.
+      }
+    }
+    \group[layout=stack, min-width=4col, gap=12px]{
+      \figure[src=./pictures/typewriter.jpg, alt="A beige and white typewriter on a table", ratio=4:3]{\credit{Luke Lung / Unsplash}}
+      \frame{
+        \subhead[style=island]{\span[style=island-num]{03} A machine with no internet}
+        Anything that writes and does nothing else: an old typewriter, a laptop with the network switched off, a phone left in another room. The fewer doors there are, the fewer you will wander through.
+      }
+    }
+    \group[layout=stack, min-width=4col, gap=12px]{
+      \figure[src=./pictures/letter.jpg, alt="An old handwritten letter on a wooden table", ratio=4:3]{\credit{Simon Ray / Unsplash}}
+      \frame{
+        \subhead[style=island]{\span[style=island-num]{04} Letters to yourself}
+        At the end of a working day, write a short note to the person who will sit down tomorrow. Where you stopped, what you were about to try, what is bothering you. It is the cheapest way to leave a door open.
+      }
+    }
+    \group[layout=stack, min-width=4col, gap=12px]{
+      \figure[src=./pictures/walk-trees.jpg, alt="A man walking along a road lined with bare trees", ratio=4:3, focus="50% 60%"]{\credit{Greysen Johnson / Unsplash}}
+      \frame{
+        \subhead[style=island]{\span[style=island-num]{05} A pair of shoes}
+        The last tool is the one you leave the house in. When a problem will not move, move yourself. Twenty minutes is usually enough to turn the volume of the noisy room down without switching it off.
+      }
+    }
+  }
+}
+
+%% ======================================================================================
+%% 9. Ink: the closing page
+%% ======================================================================================
+
+\scene[name=ink, palette=night]{
+  \figure[src=./illustrations/pen.png, alt="A collage fountain pen in greens and blues with handwriting on its barrel, its nib leaving a splash of blue ink", cols=1-6, cols@tablet=2-7, cols@phone=all, top=2bl, max-width=620px]
+  \frame[cols=7-11, cols@tablet=2-7, cols@phone=all, top=4bl, top@tablet=auto, top@phone=auto, measure=620px]{
+    \kicker{Last page · 06}
+    \headline[style=headline-mid]{Ink}
+
+    Sooner or later every idea has to leave the noisy room and go somewhere it can be seen. For most of history that place was paper, and the thing that carried it there was ink.
+
+    I still write first drafts by hand. Not because it is better, but because it is slower, and the slowness lets me hear the sentence before I commit to it. A pen makes you choose. A keyboard lets you postpone choosing forever.
+
+    The blot at the end of the line is the moment of commitment: the thought was in your head, and now it is on the page, and it is no longer only yours. That is a little frightening and entirely the point. Ideas that stay in the room never meet anyone. Put them down. Let them be wrong in public. Come back to them later and see what they have become. \endmark
+
+    \byline{Mira Okafor}
+  }
+}
+
+%% ======================================================================================
+%% Colophon
+%% ======================================================================================
+
+\scene[name=colophon, palette=night]{
+  \frame[cols=4-9, cols@tablet=2-7, cols@phone=all, measure=620px]{
+    \rule
+    \kicker{About this issue}
+
+    The Ideas Issue is a test edition made for the Wocument editorial skills. The text is original. Every person named in it is invented, including the writers, the editor, the lamp maker and the archivist.
+
+    \credit{Photographs from Unsplash, by Bundo Kim, Clay Banks, Nisa Yum, The New York Public Library, T, Yasamine June, Bailey Alexander, arcticworks, Mykyta Kravčenko, Marina Marcato, Debby Hudson, Luke Lung, Simon Ray, Tony Litvyak, Greysen Johnson, Jad Limcaco and MIKE STOLL. Illustrations: the owner's collage set.}
+  }
+}
