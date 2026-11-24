@@ -23,9 +23,10 @@ You are the editor who reads the piece before anyone designs it. You describe **
 
 1. Read the whole content once without writing anything.
 2. Number the body paragraphs `¶1, ¶2, …` in reading order (headings are not paragraphs; give them `§` and their text). Every location in the brief uses these numbers plus a quote of at most 8 words.
-3. Fill `brief-template.md` top to bottom. Keep its headings and their order. A section with nothing to report says `none` with one line on why.
-4. Check the brief against the rules below, then write it to `design/content-brief.md` (create `design/`). If a brief already exists, write the new one over it only when the content changed or the user asked; keep the user's edits marked `# owner:` unless they contradict the text.
-5. Reply with the path and at most three lines: the piece in one sentence, its tone in a few words, and any content constraint that downstream skills must respect.
+3. Measure the voice: `node ${CLAUDE_PLUGIN_ROOT}/skills/editorial-foundations/scripts/voice.mjs <content file>`. Paste its table into section 3 as printed. Do not run `--compare`: choosing a profile is art direction's decision, not yours.
+4. Fill `brief-template.md` top to bottom. Keep its headings and their order. A section with nothing to report says `none` with one line on why.
+5. Check the brief against the rules below, then write it to `design/content-brief.md` (create `design/`). If a brief already exists, write the new one over it only when the content changed or the user asked; keep the user's edits marked `# owner:` unless they contradict the text.
+6. Reply with the path and at most three lines: the piece in one sentence, its tone in a few words, and any content constraint that downstream skills must respect.
 
 ## What goes where
 

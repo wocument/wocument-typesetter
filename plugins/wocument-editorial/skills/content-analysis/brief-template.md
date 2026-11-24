@@ -36,6 +36,12 @@ Paragraph key:
 
 Tone words: <3–5 words, from the text>
 
+Voice measures (from `scripts/voice.mjs`, pasted as printed; measured, not judged):
+<the table the script prints, without --compare>
+Voice in one line: <the 2–3 measures that stand out, in plain words, e.g. "short sentences, a lot of 'I' and 'you', many questions">
+
+The voice measures and the tone table describe the same text in two ways. If they disagree (for example energy 1 but many exclamations), say so here in one line.
+
 ## 4. Reader
 <Who it is written for and how they will read it (one sitting, scan, study), with evidence.>
 
