@@ -45,7 +45,7 @@ description: "An expressive test edition about where ideas come from: an essay, 
 
   You can feel this happen if you watch for it. You are washing up, or walking to the shop, or lying awake, and two things that have been sitting in different corners of the room suddenly turn and look at each other. The song and the bees. The argument and the door. It is not a bolt of lightning. It is more like two people at a party realising they went to the same school. Neither of them is new. What is new is the meeting, and the meeting only happens because you let them both stay in the room long enough to bump into each other.
 
-  \figure[src=./pictures/library-lamps.jpg, alt="People reading at long tables under green-shaded lamps in a large library", size=wide, ratio=3:2, focus="50% 55%"]{
+  \figure[src=./pictures/library-lamps.jpg, alt="People reading at long tables under green-shaded lamps in a large library", size=column, ratio=3:2, focus="50% 55%"]{
     \caption{A reading room: one of the few places built for a quieter kind of noise.}
     \credit{Photograph: The New York Public Library / Unsplash}
   }
@@ -139,7 +139,7 @@ description: "An expressive test edition about where ideas come from: an essay, 
 
   I think it is mostly something you can stop unlearning. Children pay attention beautifully, to the wrong things, according to adults. We train them to pay attention to the right things and in the process a lot of them forget how to notice at all. I had a teacher who let us stare out of the window as long as we told her afterwards what we had seen. That was the best lesson I ever had.
 
-  \figure[src=./pictures/cabinets.jpg, alt="Rows of old wooden filing cabinets with small brass label holders", size=wide, ratio=3:2]{
+  \figure[src=./pictures/cabinets.jpg, alt="Rows of old wooden filing cabinets with small brass label holders", size=column, ratio=3:2]{
     \caption{Drawers like these hold most of what any archive knows.}
     \credit{Photograph: MIKE STOLL / Unsplash}
   }
