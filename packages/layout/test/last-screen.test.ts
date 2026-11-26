@@ -260,6 +260,40 @@ describe("whole screens (design 2026-11-26)", () => {
       expect(new Set(size(loose))).toEqual(new Set(size(raw)));
     }
   });
+
+  it("a scene rounded up spreads the leftover: its picture grows taller, text lines never change", () => {
+    const viewport = { width: 1280, height: 800 };
+    // A grid-placed picture over the whole width, and a 4-column story under it.
+    const gridded = (n: number) => `${FM}\\story[name=s]{${story(n)}}
+\\scene[height=page]{
+  \\figure[src=/missing.jpg, alt="", cols=1-12, fit=cover, ratio=3:1, wrap=rect]
+  \\frame[story=s, cols=1-12, top=0, columns=4]
+}
+`;
+    let grew = 0;
+    for (let n = 4; n <= 40; n += 4) {
+      const fitted = lay(gridded(n), viewport);
+      const doc = resolve(parse(gridded(n)).ast as Document, { assets: createAssetHost({ publicDir: here, sourceDir: here }) }).doc;
+      const raw = layout(doc, viewport, new PrepareCache(createFixedEngine()), { fit: false });
+      const [a, b] = [fitted.scenes[0]!, raw.scenes[0]!];
+      expect(a.height % viewport.height).toBeCloseTo(0, 6);
+      expect(a.height).toBeLessThanOrEqual(b.height);
+      // Tightened to one screen fewer (phase 1): not this test's case.
+      if (a.height < b.height) continue;
+      const pic = (x: typeof a) => x.objects.find((o) => o.media)!;
+      const foot = (x: typeof a) => Math.max(...x.lines.map((l) => l.y + l.height), ...x.objects.map((o) => o.box.y + o.box.height));
+      const lines = (x: typeof a) => new Set(x.lines.map((l) => `${l.style} ${l.height}`));
+      expect(lines(a)).toEqual(lines(b));
+      expect(pic(a).box.height).toBeGreaterThanOrEqual(pic(b).box.height);
+      expect(pic(a).box.width).toBeCloseTo(pic(b).box.width, 6);
+      expect(pic(a).box.height).toBeLessThanOrEqual(pic(b).box.height * 1.3 + a.grid.baseline);
+      if (pic(a).box.height > pic(b).box.height) {
+        grew++;
+        expect(a.y + a.height - foot(a)).toBeLessThan(b.y + b.height - foot(b));
+      }
+    }
+    expect(grew).toBeGreaterThan(0);
+  });
 });
 
 describe("text that ends exactly at a screen's foot", () => {

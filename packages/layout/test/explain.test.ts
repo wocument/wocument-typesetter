@@ -61,7 +61,8 @@ describe("the reasons log", () => {
   ];
   it.each(hand.map((src, i) => [i, src]))("off by default and identical when on (document %i)", (_, src) => {
     const rd = doc(src as string);
-    const off = layout(rd, VIEW, new PrepareCache(createFixedEngine()));
+    // fit: false on both: the log is compared for one layout, not for the fitting's extra ones.
+    const off = layout(rd, VIEW, new PrepareCache(createFixedEngine()), { fit: false });
     const on = layout(rd, VIEW, new PrepareCache(createFixedEngine()), { explain: true, fit: false });
     expect(off.explain).toBeUndefined();
     expect(on.explain?.version).toBe(1);

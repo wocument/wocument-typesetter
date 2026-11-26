@@ -215,6 +215,7 @@ export function layout(rd: ResolvedDocument, viewport: Viewport, cache: PrepareC
     // with its pictures smaller (lever 1: 5% at a time to 70%) and then its top and bottom margins
     // smaller (lever 3: to three quarters, then half). Text size never changes. Where no setting fits,
     // the scene keeps the extra screen. Lever 2 (space between blocks) is not built yet.
+    let tightened = false;
     if (opts.fit !== false && e.unit && e.natural !== undefined) {
       const over = e.natural / e.unit - Math.floor(e.natural / e.unit + EPS);
       // Lever 1 takes grid-placed pictures only: floating ones are the composer's (picture composition).
@@ -250,7 +251,54 @@ export function layout(rd: ResolvedDocument, viewport: Viewport, cache: PrepareC
         (s = pick.s), (e = pick.e);
         cursors.clear();
         for (const [k, c] of pick.cursors) cursors.set(k, c);
+        tightened = best !== null;
       }
+    }
+    // Design 2026-11-26, loosening: a scene rounded up to its whole screens spreads the leftover, so
+    // its last screen is not a few lines and a blank page. Its grid-placed pictures grow taller (5% at
+    // a time to 130%), then its top and bottom margins grow (to 1.25, 1.5, 1.75 and 2 times the grid's).
+    // Text size, leading and the space between lines never change. The loosest setting that adds no
+    // screen wins; where none helps, the leftover stays at the foot of the last screen.
+    // ponytail: skipped when §09.7 rule 1 already set pictures smaller (one shrink per scene); combine the two if it matters.
+    if (opts.fit !== false && !tightened && !e.shrink && e.unit && e.natural !== undefined && s.height - e.natural > e.grid.baseline + EPS) {
+      const ids = new Set(s.objects.filter((o) => o.media && v.objects[o.name]?.placement.mode === "grid").map((o) => o.name));
+      const grow = ids.size ? [1.05, 1.1, 1.15, 1.2, 1.25, 1.3] : [];
+      const settings = [...grow.map((factor) => ({ margin: 1, factor })), ...[1.25, 1.5, 1.75, 2].map((margin) => ({ margin, factor: grow.at(-1) ?? 1 }))];
+      const target = s.height;
+      const unit = e.unit;
+      const prior = new Map(s.objects.map((o) => [o.name, { screen: Math.floor((o.box.y - s.y) / unit + EPS), width: o.box.width, height: o.box.height }]));
+      const first = new Map(cursors);
+      const tries = new Map<number, { s: PositionedScene; e: Env; cursors: Map<string, Resume> } | null>();
+      const attempt = (i: number) => {
+        if (tries.has(i)) return tries.get(i)!;
+        cursors.clear();
+        for (const [k, c] of before) cursors.set(k, c);
+        const { margin, factor } = settings[i]!;
+        const t = { ...env(s.paged, margin), shrink: { factor, ids } };
+        const r = layoutScene(t, scene, cursors);
+        // It must not move a picture to another screen, resize a floating one (those are the composer's),
+        // or push the text off its first screen (§09.7 rule 1).
+        const kept = r.objects.every((o) => {
+          const was = prior.get(o.name);
+          return was !== undefined && Math.floor((o.box.y - r.y) / unit + EPS) === was.screen && (ids.has(o.name) || (Math.abs(o.box.width - was.width) < EPS && Math.abs(o.box.height - was.height) < EPS));
+        });
+        const got = r.height <= target + EPS && !t.pushed && kept ? { s: r, e: t, cursors: new Map(cursors) } : null;
+        tries.set(i, got);
+        return got;
+      };
+      // The settings loosen in order, so the search bisects them: the loosest one that fits wins.
+      let best: ReturnType<typeof attempt> = null;
+      let lo = 0;
+      let hi = settings.length - 1;
+      while (lo <= hi) {
+        const mid = (lo + hi) >> 1;
+        const got = attempt(mid);
+        if (got) (best = got), (lo = mid + 1);
+        else hi = mid - 1;
+      }
+      if (best) (s = best.s), (e = best.e);
+      cursors.clear();
+      for (const [k, c] of best?.cursors ?? first) cursors.set(k, c);
     }
     if (e.explain) (explained.push({ scene: scene.id, decisions: e.explain }), kept.push({ env: e, scene: s }));
     scenes.push(s);
@@ -260,8 +308,9 @@ export function layout(rd: ResolvedDocument, viewport: Viewport, cache: PrepareC
   return { viewport, breakpoint, scenes, height: y, ...(opts.explain ? { explain: { version: 1 as const, scenes: explained } } : {}) };
 }
 
-/** Design 2026-11-26, fitting lever 3: margin-y at `k` of the grid's, never under one baseline step. */
+/** Design 2026-11-26, fitting lever 3: margin-y at `k` of the grid's, never under one baseline step. Grown (k > 1), it takes whole baseline steps. */
 function margined(g: GridGeometry, k: number): GridGeometry {
+  if (k > 1) return { ...g, marginY: g.marginY + Math.round((g.marginY * (k - 1)) / g.baseline) * g.baseline };
   return k === 1 ? g : { ...g, marginY: Math.max(g.baseline, g.marginY * k) };
 }
 
@@ -705,10 +754,14 @@ function placeObject(
   if (o.kind !== "figure" && o.kind !== "video" && o.kind !== "embed" && o.kind !== "audio" && o.kind !== "gallery") notYet(`\\${o.kind} objects`);
   // §09.7 rule 1 (2026-11-16): a picture above a first band that would wait for the next screen is set
   // smaller: a fixed height shrinks (fit keeps the picture in it); a picture its ratio sizes narrows, centred.
+  // Design 2026-11-26 loosening: a factor over 1 grows it taller: a fixed height grows; one its ratio
+  // sizes keeps its width and, if it crops (cover), is cropped taller toward its focus.
   const shrink = env.shrink?.ids.has(o.id) ? env.shrink.factor : 1;
-  if (shrink < 1 && (o.kind === "figure" || o.kind === "video")) {
+  let taller = 1;
+  if (shrink !== 1 && (o.kind === "figure" || o.kind === "video")) {
     if (fixedHeight !== null) fixedHeight *= shrink;
-    else (x += (width * (1 - shrink)) / 2), (width *= shrink);
+    else if (shrink < 1) (x += (width * (1 - shrink)) / 2), (width *= shrink);
+    else if (o.media.fit === "cover") taller = shrink;
   }
 
   // The caption is laid out once to learn its height, then again where it goes.
@@ -734,7 +787,7 @@ function placeObject(
   else if (o.kind === "audio") mediaHeight = Math.ceil(54 / env.grid.baseline) * env.grid.baseline + (o.transcript ? env.grid.baseline : 0);
   else {
     const ratio = o.kind === "embed" ? o.ratio : o.media.ratio;
-    mediaHeight = fixedHeight !== null ? fixedHeight - (takesSpace ? captionHeight + gap : 0) : (width * ratio.h) / ratio.w + (env.grow?.get(o.id) ?? 0);
+    mediaHeight = fixedHeight !== null ? fixedHeight - (takesSpace ? captionHeight + gap : 0) : ((width * ratio.h) / ratio.w) * taller + (env.grow?.get(o.id) ?? 0);
   }
   // §09.7 rule 14 (2026-10-08): a figure takes whole lines of the baseline grid, its caption
   // included, so the text after it resumes exactly one standoff below and every column keeps the

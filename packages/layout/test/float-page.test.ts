@@ -58,7 +58,7 @@ function columnsOf(pd: PositionedDocument): { x: number; width: number }[] {
 }
 /** The first grid line at or below a screen's band top: the residue of a snapped baseline on that screen. */
 function firstGridLine(pd: PositionedDocument, screen: number): number {
-  const top = screen * pd.viewport.height + 56;
+  const top = screen * pd.viewport.height + pd.scenes[0]!.grid.marginY;
   const l = pd.scenes[0]!.lines.find((x) => x.story === "s" && x.snapped && screenOf(pd, x.y) === screen)!;
   const bl = pd.scenes[0]!.grid.baseline;
   return top + ((((l.baseline - top) % bl) + bl) % bl);
