@@ -10,6 +10,8 @@ each skill works out the tone, the theme and the voice of the piece and decides 
 |---|---|
 | `references/reading-the-content.md` | How a skill turns the content brief into decisions: what to read, the order of decisions, what wins when signals disagree, how to record each decision |
 | `references/rules/a-constants.md` to `g-web-hygiene.md` | 53 approved rules in seven groups (A constants, B geometry, C pictures, D second voices, E pacing, F components, G web hygiene). Each has the rule, an example, **decide from the content**, its behaviour on each screen size, what Wocument does today, and its approval status |
+| `references/rules/i-templates.md` | 8 proposed rules (I1 to I8) on templates, runs, picture share and the template pack, from the grid study of ten issues. Waiting for the owner's review |
+| `references/theme-catalogue.md` | The entry format of `themes/catalogue.md`: what each theme fits, its grid, templates and runs. `/editorial-art-direction` reads it; `/publication-system` writes it |
 | `references/components/` | One guide per recurring component (contents, contributors, editor's letter, feature opener, fact box, photo essay, closing page, Q&A): the parts, how they relate, how to decide from the content, and each screen size |
 | `references/profiles.md` | 18 aesthetic profiles, ordered by expressiveness, each with its measured writing voice |
 | `references/voice-fingerprints.json` | How each profile writes, as numbers, for `scripts/voice.mjs --compare` |
