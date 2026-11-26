@@ -129,6 +129,7 @@ Design around these; say so when a design asks for one.
 | `parent` | `pp` | changes the layout | not allowed | warns W062 |
 | `palette` | `p2` | changes the layout | yes | warns W062 |
 | `height` | `screen` `page` | changes the layout | yes |  |
+| `screens` | `3` `half` `third` `quarter` | changes the layout | yes |  |
 | `snap` | `soft` `hard` | changes the layout | yes | warns W030 |
 | `bg` | `accent` `#aa3355` | changes the layout | yes |  |
 | `linearize` | `true` | changes the layout | yes |  |
@@ -141,7 +142,8 @@ Design around these; say so when a design asks for one.
 | :-- | :-- | :-- | :-- | :-- |
 | `grid` | `g2` | changes the layout | yes | warns W061 |
 | `palette` | `p2` | read when the page renders | yes | fields: `palette.paper`, `palette.ink`, `palette.muted`, `palette.accent`, `palette.rule`, `diagnostics`; warns W062 |
-| `height` | `screen` `page` | read when the page renders | yes | fields: `scenes.height`, `vertical.mode`, `vertical.top`, `vertical.height`, `vertical.rows` |
+| `height` | `screen` `page` | changes the layout | yes | `screen`: read when the page renders |
+| `screens` | `3` `half` `third` `quarter` | no effect seen | **ignored** |  |
 | `snap` | `soft` `hard` | read when the page renders | yes | fields: `scenes.snap`; warns W030 |
 | `bg` | `accent` `#aa3355` | read when the page renders | yes | fields: `bg.role` |
 | `linearize` | `true` | changes the layout | yes |  |

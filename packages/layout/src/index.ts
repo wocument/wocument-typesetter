@@ -150,6 +150,10 @@ type Env = {
   pushed?: { top: number; need: number };
   /** §09.7 rule 1: the pictures above that band, set at `factor` of their size so the text starts under them. */
   shrink?: { factor: number; ids: ReadonlySet<string> };
+  /** Design 2026-11-26 (whole screens): the scene's content height plus margin-y, before it is rounded to screens. */
+  natural?: number;
+  /** Design 2026-11-26: the height of one screen unit of this scene, when it is set in whole screens (a viewport, or a share of one); absent otherwise. */
+  unit?: number;
 };
 /** The visor: a floating object's reason, and for a chosen spot its score parts and the alternatives. */
 type Pick = { reason: PictureReason; numbers: Record<string, number>; alternatives?: NonNullable<Decision["alternatives"]> };
@@ -162,7 +166,7 @@ export function activeVariant(rd: ResolvedDocument, width: number): string {
   return name;
 }
 
-export function layout(rd: ResolvedDocument, viewport: Viewport, cache: PrepareCache, opts: { composeBudget?: number; onCompose?: (screen: number, trials: number) => void; onCut?: (screen: number, layouts: number) => void; explain?: boolean } = {}): PositionedDocument {
+export function layout(rd: ResolvedDocument, viewport: Viewport, cache: PrepareCache, opts: { composeBudget?: number; fit?: boolean; onCompose?: (screen: number, trials: number) => void; onCut?: (screen: number, layouts: number) => void; explain?: boolean } = {}): PositionedDocument {
   const breakpoint = activeVariant(rd, viewport.width);
   const v = rd.variants[breakpoint]!;
   const cursors = new Map<string, Resume>();
@@ -171,7 +175,8 @@ export function layout(rd: ResolvedDocument, viewport: Viewport, cache: PrepareC
   const kept: { env: Env; scene: PositionedScene }[] = [];
   let y = 0;
   v.scenes.forEach((scene, index) => {
-    const env = (pageGrids: boolean): Env => ({ rd, v, grid: gridGeometry(scene.grid, viewport), sceneY: y, viewport, cache, page: scene.height === "page", more: index < v.scenes.length - 1, body: scene.body ?? "body", paged: false, pageGrids, budget: opts.composeBudget ?? 40, onCompose: opts.onCompose, onCut: opts.onCut, reports: [], ...(opts.explain ? { explain: [], picks: new Map() } : {}) });
+    // `margin`: design 2026-11-26 fitting lever 3, margin-y at that factor of the grid's, never under one baseline step.
+    const env = (pageGrids: boolean, margin = 1): Env => ({ rd, v, grid: margined(gridGeometry(scene.grid, viewport), margin), sceneY: y, viewport, cache, page: scene.height === "page", more: index < v.scenes.length - 1, body: scene.body ?? "body", paged: false, pageGrids, budget: opts.composeBudget ?? 40, onCompose: opts.onCompose, onCut: opts.onCut, reports: [], ...(opts.explain ? { explain: [], picks: new Map() } : {}) });
     const before = new Map(cursors);
     let e = env(false);
     let s = layoutScene(e, scene, cursors);
@@ -206,12 +211,58 @@ export function layout(rd: ResolvedDocument, viewport: Viewport, cache: PrepareC
         for (const [k, c] of first.cursors) cursors.set(k, c);
       }
     }
+    // Design 2026-11-26, fitting: a scene over its whole screens is set again to fit one screen fewer,
+    // with its pictures smaller (lever 1: 5% at a time to 70%) and then its top and bottom margins
+    // smaller (lever 3: to three quarters, then half). Text size never changes. Where no setting fits,
+    // the scene keeps the extra screen. Lever 2 (space between blocks) is not built yet.
+    if (opts.fit !== false && e.unit && e.natural !== undefined) {
+      const over = e.natural / e.unit - Math.floor(e.natural / e.unit + EPS);
+      // Lever 1 takes grid-placed pictures only: floating ones are the composer's (picture composition).
+      const ids = new Set(s.objects.filter((o) => o.media && v.objects[o.name]?.placement.mode === "grid").map((o) => o.name));
+      const target = Math.floor(e.natural / e.unit + EPS) * e.unit;
+      const floor = typeof scene.screens === "number" ? scene.screens * e.unit : e.unit;
+      const settings = [1, 0.75, 0.5].flatMap((margin) => [1, 0.95, 0.9, 0.85, 0.8, 0.75, 0.7].filter((f) => ids.size || f === 1).map((factor) => ({ margin, factor }))).slice(1);
+      if (over > EPS && target >= floor - EPS) {
+        const first = { s, e, cursors: new Map(cursors) };
+        // The settings tighten in order, so the search bisects them: the loosest one that fits wins.
+        const tries = new Map<number, { s: PositionedScene; e: Env; cursors: Map<string, Resume> } | null>();
+        const attempt = (i: number) => {
+          if (tries.has(i)) return tries.get(i)!;
+          cursors.clear();
+          for (const [k, c] of before) cursors.set(k, c);
+          const { margin, factor } = settings[i]!;
+          const t = { ...env(s.paged, margin), shrink: { factor, ids } };
+          const r = layoutScene(t, scene, cursors);
+          const got = r.height <= target + EPS ? { s: r, e: t, cursors: new Map(cursors) } : null;
+          tries.set(i, got);
+          return got;
+        };
+        let lo = 0;
+        let hi = settings.length - 1;
+        let best = attempt(hi);
+        while (best && lo < hi) {
+          const mid = (lo + hi) >> 1;
+          const got = attempt(mid);
+          if (got) (best = got), (hi = mid);
+          else lo = mid + 1;
+        }
+        const pick = best ?? first;
+        (s = pick.s), (e = pick.e);
+        cursors.clear();
+        for (const [k, c] of pick.cursors) cursors.set(k, c);
+      }
+    }
     if (e.explain) (explained.push({ scene: scene.id, decisions: e.explain }), kept.push({ env: e, scene: s }));
     scenes.push(s);
     y += s.height;
   });
   if (opts.explain) noteLines(v, cache, viewport, kept);
   return { viewport, breakpoint, scenes, height: y, ...(opts.explain ? { explain: { version: 1 as const, scenes: explained } } : {}) };
+}
+
+/** Design 2026-11-26, fitting lever 3: margin-y at `k` of the grid's, never under one baseline step. */
+function margined(g: GridGeometry, k: number): GridGeometry {
+  return k === 1 ? g : { ...g, marginY: Math.max(g.baseline, g.marginY * k) };
 }
 
 // ---------------------------------------------------------------------------
@@ -458,7 +509,16 @@ function layoutScene(env: Env, scene: Scene, cursors: Map<string, Resume>): Posi
   // Design 2026-09-29 rule 1: a page scene with column bands is a whole number of screens, so every
   // band has a screen of its own and scrolling can settle on each. With none (one column, as on a
   // phone) the text runs on across screens and the scene scrolls freely.
-  const height = env.paged && !env.more ? Math.ceil(tall / viewport.height - EPS) * viewport.height : tall;
+  // Design 2026-11-26 (the owner): every page scene on a column grid is a whole number of screens, or an
+  // equal share of one screen with the scenes beside it; this replaces the 2026-11-15 rule above for
+  // them. A linearized page scene (phones, tablets) scrolls as one column and keeps the rules above.
+  env.natural = natural;
+  const share = typeof scene.screens === "object" ? scene.screens.share : 1;
+  const whole = env.page && !scene.linearized;
+  if (whole) env.unit = viewport.height / share;
+  const height = whole
+    ? Math.max(typeof scene.screens === "number" ? scene.screens : 1, Math.ceil(natural / env.unit! - EPS)) * env.unit!
+    : env.paged && !env.more ? Math.ceil(tall / viewport.height - EPS) * viewport.height : tall;
 
   // §11.2 background: fills the whole scene behind everything; never excludes text. First, so it paints beneath.
   const behind = empty();
@@ -479,7 +539,7 @@ function layoutScene(env: Env, scene: Scene, cursors: Map<string, Resume>): Posi
   append(behind, out);
   // The visor's strips stay out of the page.
   const { narrow: _, ...drawn } = behind;
-  return { name: scene.id, y: sceneY, height, grid, paged: env.paged, ...drawn, ...(env.paged ? { screens: env.reports } : {}) };
+  return { name: scene.id, y: sceneY, height, grid, paged: env.paged, ...(share > 1 && whole ? { share } : {}), ...drawn, ...(env.paged ? { screens: env.reports } : {}) };
 }
 
 // ---------------------------------------------------------------------------

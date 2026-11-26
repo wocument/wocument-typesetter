@@ -31,6 +31,7 @@ Warnings, and what to do:
 | W062 | Ink, muted or accent under 4.5:1 against paper | darken or lighten that role in the palette |
 | W063 | Body weight under 350 | use 400 or 500 |
 | W064 | Body lines outside about 45-75 characters at a test width (30 on phones) | `measure=`, `columns=`, the frame's `cols`, or the text size, at those breakpoints |
+| W065 | Scenes with `screens=half`, `third` or `quarter` do not make a complete group, so they lose their shares | give every scene in the group the same share, and as many scenes as the share needs |
 
 After the warnings comes the **copyfitting report**: per screen of a page scene, how many lines
 short it ends and how many characters would fill it, or which picture could grow; and any

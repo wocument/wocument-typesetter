@@ -550,6 +550,12 @@ export type Scene = {
   palette: Palette;
   /** `flow`: as tall as its content plus `margin-y`. `screen`: one small-viewport height, divided into rows. `page`: at least one small-viewport height, taller when its content needs it; multi-column frames fill column bands (spec §08.2, §09.7). */
   height: "flow" | "screen" | "page";
+  /**
+   * Design 2026-11-26 (whole screens): absent = `auto`, a page scene is the whole number of screens its
+   * content needs. A number: at least that many screens. `share`: an equal share of one screen, with the
+   * scenes beside it in a complete group (2 halves, 3 thirds, 4 quarters). Page scenes only.
+   */
+  screens?: number | { share: 2 | 3 | 4 };
   /** Scroll snapping on the scene's top edge. `hard` on a flow scene is already downgraded to `soft` (spec §08.3). */
   snap: "none" | "soft" | "hard";
   /** Scene background color (spec §08.1). */

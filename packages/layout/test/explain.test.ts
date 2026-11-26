@@ -25,8 +25,9 @@ const fig = (attrs: string): string => `\\figure[src=/a.jpg, alt="A picture", ${
 const page = (story: string): string => `\\story[name=s]{${story}}\n\\scene[height=page, grid=page]{\\frame[story=s, cols=1-12, columns=3]}`;
 
 const doc = (src: string): ResolvedDocument => resolve(parse(FM + GRID + src).ast as Document, { assets: fake }).doc;
+// Fitting to whole screens (design 2026-11-26) is off here: these tests read the band mechanics' own reasons.
 function lay(src: string, viewport = VIEW, opts: { explain?: boolean; composeBudget?: number } = { explain: true }): PositionedDocument {
-  return layout(doc(src), viewport, new PrepareCache(createFixedEngine()), opts);
+  return layout(doc(src), viewport, new PrepareCache(createFixedEngine()), { fit: false, ...opts });
 }
 const ends = (pd: PositionedDocument): Decision[] => pd.explain!.scenes.flatMap((s) => s.decisions.filter((d) => d.kind === "column-end"));
 const reasons = (pd: PositionedDocument): string[] => ends(pd).map((d) => d.reason);
@@ -61,7 +62,7 @@ describe("the reasons log", () => {
   it.each(hand.map((src, i) => [i, src]))("off by default and identical when on (document %i)", (_, src) => {
     const rd = doc(src as string);
     const off = layout(rd, VIEW, new PrepareCache(createFixedEngine()));
-    const on = layout(rd, VIEW, new PrepareCache(createFixedEngine()), { explain: true });
+    const on = layout(rd, VIEW, new PrepareCache(createFixedEngine()), { explain: true, fit: false });
     expect(off.explain).toBeUndefined();
     expect(on.explain?.version).toBe(1);
     delete on.explain;
@@ -90,7 +91,7 @@ describe("the reasons log", () => {
   it("one column-end per column per screen", () => {
     const src = page(LONG + " " + LONG.slice(0, 2000));
     const rd = doc(src);
-    const pd = layout(rd, VIEW, new PrepareCache(createFixedEngine()), { explain: true });
+    const pd = layout(rd, VIEW, new PrepareCache(createFixedEngine()), { explain: true, fit: false });
     expect(pd.scenes[0]!.height / 800).toBeGreaterThanOrEqual(3);
     const keys = ends(pd).map(keyOf);
     expect(new Set(keys).size).toBe(keys.length);
@@ -165,7 +166,7 @@ describe("only kept settings record", () => {
     const figs = Array.from({ length: 5 }, (_, i) => `${para(12, `t${i}`)}\n\n${fig(`size=column, ratio=4:3`)}`).join("\n\n");
     const src = page(`${figs}\n\n${para(30, "z")}`);
     const rd = doc(src);
-    const pd = layout(rd, VIEW, new PrepareCache(createFixedEngine()), { explain: true });
+    const pd = layout(rd, VIEW, new PrepareCache(createFixedEngine()), { explain: true, fit: false });
     expect(ends(pd).length).toBe(columnsWithLines(rd, pd).length);
   });
 
@@ -296,7 +297,7 @@ describe("space reasons", () => {
   it("the strips stay out of the page: identical with explain on and off", () => {
     const rd = doc(`\\story[name=s]{${para(4, "a")}\n\n${fig("side=right, width=450px, ratio=4:3")}\n\n${para(30, "b")}}\n\\scene{\\frame[story=s, cols=1-6]}`);
     const off = layout(rd, VIEW, new PrepareCache(createFixedEngine()));
-    const on = layout(rd, VIEW, new PrepareCache(createFixedEngine()), { explain: true });
+    const on = layout(rd, VIEW, new PrepareCache(createFixedEngine()), { explain: true, fit: false });
     expect(on.explain!.scenes[0]!.decisions.some((d) => d.reason === "slot-too-narrow")).toBe(true);
     delete on.explain;
     expect(on).toEqual(off);

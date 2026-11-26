@@ -220,19 +220,45 @@ ${story(20)}}
   });
 });
 
-describe("a page scene another scene follows", () => {
-  it("ends where its content does, and the next scene starts on the same screen", () => {
+describe("whole screens (design 2026-11-26)", () => {
+  it("a page scene another scene follows is still whole screens; the next scene starts on a screen's top", () => {
     const viewport = { width: 1280, height: 800 };
     const pd = lay(article(40, "contain", "\\scene{\\frame{\\headline{The next article}}}"), viewport);
     const [first, next] = pd.scenes;
-    const end = Math.max(...first!.lines.map((l) => l.y + l.height));
-    expect(next!.y).toBeCloseTo(end + first!.grid.marginY, 6);
-    expect(first!.height % viewport.height).not.toBeCloseTo(0, 6);
+    expect(first!.height % viewport.height).toBeCloseTo(0, 6);
+    expect(next!.y % viewport.height).toBeCloseTo(0, 6);
   });
 
   it("keeps whole screens when it is the document's last scene", () => {
     const pd = lay(article(40, "contain"), { width: 1280, height: 800 });
     expect(pd.scenes[0]!.height % 800).toBe(0);
+  });
+
+  it("scenes that share one screen take an equal share each", () => {
+    const viewport = { width: 1280, height: 800 };
+    const half = `\\scene[height=page, screens=half]{\\frame{\\headline{A}}}\n`;
+    const pd = lay(`${FM}${half}${half}\\scene[height=page]{\\frame{\\headline{C}}}`, viewport);
+    expect(pd.scenes.map((x) => x.height)).toEqual([400, 400, 800]);
+    expect(pd.scenes[0]!.share).toBe(2);
+    expect(pd.scenes[2]!.y).toBe(800);
+  });
+
+  it("an unfinished group loses its shares (W065)", () => {
+    const { doc } = resolve(parse(`${FM}\\scene[height=page, screens=half]{\\frame{\\headline{A}}}`).ast as Document, { assets: fake });
+    expect(doc.diagnostics.some((d) => d.code === "W065")).toBe(true);
+    expect(doc.variants[Object.keys(doc.variants)[0]!]!.scenes[0]!.screens).toBeUndefined();
+  });
+
+  it("a scene a little over a screen is fitted to one screen with smaller pictures or margins, never smaller text", () => {
+    const viewport = { width: 1280, height: 800 };
+    for (let n = 20; n <= 60; n += 4) {
+      const loose = lay(article(n, "cover"), viewport);
+      const doc = resolve(parse(article(n, "cover")).ast as Document, { assets: createAssetHost({ publicDir: here, sourceDir: here }) }).doc;
+      const raw = layout(doc, viewport, new PrepareCache(createFixedEngine()), { fit: false });
+      expect(loose.scenes[0]!.height).toBeLessThanOrEqual(raw.scenes[0]!.height);
+      const size = (pd: typeof raw) => pd.scenes[0]!.lines.filter((l) => l.style === "body").map((l) => l.height);
+      expect(new Set(size(loose))).toEqual(new Set(size(raw)));
+    }
   });
 });
 

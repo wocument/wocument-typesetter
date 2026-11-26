@@ -290,7 +290,17 @@ export function render(root: HTMLElement, pd: PositionedDocument, rd: ResolvedDo
 
   const folio = renderFolio(doc, win, pd, rd);
   // Smooth scrolling everywhere; Space glides a page (2026-10-09); a dot for every page screen.
-  const kinds = pd.scenes.map((s) => ({ y: s.y, height: s.height, page: s.paged }));
+  // Design 2026-11-26: scenes that share one screen are one page: only the group's first scene is a stop.
+  let seat = 0;
+  const kinds = pd.scenes.flatMap((s) => {
+    if (!s.share) {
+      seat = 0;
+      return [{ y: s.y, height: s.height, page: s.paged }];
+    }
+    const first = seat === 0;
+    seat = (seat + 1) % s.share;
+    return first ? [{ y: s.y, height: s.height * s.share, page: true }] : [];
+  });
   // Screen pages only where a scene has column bands; then every scene is a stop and has a dot.
   const pages = installPages(win, root, kinds.some((k) => k.page) ? snapStops(kinds, pd.viewport.height) : [], reduce);
   // §10.6: the soundtrack lives across renders, so a resize never restarts the music.
