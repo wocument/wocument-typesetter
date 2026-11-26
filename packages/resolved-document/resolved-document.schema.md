@@ -524,6 +524,8 @@ A full-width band of the article (spec §08.1).
 | `grid` | [`Grid`](#grid) | The scene's grid at this breakpoint (spec §07.5). |
 | `palette` | [`Palette`](#palette) | The scene's palette at this breakpoint, all five roles concrete (spec §07.3). |
 | `height` | `"flow"` \| `"screen"` \| `"page"` | `flow`: as tall as its content plus `margin-y`. `screen`: one small-viewport height, divided into rows. `page`: at least one small-viewport height, taller when its content needs it; multi-column frames fill column bands (spec §08.2, §09.7). |
+| `screens` | `number` \| `object` | Design 2026-11-26 (whole screens): absent = `auto`, a page scene is the whole number of screens its content needs. A number: at least that many screens. `share`: an equal share of one screen, with the scenes beside it in a complete group (2 halves, 3 thirds, 4 quarters). Page scenes only. |
+| `run` | `string` | Design 2026-11-26: the run this page scene belongs to; absent = a run of its own. Consecutive scenes with the same run follow on, the next starting where the one before ends; only the run's last scene rounds up, so that the run is a whole number of screens. |
 | `snap` | `"none"` \| `"soft"` \| `"hard"` | Scroll snapping on the scene's top edge. `hard` on a flow scene is already downgraded to `soft` (spec §08.3). |
 | `bg` | [`Color`](#color) | Scene background color (spec §08.1). |
 | `linearized` | `boolean` | True when this scene linearized at this breakpoint. Placements below are already rewritten: stacked in source order at full width, one internal column, wrap `jump` (spec §07.5). |

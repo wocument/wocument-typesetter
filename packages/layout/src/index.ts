@@ -113,6 +113,10 @@ type Env = {
   v: Variant;
   grid: GridGeometry;
   sceneY: number;
+  /** Design 2026-11-26 runs: the top of the scene's run, a true screen top; bands and screens count from it. */
+  screenY: number;
+  /** Design 2026-11-26 runs: the next scene is in the same run, so this one ends where its content does. */
+  runOn: boolean;
   viewport: Viewport;
   cache: PrepareCache;
   /** Design 2026-09-22 §1: the scene is `height=page`, so multi-column frames fill column bands. */
@@ -150,6 +154,8 @@ type Env = {
   pushed?: { top: number; need: number };
   /** §09.7 rule 1: the pictures above that band, set at `factor` of their size so the text starts under them. */
   shrink?: { factor: number; ids: ReadonlySet<string> };
+  /** Design 2026-11-26: the height of one screen unit of this scene, when it is set in whole screens (a viewport, or a share of one); absent otherwise. */
+  unit?: number;
 };
 /** The visor: a floating object's reason, and for a chosen spot its score parts and the alternatives. */
 type Pick = { reason: PictureReason; numbers: Record<string, number>; alternatives?: NonNullable<Decision["alternatives"]> };
@@ -162,7 +168,7 @@ export function activeVariant(rd: ResolvedDocument, width: number): string {
   return name;
 }
 
-export function layout(rd: ResolvedDocument, viewport: Viewport, cache: PrepareCache, opts: { composeBudget?: number; onCompose?: (screen: number, trials: number) => void; onCut?: (screen: number, layouts: number) => void; explain?: boolean } = {}): PositionedDocument {
+export function layout(rd: ResolvedDocument, viewport: Viewport, cache: PrepareCache, opts: { composeBudget?: number; fit?: boolean; onCompose?: (screen: number, trials: number) => void; onCut?: (screen: number, layouts: number) => void; explain?: boolean } = {}): PositionedDocument {
   const breakpoint = activeVariant(rd, viewport.width);
   const v = rd.variants[breakpoint]!;
   const cursors = new Map<string, Resume>();
@@ -170,8 +176,16 @@ export function layout(rd: ResolvedDocument, viewport: Viewport, cache: PrepareC
   const explained: Explanation["scenes"] = [];
   const kept: { env: Env; scene: PositionedScene }[] = [];
   let y = 0;
+  /** Design 2026-11-26 runs: where the current run starts (a true screen top), and its first scene. */
+  let runY = 0;
+  let runFrom = 0;
+  // A run joins consecutive whole-screen page scenes (not shares) with the same `run` name.
+  const runOf = (s: Scene | undefined): string | undefined => (s && s.height === "page" && !s.linearized && typeof s.screens !== "object" ? s.run : undefined);
   v.scenes.forEach((scene, index) => {
-    const env = (pageGrids: boolean): Env => ({ rd, v, grid: gridGeometry(scene.grid, viewport), sceneY: y, viewport, cache, page: scene.height === "page", more: index < v.scenes.length - 1, body: scene.body ?? "body", paged: false, pageGrids, budget: opts.composeBudget ?? 40, onCompose: opts.onCompose, onCut: opts.onCut, reports: [], ...(opts.explain ? { explain: [], picks: new Map() } : {}) });
+    const run = runOf(scene);
+    if (run === undefined || runOf(v.scenes[index - 1]) !== run) (runY = y), (runFrom = index);
+    const runOn = run !== undefined && runOf(v.scenes[index + 1]) === run;
+    const env = (pageGrids: boolean): Env => ({ rd, v, grid: gridGeometry(scene.grid, viewport), sceneY: y, screenY: runY, runOn, viewport, cache, page: scene.height === "page", more: index < v.scenes.length - 1, body: scene.body ?? "body", paged: false, pageGrids, budget: opts.composeBudget ?? 40, onCompose: opts.onCompose, onCut: opts.onCut, reports: [], ...(opts.explain ? { explain: [], picks: new Map() } : {}) });
     const before = new Map(cursors);
     let e = env(false);
     let s = layoutScene(e, scene, cursors);
@@ -206,12 +220,62 @@ export function layout(rd: ResolvedDocument, viewport: Viewport, cache: PrepareC
         for (const [k, c] of first.cursors) cursors.set(k, c);
       }
     }
+    // Design 2026-11-26 (the owner): the run's last scene is rounded up to whole screens; its last
+    // screen, when short, holds its block in the optical centre. Nothing is resized to fill it.
+    if (opts.fit !== false && !e.runOn && e.unit && !scene.linearized) centre(v, scenes.slice(runFrom), s, e.unit, e.grid.baseline, [...explained.slice(runFrom).flatMap((x) => x.decisions), ...(e.explain ?? [])]);
     if (e.explain) (explained.push({ scene: scene.id, decisions: e.explain }), kept.push({ env: e, scene: s }));
     scenes.push(s);
     y += s.height;
   });
   if (opts.explain) noteLines(v, cache, viewport, kept);
   return { viewport, breakpoint, scenes, height: y, ...(opts.explain ? { explain: { version: 1 as const, scenes: explained } } : {}) };
+}
+
+/**
+ * Design 2026-11-26 (the owner): the optical centre of a short last screen. With more than 20% of the
+ * run's last screen free at its foot, everything that sits only on that screen moves down by 40% of the
+ * free space, in whole baseline steps, so 60% stays at the foot. Nothing moves when anything crosses into
+ * that screen from the one before, or when it holds no text. Lines are never spread apart.
+ * `before`: the run's scenes set before `s`, which may end on the same screen; `notes`: the visor's decisions, which move with them.
+ */
+function centre(v: Variant, before: readonly PositionedScene[], s: PositionedScene, unit: number, bl: number, notes: readonly Decision[]): void {
+  const top = s.y + s.height - unit;
+  const run = [...before, s];
+  const shift = (r: Rect | null, d: number) => r && (r.y += d);
+  const items = run.flatMap((p) => [
+    ...p.lines.map((l) => ({ y: l.y, bottom: l.y + l.height, text: true, move: (d: number) => ((l.y += d), (l.baseline += d)) })),
+    ...p.caps.map((c) => ({ y: c.y, bottom: c.y + c.height, text: true, move: (d: number) => ((c.y += d), (c.baseline += d)) })),
+    ...p.rules.map((r) => ({ y: r.y - r.weight / 2, bottom: r.y + r.weight / 2, text: false, move: (d: number) => (r.y += d) })),
+    ...p.columnRules.map((r) => ({ y: r.y, bottom: r.y + r.height, text: false, move: (d: number) => (r.y += d) })),
+    ...p.continues.map((c) => ({ y: c.y, bottom: c.y, text: false, move: (d: number) => (c.y += d) })),
+    ...p.objects
+      .filter((o) => v.objects[o.name]?.placement.mode !== "background")
+      .map((o) => ({
+        y: o.box.y,
+        bottom: o.box.y + o.box.height,
+        text: false,
+        move: (d: number) => {
+          // The exclusion's box may be the object's own box: each rect moves once.
+          for (const r of new Set([o.box, o.media, o.exclusion?.box ?? null])) shift(r, d);
+          if (o.anchoredAt !== null) o.anchoredAt += d;
+          if (o.mark?.close) o.mark.close.y += d;
+        },
+      })),
+  ]);
+  if (items.some((i) => i.y < top - EPS && i.bottom > top + EPS)) return;
+  const last = items.filter((i) => i.y >= top - EPS);
+  if (!last.some((i) => i.text)) return;
+  const free = top + unit - s.grid.marginY - Math.max(...last.map((i) => i.bottom));
+  const d = Math.floor((0.4 * free) / bl + EPS) * bl;
+  if (free <= 0.2 * unit + EPS || d <= 0) return;
+  for (const i of last) i.move(d);
+  for (const n of notes) if (n.at.y >= top - EPS) n.at.y += d;
+  // A scene of the run that starts part way down the last screen starts lower; the one before it ends lower.
+  run.forEach((p, k) => {
+    if (k === 0 || p.y <= top + EPS) return;
+    (run[k - 1]!.height += d), (p.y += d), (p.height -= d);
+    for (const o of p.objects) if (v.objects[o.name]?.placement.mode === "background") (o.box.y += d), (o.box.height -= d);
+  });
 }
 
 // ---------------------------------------------------------------------------
@@ -458,7 +522,21 @@ function layoutScene(env: Env, scene: Scene, cursors: Map<string, Resume>): Posi
   // Design 2026-09-29 rule 1: a page scene with column bands is a whole number of screens, so every
   // band has a screen of its own and scrolling can settle on each. With none (one column, as on a
   // phone) the text runs on across screens and the scene scrolls freely.
-  const height = env.paged && !env.more ? Math.ceil(tall / viewport.height - EPS) * viewport.height : tall;
+  // Design 2026-11-26 (the owner): every page scene on a column grid is a whole number of screens, or an
+  // equal share of one screen with the scenes beside it; this replaces the 2026-11-15 rule above for
+  // them. A linearized page scene (phones, tablets) scrolls as one column and keeps the rules above.
+  const share = typeof scene.screens === "object" ? scene.screens.share : 1;
+  const whole = env.page && !scene.linearized;
+  if (whole) env.unit = viewport.height / share;
+  // Design 2026-11-26 runs: a scene the run goes on from ends where its content does; the run's last
+  // scene rounds the whole run, from its first scene's top, up to whole screens.
+  const into = sceneY - env.screenY;
+  // An integer `screens` on the run's last scene is the least for the whole run.
+  // ponytail: a frame not set in bands (a heading) of a scene that starts part way down a screen is not
+  // moved off that screen's foot; design 2.4 (an object stays in its screen) will.
+  const height = whole
+    ? env.runOn ? natural : Math.max(typeof scene.screens === "number" ? scene.screens : 1, Math.ceil((into + natural) / env.unit! - EPS)) * env.unit! - into
+    : env.paged && !env.more ? Math.ceil(tall / viewport.height - EPS) * viewport.height : tall;
 
   // §11.2 background: fills the whole scene behind everything; never excludes text. First, so it paints beneath.
   const behind = empty();
@@ -479,7 +557,7 @@ function layoutScene(env: Env, scene: Scene, cursors: Map<string, Resume>): Posi
   append(behind, out);
   // The visor's strips stay out of the page.
   const { narrow: _, ...drawn } = behind;
-  return { name: scene.id, y: sceneY, height, grid, paged: env.paged, ...drawn, ...(env.paged ? { screens: env.reports } : {}) };
+  return { name: scene.id, y: sceneY, height, grid, paged: env.paged, ...(share > 1 && whole ? { share } : {}), ...(into > EPS ? { follows: true } : {}), ...drawn, ...(env.paged ? { screens: env.reports } : {}) };
 }
 
 // ---------------------------------------------------------------------------
@@ -1247,7 +1325,7 @@ const box = (r: Rect): Rect => ({ x: r.x, y: r.y, width: r.width, height: r.heig
 function screenAt(env: Env, y: number): number | null {
   const vh = env.viewport.height;
   // A page's screen number counts its top, rounded up: a scene can start part way down a screen (2026-11-15).
-  return env.pageGrids ? Math.ceil((env.sceneY + Math.floor((y - env.sceneY + EPS) / vh) * vh) / vh - EPS) + 1 : null;
+  return env.pageGrids ? Math.ceil((env.screenY + Math.floor((y - env.screenY + EPS) / vh) * vh) / vh - EPS) + 1 : null;
 }
 
 const SPACE_RULE: Record<SpaceReason, string> = { "slot-too-narrow": "§09.6 step 3", cropped: "§09.7 rule 12", grown: "§09.7 rule 12", "early-end": "§09.7 rule 12" };
@@ -1295,20 +1373,20 @@ function bands(
   /** Picture composition (2026-10-17): the frame's floating objects, screen by screen. */
   compose?: Composer,
 ): Columns {
-  const { grid, viewport, sceneY } = env;
+  const { grid, viewport, screenY } = env;
   const screen = viewport.height - 2 * grid.marginY;
   let at = contentTop;
   // The first band ends at the bottom of the screen `at`'s content top is on, not always screen 1:
   // a frame whose content starts on a later screen (e.g. stacked below a long banded frame) must not
   // measure its first band against screen 1's bottom, which would go negative and misplace it.
-  const k = Math.floor((at - sceneY) / viewport.height);
-  let limit = sceneY + (k + 1) * viewport.height - grid.marginY - at;
+  const k = Math.floor((at - screenY) / viewport.height);
+  let limit = screenY + (k + 1) * viewport.height - grid.marginY - at;
   // Limit: "less than a line" is one baseline step; a frame whose first style is taller may still start with an empty band.
   // Design 2026-09-29 rule 1: less than a quarter of a band left (a third until 2026-09-30, when the
   // one-line grid pushed a laptop's first band just under it), and the text starts on the next screen.
   const next = limit < grid.baseline || limit < screen / 4;
   if (next && k === 0 && limit >= grid.baseline) env.pushed ??= { top: at, need: screen / 4 - limit };
-  if (next) (at = sceneY + (k + 1) * viewport.height + grid.marginY), (limit = screen);
+  if (next) (at = screenY + (k + 1) * viewport.height + grid.marginY), (limit = screen);
   /** The screen the current band is on: every later band starts on the next screen (rule 1). */
   let page = next ? k + 1 : k;
   const out = empty();
@@ -1500,7 +1578,7 @@ function bands(
     // Going on after a frame break (an object still to place) starts at the break, never past it: the
     // text after it is the next frame's.
     from = done && band.stop === "frame" ? { ...START, block: band.cursor.block - 1 } : band.cursor;
-    at = sceneY + ++page * viewport.height + grid.marginY;
+    at = screenY + ++page * viewport.height + grid.marginY;
     env.origin = originOf(page);
     limit = screen;
   }
@@ -1554,9 +1632,9 @@ function anchorsAt(env: Env, story: Story, start: Resume, frameId: string, place
  * could grow, and the floating objects set two screens or more from their anchor.
  */
 function screenReports(env: Env, frameId: string, story: Story, start: Resume, columns: Col[], placed: Placed): ScreenReport[] {
-  const { sceneY, grid, v, rd } = env;
+  const { screenY, grid, v, rd } = env;
   const vh = env.viewport.height;
-  const screenOf = (y: number): number => Math.floor((y - sceneY + EPS) / vh);
+  const screenOf = (y: number): number => Math.floor((y - screenY + EPS) / vh);
   const order = (name: string): number => {
     const p = v.objects[name]!.placement;
     return p.mode === "anchored" ? p.block : Number.POSITIVE_INFINITY;
@@ -1566,7 +1644,7 @@ function screenReports(env: Env, frameId: string, story: Story, start: Resume, c
   const objects = placed.objects.filter((o) => v.objects[o.name]?.placement.mode !== "contained").sort((a, b) => order(a.name) - order(b.name));
   const pages = [...new Set([...lines.map((l) => screenOf(l.y)), ...objects.map((o) => screenOf(o.box.y))])].sort((a, b) => a - b);
   return pages.map((p) => {
-    const top = sceneY + p * vh;
+    const top = screenY + p * vh;
     const foot = top + vh - grid.marginY;
     const on = lines.filter((l) => screenOf(l.y) === p);
     const here = objects.filter((o) => screenOf(o.box.y) === p);
@@ -1841,7 +1919,7 @@ function composer(
   /** The frame's wrapping objects (a scene's cut-out): no box goes over them. */
   exclusions: readonly Exclusion[],
 ): Composer | undefined {
-  const { v, grid, viewport, sceneY } = env;
+  const { v, grid, viewport, screenY } = env;
   /** The frame's floating objects in story order: from its first block to a frame break. */
   const ids = floatingIn(env, story, start);
   if (ids.length === 0) return undefined;
@@ -1860,7 +1938,7 @@ function composer(
   /** The visor: an object's window, the anchor's screen and one either side, 1-based across the document. */
   const window = (id: string): Record<string, number> => {
     const a = anchors.get(id)?.screen;
-    const doc = (p: number): number => Math.ceil((sceneY + p * viewport.height) / viewport.height - EPS) + 1;
+    const doc = (p: number): number => Math.ceil((screenY + p * viewport.height) / viewport.height - EPS) + 1;
     return a === undefined ? {} : { windowFrom: doc(Math.max(0, a - 1)), windowTo: doc(a + 1) };
   };
 
@@ -1907,7 +1985,7 @@ function composer(
           const m = floatedFor([]);
           for (const id of inline) m.delete(id);
           (env.origin = pageOrigin(env, page + 1)), (env.floated = m);
-          reached.set(key, run(band, sceneY + (page + 1) * viewport.height + grid.marginY, c, [], deferred));
+          reached.set(key, run(band, screenY + (page + 1) * viewport.height + grid.marginY, c, [], deferred));
           (env.origin = origin), (env.floated = floated);
         }
         return reached.get(key)!;
@@ -1925,7 +2003,7 @@ function composer(
       };
       // Past its window already (one that waited behind three others): today's placement.
       for (const id of [...pending]) if (passed(id) && (anchors.get(id)?.screen ?? page) < page - 1) fall(id, "fallback-budget");
-      const g: ScreenGeometry = { index: page, top: at, foot: at + limit, band, columns, baseline: grid.baseline, origin: env.origin ?? sceneY };
+      const g: ScreenGeometry = { index: page, top: at, foot: at + limit, band, columns, baseline: grid.baseline, origin: env.origin ?? env.sceneY };
       // Objects set before their text owe this screen their anchors: a setting that pushes one on is
       // refused, so none lands two screens from its picture.
       const owed = [...set].filter((id) => !passed(id) && beyond(t.cursor, id));
@@ -2104,10 +2182,10 @@ function bodyBelow(env: Env, ctx: EvalContext): number {
 }
 
 function pageOrigin(env: Env, p: number): number {
-  const { grid, viewport, sceneY } = env;
+  const { grid, viewport, screenY } = env;
   const ctx: EvalContext = { viewport, grid, pctOf: 0 };
   const { lead, drop } = bodyLine(env, ctx);
-  const top = sceneY + p * viewport.height;
+  const top = screenY + p * viewport.height;
   const lastBaseline = top + viewport.height - grid.marginY - lead + drop;
   return lastBaseline - Math.floor((lastBaseline - top) / grid.baseline) * grid.baseline;
 }
@@ -2571,7 +2649,7 @@ function fillColumn(
   const pageGrid = new Map<number, number>();
   const originAt = (y: number): number => {
     if (env.origin !== undefined || !env.pageGrids) return env.origin ?? sceneY;
-    const p = Math.max(0, Math.floor((y - sceneY + EPS) / env.viewport.height));
+    const p = Math.max(0, Math.floor((y - env.screenY + EPS) / env.viewport.height));
     if (!pageGrid.has(p)) pageGrid.set(p, pageOrigin(env, p));
     return pageGrid.get(p)!;
   };
@@ -2913,11 +2991,12 @@ function fillColumn(
         // its lines: a paragraph split before them would lose its cap (2026-11-16).
         // At a column's top the paragraph stays (a column never refuses text forever), except one too
         // short for its cap when a later column can take it and a lead (anchored before any of its
-        // story's text) set over the column left only those lines. Elsewhere a cut cap is a hard rule
-        // of the setting search (rule 13).
+        // story's text) or a grid-placed object set over the column left only those lines. Elsewhere
+        // a cut cap is a hard rule of the setting search (rule 13). 2026-11-26: grid-placed objects too:
+        // a scene's picture over the first column, with the band balanced short, cut the cap off.
         const leadOf = (id: string): boolean => {
           const p = env.v.objects[id]?.placement;
-          return p?.mode === "anchored" && env.v.stories[p.story]!.blocks.slice(0, p.block).every((x) => x.kind === "object");
+          return p?.mode === "grid" || (p?.mode === "anchored" && env.v.stories[p.story]!.blocks.slice(0, p.block).every((x) => x.kind === "object"));
         };
         const under = cap !== null && exclusions.some((e) => leadOf(e.id) && e.box.y + e.box.height > blockTop + EPS && e.box.y + e.box.height <= (starts[0]?.y ?? blockTop) + EPS && e.box.x < pcol.x + pcol.width - EPS && e.box.x + e.box.width > pcol.x + EPS);
         const short = cap !== null && n < cap.lines && !defer.last && under;

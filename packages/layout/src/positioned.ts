@@ -73,6 +73,10 @@ export type PositionedScene = {
   continues: PositionedContinue[];
   /** Design 2026-09-29: a page scene with column bands, so its height is whole screens and scrolling settles on each. */
   paged: boolean;
+  /** Design 2026-11-26: the scene is an equal share (2, 3 or 4) of one screen with the scenes beside it; absent for whole screens. */
+  share?: number;
+  /** Design 2026-11-26 runs: the scene goes on from the scene before, in the same run, part way down a screen; screens count from the run's first scene. */
+  follows?: boolean;
   /** Design 2026-10-17, the copyfitting report: one per screen a banded frame sets, for page scenes only (absent when the scene scrolls). */
   screens?: ScreenReport[];
 };

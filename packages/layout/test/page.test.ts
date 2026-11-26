@@ -17,7 +17,8 @@ export const VIEW = { width: 1280, height: 800 };
 
 export function lay(src: string, viewport = VIEW) {
   const { doc } = resolve(parse(FM + GRID + src).ast as Document);
-  return layout(doc, viewport, new PrepareCache(createFixedEngine()));
+  // The optical centre (design 2026-11-26) is off: these tests check the band mechanics alone.
+  return layout(doc, viewport, new PrepareCache(createFixedEngine()), { fit: false });
 }
 
 describe("a page scene", () => {
@@ -261,10 +262,10 @@ describe("screen pages (design 2026-09-29)", () => {
     }
   });
 
-  it("a page scene with no column bands (one column, as on a phone) is not paged: it scrolls freely", () => {
+  it("a page scene with no column bands is not paged, yet still whole screens on a column grid (design 2026-11-26)", () => {
     const s = lay(`\\story[name=s]{${LONG}}\n\\scene[height=page, grid=page]{\\frame[story=s, cols=1-12]}`).scenes[0]!;
     expect(s.paged).toBe(false);
-    expect(s.height % 800).not.toBe(0);
+    expect(s.height % 800).toBe(0);
   });
 
   it("no band that the story carries on from ends its last column at a soft hyphen", () => {
@@ -378,7 +379,7 @@ describe("a cols= picture taller than a page (2026-10-07)", () => {
     // Missing files on purpose: the placeholder size from ratio= stands in.
     const here = fileURLToPath(new URL(".", import.meta.url));
     const { doc } = resolve(parse(FM + GRID + src).ast as Document, { assets: createAssetHost({ publicDir: here, sourceDir: here }) });
-    const pd = layout(doc, VIEW, new PrepareCache(createFixedEngine()));
+    const pd = layout(doc, VIEW, new PrepareCache(createFixedEngine()), { fit: false });
     layoutInvariants(doc, pd, { standoff: false });
   });
 });
@@ -540,7 +541,7 @@ describe("an anchored object taller than a band (§09.7 rule 5, W043)", () => {
     const src =
       `\\story[name=s]{\\sidebar[side=full]{${SIDEBAR}}\n\n${LONG}}\n` + "\\scene[height=page, grid=page]{\\frame[story=s, cols=1-12, columns=3]}";
     const { doc } = resolve(parse(FM + GRID + src).ast as Document);
-    const pd = layout(doc, VIEW, new PrepareCache(createFixedEngine()));
+    const pd = layout(doc, VIEW, new PrepareCache(createFixedEngine()), { fit: false });
 
     const sidebars = pd.scenes[0]!.objects.filter((o) => o.name === "sidebar-1");
     expect(sidebars).toHaveLength(1);

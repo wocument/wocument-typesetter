@@ -76,7 +76,8 @@ describe.each(WIDTHS)("minimum file at %ipx", (width) => {
 
 describe("geometry at 1470px (MacBook Air 13\", compact variant)", () => {
   it("places the heading frame on columns 1-8 of the 12-column grid", () => {
-    const { grid, lines } = run(1470).scenes[0]!;
+    // fit: false: this checks where the grid puts the first line; the optical centre may move it (design 2026-11-26).
+    const { grid, lines } = layout(rd, { width: 1470, height: 800 }, new PrepareCache(createFixedEngine()), { fit: false }).scenes[0]!;
     // content = min(1470 - 2*108, 1224) = 1224; column = (1224 - 11*20) / 12
     expect(grid.content).toBe(1224);
     expect(grid.colWidth).toBeCloseTo((1224 - 11 * 20) / 12, 9);

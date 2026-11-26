@@ -682,6 +682,12 @@ export function resolve(source: Document, options: ResolveOptions = {}): Resolve
       const height = enumId(a.get("height")) as Scene["height"];
       // 2026-10-09: page scenes no longer snap by default (until then soft); smooth scrolling
       // and a smooth page step on the space bar replace it. An author's own `snap` still applies.
+      // Design 2026-11-26: whole screens. `auto` is the default and is left out of the document.
+      const sv = a.get("screens");
+      const screens: Scene["screens"] =
+        height !== "page" || !sv ? undefined
+        : sv.t === "integer" ? Math.min(6, Math.max(1, sv.n))
+        : ({ half: { share: 2 as const }, third: { share: 3 as const }, quarter: { share: 4 as const } } as Record<string, { share: 2 | 3 | 4 }>)[enumId(sv)];
       let snap = enumId(a.get("snap")) as Scene["snap"];
       if (snap === "hard" && height === "flow") {
         snap = "soft";
@@ -803,6 +809,8 @@ export function resolve(source: Document, options: ResolveOptions = {}): Resolve
         grid,
         palette: design.palette(ident(a.get("palette")), bp),
         height,
+        ...(screens === undefined ? {} : { screens }),
+        ...(height === "page" && ident(a.get("run")) ? { run: ident(a.get("run")) } : {}),
         snap,
         bg: colorOf(a.get("bg")) ?? { role: "paper" },
         linearized,
@@ -812,6 +820,25 @@ export function resolve(source: Document, options: ResolveOptions = {}): Resolve
       };
     });
     use("");
+
+    // Design 2026-11-26: scenes that share one screen come in complete groups (2 halves, 3 thirds,
+    // 4 quarters) of consecutive scenes. A run that is mixed or does not add up to whole screens loses
+    // its shares: each of its scenes becomes a whole-screen scene, with W065.
+    for (let i = 0; i < scenes.length; ) {
+      const share = (s: Scene | undefined): number => (s && typeof s.screens === "object" ? s.screens.share : 0);
+      if (!share(scenes[i])) {
+        i++;
+        continue;
+      }
+      let j = i;
+      while (share(scenes[j])) j++;
+      const run = scenes.slice(i, j);
+      if (run.some((s) => share(s) !== share(run[0])) || run.length % share(run[0]) !== 0) {
+        for (const s of run) delete s.screens;
+        if (bp === BASE) warn("W065", `Scenes ${run.map((s) => `"${s.id}"`).join(", ")} do not make whole screens: shares must be equal and add up to one screen.`, sources.find((x) => x.id === run[0]!.id)?.cmd ?? null, null, "Give every scene of the group the same share (half, third or quarter), and as many scenes as the share needs.");
+      }
+      i = j;
+    }
 
     // Anchored objects, where their story put them (§11.3). one whose cols do not
     // fit a breakpoint's grid linearizes alone, since its scene is known only to layout.

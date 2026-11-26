@@ -55,12 +55,15 @@ export function layoutInvariants(rd: ResolvedDocument, pd: PositionedDocument, {
   }
   // Snapped baselines share one grid per screen. A flow scene's counts from the scene's top; a page
   // scene's counts up from each screen's bottom line (2026-10-17), so only "one grid" is checked here.
+  // Design 2026-11-26 runs: a scene that follows on in its run counts its screens from the run's top.
+  let runTop = 0;
   for (const s of pd.scenes) {
+    if (!s.follows) runTop = s.y;
     const residue = (y: number) => (((y % s.grid.baseline) + s.grid.baseline) % s.grid.baseline);
     const grids = new Map<number, number>();
     for (const l of s.lines.filter((x) => x.snapped)) {
       // The screen the baseline is on: a line a plain frame runs over a screen's edge snaps there.
-      const page = Math.floor((l.baseline - s.y) / pd.viewport.height);
+      const page = Math.floor((l.baseline - runTop) / pd.viewport.height);
       const r = residue(l.baseline);
       const first = grids.get(page) ?? r;
       grids.set(page, first);
