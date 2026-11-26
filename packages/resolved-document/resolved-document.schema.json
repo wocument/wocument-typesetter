@@ -1548,6 +1548,10 @@
           ],
           "description": "Design 2026-11-26 (whole screens): absent = `auto`, a page scene is the whole number of screens its content needs. A number: at least that many screens. `share`: an equal share of one screen, with the scenes beside it in a complete group (2 halves, 3 thirds, 4 quarters). Page scenes only."
         },
+        "run": {
+          "type": "string",
+          "description": "Design 2026-11-26: the run this page scene belongs to; absent = a run of its own. Consecutive scenes with the same run follow on, the next starting where the one before ends; only the run's last scene rounds up, so that the run is a whole number of screens."
+        },
         "snap": {
           "type": "string",
           "enum": [

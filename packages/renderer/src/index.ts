@@ -291,16 +291,19 @@ export function render(root: HTMLElement, pd: PositionedDocument, rd: ResolvedDo
   const folio = renderFolio(doc, win, pd, rd);
   // Smooth scrolling everywhere; Space glides a page (2026-10-09); a dot for every page screen.
   // Design 2026-11-26: scenes that share one screen are one page: only the group's first scene is a stop.
+  // A scene that follows on in its run (part way down a screen) is part of the run's page, so the stops
+  // are the run's screens, counted from its first scene's top.
   let seat = 0;
-  const kinds = pd.scenes.flatMap((s) => {
-    if (!s.share) {
-      seat = 0;
-      return [{ y: s.y, height: s.height, page: s.paged }];
+  const kinds: { y: number; height: number; page: boolean }[] = [];
+  for (const s of pd.scenes) {
+    const run = kinds.at(-1);
+    if (s.follows && run) (run.height += s.height), (run.page ||= s.paged);
+    else if (!s.share) (seat = 0), kinds.push({ y: s.y, height: s.height, page: s.paged });
+    else {
+      if (seat === 0) kinds.push({ y: s.y, height: s.height * s.share, page: true });
+      seat = (seat + 1) % s.share;
     }
-    const first = seat === 0;
-    seat = (seat + 1) % s.share;
-    return first ? [{ y: s.y, height: s.height * s.share, page: true }] : [];
-  });
+  }
   // Screen pages only where a scene has column bands; then every scene is a stop and has a dot.
   const pages = installPages(win, root, kinds.some((k) => k.page) ? snapStops(kinds, pd.viewport.height) : [], reduce);
   // §10.6: the soundtrack lives across renders, so a resize never restarts the music.
@@ -325,7 +328,10 @@ function renderFolio(doc: Document, win: Window, pd: PositionedDocument, rd: Res
   const v = rd.variants[pd.breakpoint]!;
   const labels: HTMLElement[] = [];
   let progress = false;
+  /** Design 2026-11-26 runs: the top of the run the scene is in; its screens count from there. */
+  let runTop = 0;
   for (const ps of pd.scenes) {
+    if (!ps.follows) runTop = ps.y;
     const scene = v.scenes.find((s) => s.id === ps.name)!;
     // Each scene carries the folio shown over it: a parent's own, or the document's (§10.5).
     const f = scene.folio;
@@ -334,8 +340,11 @@ function renderFolio(doc: Document, win: Window, pd: PositionedDocument, rd: Res
     progress ||= f.progress;
     // A paged scene repeats it on every screen page, in the same place, so every page has the same
     // head (2026-10-07); any other scene shows it once, at its top or foot.
-    const pages = ps.paged ? Math.max(1, Math.round(ps.height / pd.viewport.height)) : 1;
-    for (let k = 0; k < pages; k++) {
+    // In a run, only the screens whose top is in this scene: the scene before drew the one it starts on.
+    const vh = pd.viewport.height;
+    const skip = Math.ceil((ps.y - runTop) / vh - 1e-6);
+    const pages = ps.paged ? Math.max(1, Math.round((ps.y + ps.height - runTop) / vh)) : 1;
+    for (let k = ps.paged ? skip : 0; k < pages; k++) {
       const label = doc.createElement("div");
       label.className = "woc-folio";
       label.setAttribute("aria-hidden", "true");
@@ -344,8 +353,8 @@ function renderFolio(doc: Document, win: Window, pd: PositionedDocument, rd: Res
       applyStyle(label, v.styles[block.style]!, { viewport: pd.viewport, grid: ps.grid, pctOf: pd.viewport.width });
       label.textContent = block.runs.map((r) => (r.kind === "break" ? " " : rd.strings[r.s])).join("");
       const [vert, side] = f.position.split("-") as ["top" | "bottom" | "margin", "left" | "right"];
-      const pageTop = k * pd.viewport.height;
-      const pageBottom = ps.paged ? (k + 1) * pd.viewport.height : ps.height;
+      const pageTop = ps.paged ? runTop + k * vh - ps.y : 0;
+      const pageBottom = ps.paged ? pageTop + vh : ps.height;
       // Centred in the top margin (or the bottom one), on the grid's outer edge; `margin` positions
       // sit at the screen's own edge rather than the grid's, a gutter in.
       label.style.top = `${vert === "bottom" ? pageBottom - ps.grid.marginY / 2 : pageTop + ps.grid.marginY / 2}px`;

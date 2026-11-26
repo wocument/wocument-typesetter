@@ -810,6 +810,7 @@ export function resolve(source: Document, options: ResolveOptions = {}): Resolve
         palette: design.palette(ident(a.get("palette")), bp),
         height,
         ...(screens === undefined ? {} : { screens }),
+        ...(height === "page" && ident(a.get("run")) ? { run: ident(a.get("run")) } : {}),
         snap,
         bg: colorOf(a.get("bg")) ?? { role: "paper" },
         linearized,

@@ -2,8 +2,9 @@
  * The last screen of a page scene (2026-11-15).
  * - Rule 16: a picture sized from print (`size=<n>em`) keeps its size relative to the body text,
  *   scaled to the screen, and nothing resizes it to fill a screen.
- * - A page scene another scene follows ends where its content does: the next scene starts on the
- *   same screen, with no empty screen between them.
+ * - Whole screens and runs (design 2026-11-26): a run of page scenes is a whole number of screens; the
+ *   next scene of a run starts on the same screen, and a short last screen holds its block in the
+ *   optical centre.
  * - Text that ends exactly at a screen's foot adds no empty screen after it.
  */
 import { fileURLToPath } from "node:url";
@@ -249,50 +250,102 @@ describe("whole screens (design 2026-11-26)", () => {
     expect(doc.variants[Object.keys(doc.variants)[0]!]!.scenes[0]!.screens).toBeUndefined();
   });
 
-  it("a scene a little over a screen is fitted to one screen with smaller pictures or margins, never smaller text", () => {
-    const viewport = { width: 1280, height: 800 };
-    for (let n = 20; n <= 60; n += 4) {
-      const loose = lay(article(n, "cover"), viewport);
-      const doc = resolve(parse(article(n, "cover")).ast as Document, { assets: createAssetHost({ publicDir: here, sourceDir: here }) }).doc;
-      const raw = layout(doc, viewport, new PrepareCache(createFixedEngine()), { fit: false });
-      expect(loose.scenes[0]!.height).toBeLessThanOrEqual(raw.scenes[0]!.height);
-      const size = (pd: typeof raw) => pd.scenes[0]!.lines.filter((l) => l.style === "body").map((l) => l.height);
-      expect(new Set(size(loose))).toEqual(new Set(size(raw)));
-    }
-  });
+});
 
-  it("a scene rounded up spreads the leftover: its picture grows taller, text lines never change", () => {
-    const viewport = { width: 1280, height: 800 };
-    // A grid-placed picture over the whole width, and a 4-column story under it.
-    const gridded = (n: number) => `${FM}\\story[name=s]{${story(n)}}
-\\scene[height=page]{
-  \\figure[src=/missing.jpg, alt="", cols=1-12, fit=cover, ratio=3:1, wrap=rect]
-  \\frame[story=s, cols=1-12, top=0, columns=4]
-}
+describe("runs (design 2026-11-26)", () => {
+  const viewport = { width: 1280, height: 800 };
+  const page = (run: string, n: number, name: string) => `\\story[name=${name}]{${story(n)}}
+\\scene[height=page${run}]{\\frame[cols=all]{\\headline{${name}}}\\frame[story=${name}, cols=all, columns=4]}
 `;
-    let grew = 0;
-    for (let n = 4; n <= 40; n += 4) {
-      const fitted = lay(gridded(n), viewport);
-      const doc = resolve(parse(gridded(n)).ast as Document, { assets: createAssetHost({ publicDir: here, sourceDir: here }) }).doc;
-      const raw = layout(doc, viewport, new PrepareCache(createFixedEngine()), { fit: false });
-      const [a, b] = [fitted.scenes[0]!, raw.scenes[0]!];
-      expect(a.height % viewport.height).toBeCloseTo(0, 6);
-      expect(a.height).toBeLessThanOrEqual(b.height);
-      // Tightened to one screen fewer (phase 1): not this test's case.
-      if (a.height < b.height) continue;
-      const pic = (x: typeof a) => x.objects.find((o) => o.media)!;
-      const foot = (x: typeof a) => Math.max(...x.lines.map((l) => l.y + l.height), ...x.objects.map((o) => o.box.y + o.box.height));
-      const lines = (x: typeof a) => new Set(x.lines.map((l) => `${l.style} ${l.height}`));
-      expect(lines(a)).toEqual(lines(b));
-      expect(pic(a).box.height).toBeGreaterThanOrEqual(pic(b).box.height);
-      expect(pic(a).box.width).toBeCloseTo(pic(b).box.width, 6);
-      expect(pic(a).box.height).toBeLessThanOrEqual(pic(b).box.height * 1.3 + a.grid.baseline);
-      if (pic(a).box.height > pic(b).box.height) {
-        grew++;
-        expect(a.y + a.height - foot(a)).toBeLessThan(b.y + b.height - foot(b));
+
+  it("the next scene of a run starts on the last screen of the one before; only the run is whole screens", () => {
+    let mid = 0;
+    for (let n = 8; n <= 40; n += 4) {
+      const pd = lay(`${FM}${page(", run=a", n, "one")}${page(", run=a", 50, "two")}${page("", 6, "three")}`, viewport);
+      const [one, two, three] = pd.scenes;
+      expect(two!.y).toBeCloseTo(one!.y + one!.height, 6);
+      expect((one!.height + two!.height) % viewport.height).toBeCloseTo(0, 6);
+      // A scene without a run starts on a screen's top.
+      expect(three!.y % viewport.height).toBeCloseTo(0, 6);
+      if (two!.y % viewport.height > 1) {
+        mid++;
+        expect(two!.follows).toBe(true);
+        // Its bands are counted from the true screens: no line of its columns runs over a screen's foot
+        // or into its head. (Its heading frame is not set in bands, so it may still cross a foot.)
+        const g = two!.grid;
+        for (const l of two!.lines.filter((x) => x.story === "two")) {
+          const top = Math.floor(l.y / viewport.height) * viewport.height;
+          expect(l.y, l.text).toBeGreaterThanOrEqual(top + g.marginY - 1e-6);
+          expect(l.y + l.height, l.text).toBeLessThanOrEqual(top + viewport.height - g.marginY + 1e-6);
+        }
       }
     }
-    expect(grew).toBeGreaterThan(0);
+    expect(mid).toBeGreaterThan(0);
+  });
+
+  it("a scene with a run name of its own is a run of its own", () => {
+    const pd = lay(`${FM}${page(", run=a", 12, "one")}${page(", run=b", 12, "two")}`, viewport);
+    expect(pd.scenes[0]!.height % viewport.height).toBeCloseTo(0, 6);
+    expect(pd.scenes[1]!.y % viewport.height).toBeCloseTo(0, 6);
+  });
+});
+
+describe("the optical centre of a short last screen (design 2026-11-26)", () => {
+  const viewport = { width: 1280, height: 800 };
+  const src = (n: number) => `${FM}\\story[name=s]{${story(n)}}
+\\scene[height=page]{\\frame[cols=all]{\\headline{Heading}}\\frame[story=s, cols=all, columns=3]}
+`;
+  const raw = (n: number) => {
+    const { doc } = resolve(parse(src(n)).ast as Document, { assets: fake });
+    return layout(doc, viewport, new PrepareCache(createFixedEngine()), { fit: false }).scenes[0]!;
+  };
+
+  it("moves the block down by 40% of the free space, in whole baselines, and never changes the text", () => {
+    let moved = 0;
+    let kept = 0;
+    for (let n = 2; n <= 60; n += 2) {
+      const a = layp(src(n), viewport).scenes[0]!;
+      const b = raw(n);
+      expect(a.height).toBe(b.height);
+      expect(a.lines.map((l) => [l.text, l.height, l.x])).toEqual(b.lines.map((l) => [l.text, l.height, l.x]));
+      const top = b.y + b.height - viewport.height;
+      const last = b.lines.filter((l) => l.y >= top);
+      const free = top + viewport.height - b.grid.marginY - Math.max(...last.map((l) => l.y + l.height));
+      const d = a.lines.at(-1)!.y - b.lines.at(-1)!.y;
+      // Lines are never spread: every line on the last screen moves by the same offset.
+      a.lines.forEach((l, i) => expect(l.y - b.lines[i]!.y).toBeCloseTo(b.lines[i]!.y >= top ? d : 0, 6));
+      if (free > 0.2 * viewport.height && !b.lines.some((l) => l.y < top)) {
+        expect(d).toBeCloseTo(Math.floor((0.4 * free) / b.grid.baseline) * b.grid.baseline, 6);
+        if (d > 0) moved++;
+      } else if (free <= 0.2 * viewport.height) {
+        expect(d).toBe(0);
+        kept++;
+      }
+    }
+    expect(moved).toBeGreaterThan(0);
+    expect(kept).toBeGreaterThan(0);
+  });
+});
+
+describe("a drop cap under a grid-placed picture (2026-11-26)", () => {
+  it("is never lost when the picture leaves its column fewer lines than the cap", () => {
+    let tried = 0;
+    for (const viewport of [{ width: 2560, height: 1440 }, { width: 1280, height: 800 }])
+    for (let h = 40; h <= 90; h += 5)
+    for (let n = 6; n <= 30; n += 6) {
+      const src = `${FM}\\story[name=s]{\\dropcap[lines=5]
+
+${story(n)}}
+\\scene[height=page]{
+  \\figure[src=/missing.jpg, alt="", cols=1-3, top=0, height=${h}vh, wrap=rect]
+  \\frame[story=s, cols=all, top=0, columns=4]
+}
+`;
+      const s = layp(src, viewport).scenes[0]!;
+      expect(s.caps.length, `${viewport.width}: ${h}vh, ${n} sentences`).toBe(1);
+      tried++;
+    }
+    expect(tried).toBeGreaterThan(0);
   });
 });
 

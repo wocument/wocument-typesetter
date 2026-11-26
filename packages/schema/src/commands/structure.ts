@@ -20,6 +20,7 @@ const SCENE_ATTRS: Attrs = {
   palette: { types: ["ident"], default: "default" },
   height: { types: ["enum"], enum: ["flow", "screen", "page"], default: "flow" },
   screens: { types: ["integer", "enum"], enum: ["auto", "half", "third", "quarter"], default: "auto", note: "page scenes on a column grid: a whole number of screens (1-6), or an equal share of one screen with the scenes beside it (design 2026-11-26)" },
+  run: { types: ["ident"], responsive: false, note: "page scenes: consecutive scenes with the same run follow on, on the same screen; only the run's last scene rounds up to whole screens (design 2026-11-26)" },
   snap: { types: ["enum"], enum: ["none", "soft", "hard"], default: "none" },
   turn: { types: ["enum"], enum: ["none", "fade", "slide"], default: "none", note: "removed 2026-11-21 (page turns): ignored, warning W036" },
   bg: { types: [...COLOR_VALUE], default: "paper" },

@@ -25,7 +25,7 @@ const fig = (attrs: string): string => `\\figure[src=/a.jpg, alt="A picture", ${
 const page = (story: string): string => `\\story[name=s]{${story}}\n\\scene[height=page, grid=page]{\\frame[story=s, cols=1-12, columns=3]}`;
 
 const doc = (src: string): ResolvedDocument => resolve(parse(FM + GRID + src).ast as Document, { assets: fake }).doc;
-// Fitting to whole screens (design 2026-11-26) is off here: these tests read the band mechanics' own reasons.
+// The optical centre (design 2026-11-26) is off here: these tests read the band mechanics' own positions.
 function lay(src: string, viewport = VIEW, opts: { explain?: boolean; composeBudget?: number } = { explain: true }): PositionedDocument {
   return layout(doc(src), viewport, new PrepareCache(createFixedEngine()), { fit: false, ...opts });
 }
@@ -61,7 +61,7 @@ describe("the reasons log", () => {
   ];
   it.each(hand.map((src, i) => [i, src]))("off by default and identical when on (document %i)", (_, src) => {
     const rd = doc(src as string);
-    // fit: false on both: the log is compared for one layout, not for the fitting's extra ones.
+    // fit: false on both: the log is compared for one layout, with no optical centre.
     const off = layout(rd, VIEW, new PrepareCache(createFixedEngine()), { fit: false });
     const on = layout(rd, VIEW, new PrepareCache(createFixedEngine()), { explain: true, fit: false });
     expect(off.explain).toBeUndefined();

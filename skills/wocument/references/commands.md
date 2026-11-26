@@ -525,6 +525,7 @@ at most once: folio
 | `palette` | ident | default |  |
 | `height` | flow screen page | flow |  |
 | `screens` | integer or auto half third quarter | auto | page scenes on a column grid: a whole number of screens (1-6), or an equal share of one screen with the scenes beside it (design 2026-11-26) |
+| `run` | ident | none | not responsive; page scenes: consecutive scenes with the same run follow on, on the same screen; only the run's last scene rounds up to whole screens (design 2026-11-26) |
 | `snap` | none soft hard | none |  |
 | `turn` | none fade slide | none | removed 2026-11-21 (page turns): ignored, warning W036 |
 | `bg` | role or color | paper |  |
@@ -610,6 +611,7 @@ children: frame group figure video embed lottie audio gallery pullquote sidebar 
 | `palette` | ident | default |  |
 | `height` | flow screen page | flow |  |
 | `screens` | integer or auto half third quarter | auto | page scenes on a column grid: a whole number of screens (1-6), or an equal share of one screen with the scenes beside it (design 2026-11-26) |
+| `run` | ident | none | not responsive; page scenes: consecutive scenes with the same run follow on, on the same screen; only the run's last scene rounds up to whole screens (design 2026-11-26) |
 | `snap` | none soft hard | none |  |
 | `turn` | none fade slide | none | removed 2026-11-21 (page turns): ignored, warning W036 |
 | `bg` | role or color | paper |  |

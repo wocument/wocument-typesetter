@@ -17,7 +17,7 @@ export const VIEW = { width: 1280, height: 800 };
 
 export function lay(src: string, viewport = VIEW) {
   const { doc } = resolve(parse(FM + GRID + src).ast as Document);
-  // Fitting to whole screens (design 2026-11-26) is off: these tests check the band mechanics alone.
+  // The optical centre (design 2026-11-26) is off: these tests check the band mechanics alone.
   return layout(doc, viewport, new PrepareCache(createFixedEngine()), { fit: false });
 }
 

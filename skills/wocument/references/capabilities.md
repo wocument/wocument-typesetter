@@ -130,6 +130,7 @@ Design around these; say so when a design asks for one.
 | `palette` | `p2` | changes the layout | yes | warns W062 |
 | `height` | `screen` `page` | changes the layout | yes |  |
 | `screens` | `3` `half` `third` `quarter` | changes the layout | yes |  |
+| `run` | `probe` | changes the layout | not allowed |  |
 | `snap` | `soft` `hard` | changes the layout | yes | warns W030 |
 | `bg` | `accent` `#aa3355` | changes the layout | yes |  |
 | `linearize` | `true` | changes the layout | yes |  |
@@ -144,6 +145,7 @@ Design around these; say so when a design asks for one.
 | `palette` | `p2` | read when the page renders | yes | fields: `palette.paper`, `palette.ink`, `palette.muted`, `palette.accent`, `palette.rule`, `diagnostics`; warns W062 |
 | `height` | `screen` `page` | changes the layout | yes | `screen`: read when the page renders |
 | `screens` | `3` `half` `third` `quarter` | no effect seen | **ignored** |  |
+| `run` | `probe` | no effect seen | not allowed |  |
 | `snap` | `soft` `hard` | read when the page renders | yes | fields: `scenes.snap`; warns W030 |
 | `bg` | `accent` `#aa3355` | read when the page renders | yes | fields: `bg.role` |
 | `linearize` | `true` | changes the layout | yes |  |
