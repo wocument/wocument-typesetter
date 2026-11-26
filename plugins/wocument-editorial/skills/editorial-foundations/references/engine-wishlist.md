@@ -21,6 +21,10 @@ capability; none asks the engine to make an editorial judgement.
 | Mixed type sizes in one headline that stay correct on narrow screens | F6 | Styled spans and `fit=width` work, but on narrow screens the large words overlap the line above and break inside a word | Check every line in the render check; reduce the size ratio on phones rather than break words |
 | Picture files in several sizes, so each screen downloads one its size | G5 | One size per picture | Export pictures at a sensible single size; note the cost on phones |
 | Breakpoints and column widths in ems, so layouts follow the reader's text size | G6 | Pixels | Test with enlarged text (G1) and fix what breaks |
+| A scene fitted to a whole number of screens (pictures, space, margins, then text size) | J1 | The last band of a page scene is cut to its text | Fit by hand: picture size, a tighter baseline grid for the scene, a story style one step smaller (design note 2026-11-26) |
+| A head strip with two labels (issue name and section) that content never enters | J5 | One folio per scene | Section label from a parent's folio; never a frame in the content |
+| A picture kept inside one screen of a page scene | J4 | A grid-placed picture can cross into the next band | `ratio=` and `fit=cover` so it is shorter than a screen |
+| Display type that shrinks to fit its longest word instead of breaking it | J6 | A long word breaks inside the word | Size display type for the narrowest frame it is set in |
 
 ## Asked for by profiles and options
 
