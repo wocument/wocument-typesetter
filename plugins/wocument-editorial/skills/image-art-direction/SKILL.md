@@ -30,3 +30,10 @@ description: Use when pictures need choosing, placing or cropping for a Wocument
 - **Fitting lever 1 is yours.** When a scene must fit whole screens, pictures grow or shrink first, by whole baseline steps, or crop toward `focus`. Mark in the plan how far each picture may move.
 - **Grids of people** (contributors, list entries): equal crops, faces in the top third (`focus="50% 25%"`), a ratio that lets the whole set fit its screen target; wide crops (2:1 or 5:2) when the screen is short.
 - **Small inset portraits and signatures** are grid-placed at the head of a column, not anchored at the end of the text: an end anchor pushes them to a new screen.
+
+**Round 1b, whole screens (2026-11-26)**
+
+- **Spend surplus columns on pictures.** When a screen has room, promote a picture to a wider span or bleed one outer edge against an open margin. Do not give the room to wider text. (J8)
+- **Never grow a picture only to fill a screen.** A picture is sized from its purpose (J3). Extra space is placed by the ladder, not absorbed by the picture.
+- **Pair a large picture with a small one.** One dominant picture and one small detail, not two of equal weight. (J8)
+- **A breather screen is a picture decision.** In the middle of an article, a large open area is answered by pulling a picture into its own screen, and the plan says which one.

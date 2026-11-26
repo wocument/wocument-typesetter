@@ -35,3 +35,11 @@ description: Use when a content brief exists (design/content-brief.md) and a pie
 - **Pull quotes**: at least one quote in a long feature spans two columns inside the prose (`place=float, size=wide`); one-column quotes alone read as captions.
 - **Cut what does not read on screen.** A print composition that only works on paper (the gathered "look" strip with a row of labels) is dropped, not imitated.
 - **Read a page fraction against the page, not the spread.** A desktop screen holds a whole spread. (J3, with image-art-direction)
+
+**Round 1b, whole screens (2026-11-26)**
+
+- **Scenes round up, never down.** A scene takes the nearest whole number of screens above its content. Never plan to save a screen. (J1)
+- **Plan runs.** Articles of one section share `run=<name>` and follow on directly. Only the end of the run rounds up. The editor's letter is not in a run and has its own screens. (J1)
+- **Choose where the space lands.** For each screen, name its open share and pick from the ladder: margin or top sink, a promoted quote or picture, a deep sink for an opener, a closer for a short last screen. (J8)
+- **Never leave trapped space.** Empty pockets in the middle of a layout are moved to an edge. Never stretch line spacing or widen text to fill a screen. (J8)
+- **The engine only rounds up and centres a short last screen.** Everything else on the ladder is decided in the plan.

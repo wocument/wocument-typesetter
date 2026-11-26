@@ -4,19 +4,21 @@ How a scene is sized against the screen, how a picture is sized from its purpose
 
 Each rule reads: **the rule**, an **example**, **decide from the content**, **on each screen**, **in Wocument today**, and its **status**.
 
-## J1. A scene is a whole number of screens
+## J1. A scene is a whole number of screens, rounded up
 
-*Decided by:* editorial-art-direction. *Done by:* a skill (the target), the engine (the fit, not built yet). *Status:* Proposed (2026-11-26).
+*Decided by:* editorial-art-direction. *Done by:* a skill (the target), the engine (round up, being built). *Status:* Proposed (2026-11-26), updated in round 1b.
 
 **The rule.**
 
 A scene is 1, 2 or 3 screens tall, never 1.5. A page that is meant to be seen at once is one screen: an editor's letter, a contributors page, an opener, a short department page, a list spread. A longer piece takes two or three whole screens. The reader should never scroll through half a screen of one scene and half of the next.
 
-If the content does not fill its screens, the space is balanced on the issue's grid: pictures grow first, then the gaps between blocks, then the margins. Lines of text are never spread apart to fill a page. If the content is a little too long, it is tightened (smaller pictures, then tighter space, then smaller margins), never cut. **Text size and leading never change to make a fit.**
+A scene always rounds up to its nearest whole number of screens. The goal is never to use as few screens as possible. If the content is a little longer than a screen, the scene takes the next whole screen, and the space that is left over is placed by J8, not squeezed away. Content is never cut and never shrunk to save a screen. Lines of text are never spread apart to fill a page. **Text size and leading never change to make a fit.**
+
+Articles of one section may form a run: give each scene in the run the same `run=<name>` attribute. The articles of a run follow on directly, one after the other, and only the end of the whole run rounds up to a whole screen. The editor's letter is not part of a run. It has its own screens.
 
 Scenes may also share one screen in equal parts: two halves, three thirds or four quarters in a row make one screen together, and the space bar moves them as one.
 
-**Example.** An editor's letter of about 4,300 characters with one large picture, a small portrait and a signature, at a laptop size. In four text columns the text alone nearly fills one screen, so the picture shrinks to the head of the first column and the portrait and signature move to the head of the last column. If it still runs over, the margins tighten; the text size stays.
+**Example.** An editor's letter of about 4,300 characters with one large picture, a small portrait and a signature, at a laptop size. In four text columns the text alone nearly fills one screen, so the picture sits at the head of the first column and the portrait and signature at the head of the last column. If the letter still runs over, it takes a second whole screen, and J8 places the space that is left; the text size stays.
 
 Another: two short department items, each half a screen, share one screen as a pair of `1/2` scenes.
 
@@ -28,7 +30,7 @@ Another: two short department items, each half a screen, share one screen as a p
 - Tablets (640 to 1023 px): Same, when the scene is set in bands. A scene that scrolls as one column has no target.
 - Phones (under 640 px): The scene scrolls as one column. There is no target, but no blank strips either.
 
-**In Wocument today.** The last band of a page scene is cut to its text, so scenes end at fractions of a screen. Until the engine's fitting step is built (design note `docs/superpowers/specs/2026-11-26-whole-scenes-and-head-strip.md`), fit by hand with pictures and space only: picture size and crop, the row-group cell width, gaps and margins. Never a smaller text style or a tighter baseline for the text. Check the scene heights through `page.html?doc=<name>&inspect` (`window.__woc.pd.scenes[i].height` against the viewport height).
+**In Wocument today.** The last band of a page scene is cut to its text, so scenes end at fractions of a screen. Until the engine's round-up step is built (design note `docs/superpowers/specs/2026-11-26-whole-scenes-and-head-strip.md`), plan the screen count by hand and place the space with pictures and gaps (J8). Never a smaller text style or a tighter baseline for the text. The `run=` attribute is being built. Check the scene heights through `page.html?doc=<name>&inspect` (`window.__woc.pd.scenes[i].height` against the viewport height).
 
 ## J2. A scene break is a boundary, not a scene
 
@@ -154,3 +156,52 @@ Opener styles belong to the template, not to a page group. A page group (the pag
 **On each screen.** Same on every screen.
 
 **In Wocument today.** Built: named styles and `extends`.
+
+## J8. White space is placed, not filled
+
+*Decided by:* editorial-art-direction and image-art-direction. *Done by:* a skill, the engine (round up and optical centre: being built). *Status:* Proposed (2026-11-26), to be confirmed in review round 1c.
+
+**The rule.**
+
+Because a scene rounds up (J1), most screens end with some empty space. Skilled art directors do not fill that space. They choose where it lands. Space that is trapped, an empty pocket in the middle of a layout with content on all sides, looks like a mistake. Space that is pushed to the outer edges, such as the margins, a band at the top or an open column beside the text, looks confident and planned. A good page has contrast: one dense cluster of content and one open zone, never equal padding everywhere.
+
+How much to do depends on how much of the screen is open:
+
+| Open area on a screen | What to do | Owner |
+| :-- | :-- | :-- |
+| Small, 10 to 20% | Leave it as the outer margin or a top sink. A hairline rule may help. | The engine (margin); the art-direction skill (rule) |
+| Medium, 20 to 35% | Promote a nearby pull quote or picture to a wider span, or shift a text-only block off centre and drop its hangline 2 to 4 lines. | Art-direction skill; image-art-direction for pictures |
+| Large, over 35%, an opener | A deep sink: text and pictures drop to a shared line 20 to 35% down, leaving an empty band at the top. | Art-direction skill |
+| Large, over 35%, mid-article | Pull a picture into a breather screen. | Image-art-direction skill |
+| Large, last screen of a scene or run | Promote an earlier picture or quote so the screen is 60 to 75% full, or add a closer (end mark, author note, credits, a closing quote with a cutoff rule). If more than 20% is still free, the engine sets the block in the optical centre: 40% of the free space above and 60% below, in whole baselines. | Art-direction skill; the engine (centre) |
+
+The tools, in short:
+
+- **Deep sink and hangline.** A shared line that text and pictures hang from, low on the screen. Good for openers and tall screens.
+- **Hairline rules.** A vertical rule between columns ties them together on a wide screen and separates unequal zones. A full-width horizontal rule at the hangline claims the empty band above. A short cutoff rule seals a short column.
+- **A monumental pull quote.** 2.5 to 4 times the body size, in an open column or across two, with 3 to 4 baseline lines of space around it.
+- **Spend spare columns on pictures, never on wider text.** Keep body lines under about 70 characters. Bleed one outer edge of a picture against an open opposite margin. Pair one dominant picture with one small detail, not two of equal weight.
+- **Asymmetric voids.** Move the reading block off centre. Do not centre a narrow block in a wide screen.
+- **Typographic colour.** On large bright screens, a little more leading can lighten a text block. This is not used in Wocument: text size and leading never change to suit the space.
+
+Never do these:
+
+- Never trap space in the middle of a layout.
+- Never stretch paragraph or line spacing to reach the bottom of a screen.
+- Never widen a line of text past about 72 characters.
+- Never add decoration only to fill space.
+- Never spread equal padding everywhere.
+
+**Example.** An opener scene is one screen and its content fills 55% of it, so 45% is open. The plan drops the headline, deck and first column to a hangline 30% down, sets one full-width hairline rule on that line, and lets the top band stay empty. The picture beside the text takes the spare columns instead of the text getting wider. The empty band sits at the top edge, so it reads as a choice.
+
+Another: the last screen of a section run has one short column of text and 70% free space. The plan promotes a picture from the screen before it to fill about two thirds of the width, and ends the text with an end mark and a short author note.
+
+**Decide from the content.** Measure how much of the final layout is open. Find where it would land if nobody chose. If it would land in the middle, move it to an edge or fill it with a promoted picture or quote. Pick the smallest tool in the table that moves the space to an edge.
+
+**On each screen.**
+
+- Laptops and wide screens (1024 px and up): The full ladder, including the deep sink, column rules and off-centre blocks.
+- Tablets (640 to 1023 px): The same ladder with fewer columns. A deep sink and a pull quote across two columns still work.
+- Phones (under 640 px): The scene scrolls as one column, so there is no open area to place. No blank strips; no sink.
+
+**In Wocument today.** Built: `\rule` and column rules, `size=wide` and `size=hero`, `bleed`, `cols=`, and pull-quote styles. Being built: the engine's round-up and its optical centring of a short last screen. Not built: an attribute for the hangline or sink. Until it exists, make the sink with a frame's `top=` or an empty grid row. Everything else in the table is decided in the plan and set by hand.
